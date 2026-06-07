@@ -1,6 +1,6 @@
 import { sourceData } from "@/lib/source-data";
 import type { Rifle, RifleCategory } from "@/lib/types";
-import { images, riflePlaceholder, riflePlaceholderAlt } from "@/lib/images";
+import { platformImage, riflePlaceholder, riflePlaceholderAlt } from "@/lib/images";
 
 const categoryBySlug: Record<string, RifleCategory> = {
   specter: "hunting",
@@ -32,7 +32,7 @@ function rifleImage(caption?: string) {
 }
 
 const heroImage = {
-  url: images.rifle.studioCropped,
+  url: platformImage,
   alt: riflePlaceholderAlt,
 };
 

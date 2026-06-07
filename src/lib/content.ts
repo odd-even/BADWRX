@@ -62,7 +62,31 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   if (!isSanityConfigured()) return defaultSiteSettings;
   try {
     const doc = await client.fetch(siteSettingsQuery);
-    return mapSiteSettings(doc) ?? defaultSiteSettings;
+    const settings = mapSiteSettings(doc) ?? defaultSiteSettings;
+    const hero = settings.homeHero as SiteSettings["homeHero"] & { headline?: string };
+    if (!hero.headlines?.length) {
+      const legacy = hero.headline?.replace(/^Engineered\s+/i, "") ?? "";
+      return {
+        ...settings,
+        homeHero: {
+          ...hero,
+          headlinePrefix: hero.headlinePrefix ?? defaultSiteSettings.homeHero.headlinePrefix,
+          headlines: legacy
+            ? [legacy]
+            : defaultSiteSettings.homeHero.headlines,
+        },
+      };
+    }
+    if (!hero.headlinePrefix) {
+      return {
+        ...settings,
+        homeHero: {
+          ...hero,
+          headlinePrefix: defaultSiteSettings.homeHero.headlinePrefix,
+        },
+      };
+    }
+    return settings;
   } catch {
     return defaultSiteSettings;
   }

@@ -53,6 +53,59 @@ export interface Course {
   featured?: boolean;
 }
 
+export type MerchCategory = "caps" | "t-shirts" | "sweaters";
+
+export interface MerchItem {
+  id: string;
+  slug: string;
+  title: string;
+  category: MerchCategory;
+  price: string;
+  priceCents: number;
+  description: string;
+  image: RifleImage;
+  sizes: string[];
+  colors?: string[];
+}
+
+export type MerchShippingMethod = "standard" | "express";
+
+export interface MerchCartLine {
+  lineId: string;
+  slug: string;
+  title: string;
+  size: string;
+  color?: string;
+  quantity: number;
+  priceCents: number;
+  imageUrl: string;
+}
+
+export interface MerchShippingAddress {
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface MerchOrderPayload {
+  orderId: string;
+  submittedAt: string;
+  contact: {
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  shipping: MerchShippingAddress;
+  shippingMethod: MerchShippingMethod;
+  items: MerchCartLine[];
+  subtotalCents: number;
+  shippingCents: number;
+  totalCents: number;
+}
+
 export interface SiteSettings {
   name: string;
   short: string;
@@ -65,9 +118,23 @@ export interface SiteSettings {
   trustMarqueeItems: string[];
   homeHero: {
     eyebrow: string;
-    headline: string;
+    headlinePrefix: string;
+    headlines: string[];
     subheadline: string;
   };
+  homePlatforms: {
+    eyebrow: string;
+    title: string;
+    body: string;
+  };
+  homeIntro: {
+    eyebrow: string;
+    body: string;
+  };
+  homePillars: {
+    title: string;
+    body: string;
+  }[];
   fieldTested: {
     eyebrow: string;
     title: string;
@@ -117,8 +184,7 @@ export type BuildConfiguration = Record<
   | "stockPaint"
   | "scope"
   | "rings"
-  | "muzzleBrake"
-  | "suppressor"
-  | "rifleCase",
+  | "basecampPackage"
+  | "ballisticPackage",
   ConfigOption | null
 >;

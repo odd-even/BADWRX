@@ -15,11 +15,10 @@ export default function ConfigurePage() {
         Configure Your Rifle
       </h1>
       <p className="mt-4 max-w-2xl text-white-muted">
-        Walk through platform, caliber, finish, scope, rings, muzzle brake,
-        suppressor, and case options on all six BADWRX builds.
-        Every rifle is hand test-fired before it leaves the shop and delivered
-        with a ballistics table and rifle-specific ammunition recommendation.
-        Submit your spec for a consultation — no payment required.
+        Walk through platform, caliber, finish, optics, rings, Basecamp Package,
+        and Ballistic Package — matching the six BADWRX builds in our source
+        spec. Muzzle device and trigger are set per platform. Submit your spec
+        for a consultation — no payment required.
       </p>
 
       <div className="mt-12">

@@ -225,6 +225,50 @@ function parseWebsiteData(rows) {
   return { rifles, rifleSpecs, stockColors, optics, caliberMatrix, copyBlocks };
 }
 
+function buildConfiguratorMeta(website, copyBlocks) {
+  const platformDefaults = {};
+  for (const rifle of website.rifles) {
+    const spec = website.rifleSpecs[rifle.slug]?.specs ?? {};
+    platformDefaults[rifle.slug] = {
+      muzzleBrake: spec.muzzle_brake || "SRS Titanium",
+      trigger: spec.trigger || "TriggerTech Special",
+    };
+  }
+
+  return {
+    platformDefaults,
+    rings: {
+      id: "hawkins-ult-rings",
+      label: "Hawkins Precision ULT Rings — 30mm",
+      description:
+        copyBlocks["HAWKINS RINGS — Description"] ||
+        "Included with all Optics Package configurations.",
+    },
+    basecamp: {
+      id: "basecamp-package",
+      label: "BADWRX Basecamp Package",
+      headline: copyBlocks["BASECAMP PACKAGE — Headline"] || "The Complete System.",
+      description:
+        copyBlocks["BASECAMP PACKAGE — Body"] ||
+        "Laser-cut hard case, Garmin Xero Chronograph, and Fix It Sticks field kit.",
+      items: [
+        copyBlocks["BASECAMP — Laser-Cut Hard Case"],
+        copyBlocks["BASECAMP — Garmin Xero Chronograph"],
+        copyBlocks["BASECAMP — Fix It Sticks Field Kit"],
+      ].filter(Boolean),
+    },
+    ballistic: {
+      id: "ballistic-package",
+      label: "BADWRX Ballistic Package",
+      headline:
+        copyBlocks["BALLISTIC PACKAGE — Headline"] ||
+        "Your rifle ships zeroed. Most builders stop there. We don't.",
+      description: copyBlocks["BALLISTIC PACKAGE — Body"] || "",
+      howItWorks: copyBlocks["BALLISTIC PACKAGE — How It Works"] || "",
+    },
+  };
+}
+
 function parseRetailPrices(rows) {
   const prices = {};
   for (const row of rows) {
@@ -254,23 +298,15 @@ function main() {
   const docxCopy = buildCopyFromDocx(extractDocxParagraphs());
 
   const pricing = {
-    baseBuildCents: 850_00,
+    baseBuildCents: 0,
     optionPriceCents: {
-      "triggertech-special":
-        retailPrices["Rem 700 Special (Single-Stage)"] ?? 229_99,
       "hawkins-ult-rings": 196_00,
-      "srs-ti-pro-2": retailPrices['SRS "TI PRO 2" Muzzle Brake'] ?? 160_00,
-      "srs-the-chub": retailPrices['SRS "The Chub" Muzzle Brake'] ?? 185_00,
-      "srs-cb-banish-brake":
-        retailPrices["SRS CB Banish Suppressor Brake"] ?? 155_00,
-      "pelican-v800": retailPrices["Pelican V800"] ?? 425_00,
       "basecamp-package": 1_250_00,
       "ballistic-package": 2_500_00,
       "scope-none": 0,
       "rings-none": 0,
-      "muzzle-none": 0,
-      "suppressor-none": 0,
       "case-none": 0,
+      "ballistic-none": 0,
     },
   };
 
@@ -305,6 +341,8 @@ function main() {
           : 0;
   }
 
+  const configurator = buildConfiguratorMeta(website, website.copyBlocks);
+
   const payload = {
     meta: {
       syncedAt: new Date().toISOString(),
@@ -316,6 +354,7 @@ function main() {
     },
     docxCopy,
     website,
+    configurator,
     retailPrices,
     pricing,
   };

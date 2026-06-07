@@ -1,0 +1,35 @@
+"use client";
+
+import Link from "next/link";
+import { useMerchCart } from "@/components/merch/CartProvider";
+
+export function MerchCartLink() {
+  const { itemCount } = useMerchCart();
+
+  return (
+    <Link
+      href="/merch/cart"
+      className="relative flex h-10 w-10 items-center justify-center text-white-muted transition hover:text-white"
+      aria-label={`Cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        className="h-5 w-5"
+        aria-hidden
+      >
+        <path d="M6 6h15l-1.5 9h-12z" />
+        <path d="M6 6 5 3H2" />
+        <circle cx="9" cy="20" r="1.5" />
+        <circle cx="18" cy="20" r="1.5" />
+      </svg>
+      {itemCount > 0 ? (
+        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-red px-1 text-[10px] font-semibold text-white">
+          {itemCount > 9 ? "9+" : itemCount}
+        </span>
+      ) : null}
+    </Link>
+  );
+}

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
+import { TypewriterText } from "@/components/ui/TypewriterText";
 import { RifleCard } from "@/components/rifles/RifleCard";
-import { TruncatedText } from "@/components/ui/TruncatedText";
 import { getFeaturedRifles, getSiteSettings } from "@/lib/content";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 
@@ -29,12 +29,12 @@ export default async function HomePage() {
         </div>
 
         <div className="relative mx-auto w-full max-w-7xl px-6 pb-20 pt-32">
-          <p className="text-xs uppercase tracking-[0.3em] text-red">
-            {site.homeHero.eyebrow ?? "Unrelenting Performance"}
-          </p>
-          <h1 className="mt-4 max-w-3xl text-5xl text-white md:text-7xl">
-            {site.homeHero.headline}
-          </h1>
+          <TypewriterText
+            as="h1"
+            prefix={site.homeHero.headlinePrefix}
+            phrases={site.homeHero.headlines}
+            className="max-w-3xl text-5xl leading-[0.92] text-white md:text-7xl"
+          />
           <p className="mt-6 max-w-xl text-lg text-white-muted">
             {site.homeHero.subheadline}
           </p>
@@ -49,7 +49,7 @@ export default async function HomePage() {
               href="/builds"
               className="border border-white/30 px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-white"
             >
-              View Past Builds
+              View Our Rifles
             </Link>
           </div>
         </div>
@@ -59,22 +59,20 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-red">Featured builds</p>
-            <h2 className="mt-2 text-4xl text-white">Past work</h2>
-            <p className="mt-4 max-w-xl text-white-muted">
-              <TruncatedText
-                text={site.deliveryPackage}
-                title="Delivery & verification"
-                maxLines={3}
-              />
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-widest text-red">
+              {site.homePlatforms.eyebrow}
+            </p>
+            <h2 className="mt-2 text-4xl text-white">{site.homePlatforms.title}</h2>
+            <p className="mt-4 text-white-muted leading-relaxed">
+              {site.homePlatforms.body}
             </p>
           </div>
           <Link
             href="/builds"
-            className="text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
+            className="shrink-0 text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
           >
-            View all builds →
+            View all platforms →
           </Link>
         </div>
 
@@ -86,6 +84,33 @@ export default async function HomePage() {
       </section>
 
       <section className="border-y border-white/10 bg-black-muted">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <p className="text-xs uppercase tracking-widest text-red">
+            {site.homeIntro.eyebrow}
+          </p>
+          <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
+            {site.homeIntro.body}
+          </p>
+
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            {site.homePillars.map((pillar) => (
+              <div
+                key={pillar.title}
+                className="border border-white/10 bg-black-light p-8"
+              >
+                <h3 className="text-sm font-semibold uppercase tracking-widest text-red">
+                  {pillar.title}
+                </h3>
+                <p className="mt-4 text-sm text-white-muted leading-relaxed">
+                  {pillar.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-white/10">
         <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden border border-white/10">
             <Image
@@ -101,12 +126,9 @@ export default async function HomePage() {
               {site.fieldTested.eyebrow}
             </p>
             <h2 className="mt-2 text-4xl text-white">{site.fieldTested.title}</h2>
-            <TruncatedText
-              text={site.fieldTested.body}
-              title={site.fieldTested.title}
-              maxLines={4}
-              className="text-white-muted leading-relaxed"
-            />
+            <p className="mt-6 text-white-muted leading-relaxed">
+              {site.fieldTested.body}
+            </p>
           </div>
         </div>
       </section>
@@ -122,19 +144,22 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-0% via-black/50 via-[32%] via-black/90 via-[52%] to-black to-100%" />
 
         <div className="relative mx-auto w-full max-w-7xl px-6 pb-20 pt-32">
-          <div className="max-w-xl">
+          <div className="max-w-2xl">
             <p className="text-xs uppercase tracking-widest text-red">
               {site.unrelenting.eyebrow}
             </p>
             <h2 className="mt-2 text-4xl text-white md:text-5xl">
               {site.unrelenting.title}
             </h2>
-            <TruncatedText
-              text={site.unrelenting.body}
-              title={site.unrelenting.title}
-              maxLines={4}
-              className="text-white-muted leading-relaxed"
-            />
+            <p className="mt-6 text-white-muted leading-relaxed">
+              {site.unrelenting.body}
+            </p>
+            <Link
+              href="/contact"
+              className="mt-8 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
+            >
+              Ask about the Ballistic Package →
+            </Link>
           </div>
         </div>
       </section>
@@ -142,12 +167,9 @@ export default async function HomePage() {
       <section className="border-y border-white/10 bg-black-light">
         <div className="mx-auto max-w-4xl px-6 py-24 text-center">
           <p className="text-xs uppercase tracking-widest text-red">From the field</p>
-          <TruncatedText
-            text={`"${site.testimonial.quote}"`}
-            title="From the field"
-            maxLines={4}
-            className="mt-8 text-xl text-white md:text-2xl"
-          />
+          <blockquote className="mt-8 text-xl text-white md:text-2xl leading-relaxed">
+            &ldquo;{site.testimonial.quote}&rdquo;
+          </blockquote>
           <p className="mt-8 text-sm uppercase tracking-widest text-white-muted">
             — {site.testimonial.author}
           </p>
@@ -159,12 +181,9 @@ export default async function HomePage() {
           <div>
             <p className="text-xs uppercase tracking-widest text-red">Get in touch</p>
             <h2 className="mt-2 text-4xl text-white">{site.contactSection.title}</h2>
-            <TruncatedText
-              text={site.contactSection.body}
-              title={site.contactSection.title}
-              maxLines={4}
-              className="text-white-muted leading-relaxed"
-            />
+            <p className="mt-6 text-white-muted leading-relaxed">
+              {site.contactSection.body}
+            </p>
             <a
               href={`mailto:${site.email}`}
               className="mt-6 inline-block text-lg text-white transition hover:text-red"

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "syncedAt": "2026-06-07T18:05:14.988Z",
+    "syncedAt": "2026-06-07T20:21:11.049Z",
     "sources": [
       "Pricing_List_BADWRX_Final_43.xlsx",
       "BADWRX_Website_Copy_7.docx"
@@ -510,6 +510,57 @@
       "ABOUT — Pillar 1: PRECISION": "We build to tolerances that matter. Every action, barrel, and component in a BADWRX rifle is selected and fitted to perform as a system, not as a collection of parts.",
       "ABOUT — Pillar 2: WEIGHT": "Ultralight is not a marketing term. It is an engineering discipline. We build the lightest rifle that can do the job — and we do not build rifles that cannot.",
       "ABOUT — Pillar 3: RELIABILITY": "A precision rifle that fails in the field is worse than useless. Every BADWRX build is tested, verified, and guaranteed before it ships."
+    }
+  },
+  "configurator": {
+    "platformDefaults": {
+      "specter": {
+        "muzzleBrake": "SRS Titanium",
+        "trigger": "TriggerTech Special"
+      },
+      "reaper": {
+        "muzzleBrake": "SRS Titanium",
+        "trigger": "TriggerTech Special"
+      },
+      "imperium": {
+        "muzzleBrake": "SRS Titanium",
+        "trigger": "TriggerTech Special"
+      },
+      "invictus": {
+        "muzzleBrake": "SRS Titanium",
+        "trigger": "TriggerTech Special"
+      },
+      "sentinel": {
+        "muzzleBrake": "SRS Titanium",
+        "trigger": "TriggerTech Special"
+      },
+      "goat": {
+        "muzzleBrake": "Hawkins Precision",
+        "trigger": "TriggerTech Special"
+      }
+    },
+    "rings": {
+      "id": "hawkins-ult-rings",
+      "label": "Hawkins Precision ULT Rings — 30mm",
+      "description": "Hawkins Precision Ultra Light Tactical Rings — 30mm with offset level cap. The standard for precision rifle builds. Hawkins rings hold zero, protect your turrets, and add virtually nothing to your overall weight."
+    },
+    "basecamp": {
+      "id": "basecamp-package",
+      "label": "BADWRX Basecamp Package",
+      "headline": "The Complete System.",
+      "description": "Every BADWRX rifle is built to perform. The BADWRX Basecamp Package ensures it is protected, verified, and maintainable everywhere you take it. Available on all six BADWRX platforms, the Basecamp Package includes a laser-cut BADWRX hard case foam insert fitted precisely to your rifle configuration, a Garmin Xero Chronograph for verified ballistic data in the field, and a Fix It Sticks field tool kit with the tools you need to maintain your rifle anywhere on earth. This is not a bundle. It is a system.",
+      "items": [
+        "Custom laser-cut foam insert fitted to the exact dimensions of your rifle, scope, and accessories. Your rifle sits exactly where it belongs. Nothing moves.",
+        "Wireless, compact, accurate. Know your actual velocity in any condition. Not what a chart says — what your rifle says.",
+        "The torque driver system used by professional gunsmiths and field hunters worldwide. The tools you need to maintain zero, tighten components, and solve problems in the field."
+      ]
+    },
+    "ballistic": {
+      "id": "ballistic-package",
+      "label": "BADWRX Ballistic Package",
+      "headline": "Your rifle ships zeroed. Most builders stop there. We don't.",
+      "description": "The BADWRX Ballistic Package takes your rifle to 1,000 meters. We shoot it, collect real velocity data, build your ballistic solution, true the data against actual impacts, calculate density altitude and firing solution corrections, and laser engrave your custom turret with the drop data for your exact load. Tell us where you hunt and what time of year — we account for the atmospherics. When your rifle arrives, your turrets are engraved for your elevation, your conditions, and your load. You dial, you shoot, you connect. This is not a ballistic app. This is your rifle, your data, your turrets — done right before it ever leaves our hands.",
+      "howItWorks": "When you order the Ballistic Package, tell us where you are hunting and what time of year. We use that information to set atmospheric parameters that match your conditions. Your rifle is shot at distance, the data is collected and trued, corrections are applied, and your turrets are engraved before the rifle ships. You arrive in the field with a rifle that is ready."
     }
   },
   "retailPrices": {
@@ -1270,21 +1321,15 @@
     "Hawkins XLR DBM Upgrade (Bottom Metal)": 7400
   },
   "pricing": {
-    "baseBuildCents": 85000,
+    "baseBuildCents": 0,
     "optionPriceCents": {
-      "triggertech-special": 22999,
       "hawkins-ult-rings": 19600,
-      "srs-ti-pro-2": 16000,
-      "srs-the-chub": 18500,
-      "srs-cb-banish-brake": 15500,
-      "pelican-v800": 4603200,
       "basecamp-package": 125000,
       "ballistic-package": 250000,
       "scope-none": 0,
       "rings-none": 0,
-      "muzzle-none": 0,
-      "suppressor-none": 0,
       "case-none": 0,
+      "ballistic-none": 0,
       "nx8-25-20x50-mil-xt": 195000,
       "nx8-25-20x50-tremor3": 220000,
       "nx8-4-32x50-mil-xt": 215000,

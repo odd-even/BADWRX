@@ -16,9 +16,16 @@ import {
   type BuildContactDetails,
 } from "@/lib/build-submission";
 import {
+  companionSelection,
+  filterStepOptions,
+  platformSpecDefaults,
+  calibersForPlatform,
+} from "@/lib/configurator/filter-options";
+import {
   computeBuildLineItems,
   computeBuildTotal,
   computeDepositCents,
+  formatLineItemPrice,
   formatPrice,
   formatPriceDelta,
   getOptionPrice,
@@ -30,9 +37,8 @@ const emptyConfig: BuildConfiguration = {
   stockPaint: null,
   scope: null,
   rings: null,
-  muzzleBrake: null,
-  suppressor: null,
-  rifleCase: null,
+  basecampPackage: null,
+  ballisticPackage: null,
 };
 
 const swatchSteps: StepKey[] = ["stockPaint", "rings"];
@@ -48,6 +54,12 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
     }
     if (option && !option.specs) {
       summary[key] = option.label;
+    }
+  }
+  const platformDefaults = platformSpecDefaults(config.platform?.id);
+  for (const [key, value] of Object.entries(platformDefaults)) {
+    if (value && !summary[key]) {
+      summary[key] = value;
     }
   }
   return summary;
@@ -86,8 +98,26 @@ export function Configurator() {
   const isImageGridStep =
     currentStep.options.some((option) => option.image) && !isSwatchStep;
 
+  const visibleOptions = useMemo(
+    () => filterStepOptions(currentKey, currentStep.options, config),
+    [currentKey, currentStep.options, config],
+  );
+
   function selectOption(option: ConfigOption) {
-    setConfig((prev) => ({ ...prev, [currentKey]: option }));
+    setConfig((prev) => {
+      const next: BuildConfiguration = {
+        ...prev,
+        [currentKey]: option,
+        ...companionSelection(currentKey, option),
+      };
+      if (currentKey === "platform" && prev.caliber) {
+        const allowed = calibersForPlatform(option.id).map((c) => c.id);
+        if (!allowed.includes(prev.caliber.id)) {
+          next.caliber = null;
+        }
+      }
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -206,9 +236,10 @@ export function Configurator() {
               : "mt-8 space-y-3"
           }
         >
-          {currentStep.options.map((option) => {
+          {visibleOptions.map((option) => {
             const selected = config[currentKey]?.id === option.id;
             const optionPrice = getOptionPrice(option.id);
+            const priceLabel = formatPriceDelta(optionPrice, currentKey);
             return (
               <button
                 key={option.id}
@@ -248,9 +279,11 @@ export function Configurator() {
                         />
                       </div>
                     )}
-                    <p className="mt-2 text-xs uppercase tracking-widest text-red">
-                      {formatPriceDelta(optionPrice)}
-                    </p>
+                    {priceLabel && (
+                      <p className="mt-2 text-xs uppercase tracking-widest text-red">
+                        {priceLabel}
+                      </p>
+                    )}
                   </div>
                   <span
                     className={`mt-1 h-4 w-4 shrink-0 border ${
@@ -374,7 +407,7 @@ export function Configurator() {
                       >
                         <span className="text-white-muted">{item.label}</span>
                         <span className="shrink-0 text-white">
-                          {item.cents === 0 ? "Included" : formatPrice(item.cents)}
+                          {formatLineItemPrice(item.cents, item.key)}
                         </span>
                       </li>
                     ))}

@@ -76,3 +76,49 @@ h3 {
     animation: none;
   }
 }
+
+@keyframes hero-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-tag-in {
+  opacity: 0;
+  animation: hero-tag-in 0.65s ease-out 0.15s forwards;
+}
+
+.hero-suffix {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.hero-suffix-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-suffix-hidden {
+  opacity: 0;
+  transform: translateY(-0.12em);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-suffix {
+    transition: none;
+  }
+
+  .hero-suffix-hidden {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-tag-in {
+    opacity: 1;
+    animation: none;
+  }
+}

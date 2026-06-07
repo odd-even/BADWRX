@@ -28,6 +28,7 @@ export const riflePlaceholderAlt =
   "Custom precision bolt-action rifle with NightForce scope on black background";
 
 const configuratorBase = "/images/placeholders";
+const configuratorAssetBase = "/images/configurator";
 
 export type PlaceholderCategory =
   | "actions"
@@ -47,4 +48,77 @@ export function placeholderImage(
   filename: string,
 ): string {
   return `${configuratorBase}/${category}/${filename}`;
+}
+
+/** Curated assets from `_assets/configurator/{subfolder}/` */
+export function configuratorImage(subfolder: string, filename: string): string {
+  return `${configuratorAssetBase}/${subfolder}/${filename}`;
+}
+
+/** Platform hero in `_assets/placeholder images/platform/` */
+export const platformImage = `${configuratorBase}/platform/IMG_0058 copy.webp`;
+
+/** Platform hero images in `_assets/placeholder images/platform/` */
+export const platformImages: Record<string, string> = {
+  specter: platformImage,
+  reaper: platformImage,
+  imperium: platformImage,
+  invictus: platformImage,
+  sentinel: platformImage,
+  goat: platformImage,
+};
+
+/** Finish swatches in `_assets/placeholder images/camo/` */
+export const stockPaintImages: Record<string, string> = {
+  "vias-multicam-black": placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
+  "alpine-ghost": placeholderImage(
+    "camo",
+    "bondcambrushcam5monochromecontrasty50x50swatch.jpg.webp",
+  ),
+  "ridgeline-bronze": placeholderImage(
+    "camo",
+    "Camouflage-Seamless-Pattern-Background-Graphics-41997134-2-580x386.jpg",
+  ),
+  "midnight-operator": placeholderImage("camo", "camo-seamless-pattern-v0-7or2osuu8bxb1.jpg"),
+  "tungsten-mountain": placeholderImage(
+    "camo",
+    "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
+  ),
+  "od-backcountry": placeholderImage(
+    "camo",
+    "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
+  ),
+  custom: placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
+};
+
+const scopeImages = {
+  lp: placeholderImage(
+    "scopes",
+    "ATACR_1-8x24_F1_C672_1_Edited__56363.1730990457.1280.1280__93511.png.webp",
+  ),
+  precision: placeholderImage(
+    "scopes",
+    "ATACR_7-35x56_F1_C613_1__92890.1730990339.1280.1280__96549.png.webp",
+  ),
+  precisionAlt: placeholderImage(
+    "scopes",
+    "ATACR_7-35x56_F1_C689_1__59276.1730990338.1280.1280__81359.png.webp",
+  ),
+} as const;
+
+/** Nightforce product photos in `_assets/placeholder images/scopes/` */
+export function scopeImageForMagnification(
+  magnification: string,
+  opticId?: string,
+): string {
+  if (magnification.startsWith("1-") || magnification.startsWith("2-12")) {
+    return scopeImages.lp;
+  }
+  if (opticId?.includes("dark-earth")) {
+    return scopeImages.precisionAlt;
+  }
+  if (magnification.startsWith("6-") || magnification.startsWith("5-")) {
+    return scopeImages.precisionAlt;
+  }
+  return scopeImages.precision;
 }

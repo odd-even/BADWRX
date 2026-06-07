@@ -2,7 +2,7 @@ import type { BuildConfiguration } from "@/lib/types";
 import type { BuildContactDetails, BuildSubmission } from "@/lib/build-submission";
 import { stepKeys } from "@/data/configurator-options";
 import { OptionImage } from "@/components/configurator/OptionImage";
-import { formatPrice } from "@/lib/pricing";
+import { formatPrice, formatLineItemPrice } from "@/lib/pricing";
 
 interface BuildReviewProps {
   config: BuildConfiguration;
@@ -89,7 +89,7 @@ export function BuildReview({
                 ))}
               </dd>
               <dd className="text-sm text-white sm:text-right">
-                {line.priceCents === 0 ? "Included" : formatPrice(line.priceCents)}
+                {formatLineItemPrice(line.priceCents, line.stepKey)}
               </dd>
             </div>
           ))}
@@ -103,7 +103,7 @@ export function BuildReview({
               >
                 <span className="text-white-muted">{item.label}</span>
                 <span className="text-white">
-                  {item.cents === 0 ? "Included" : formatPrice(item.cents)}
+                  {formatLineItemPrice(item.cents, item.key)}
                 </span>
               </li>
             ))}

@@ -63,6 +63,27 @@ export interface SourceData {
     }[];
     copyBlocks: Record<string, string>;
   };
+  configurator: {
+    platformDefaults: Record<
+      string,
+      { muzzleBrake: string; trigger: string }
+    >;
+    rings: { id: string; label: string; description: string };
+    basecamp: {
+      id: string;
+      label: string;
+      headline: string;
+      description: string;
+      items: string[];
+    };
+    ballistic: {
+      id: string;
+      label: string;
+      headline: string;
+      description: string;
+      howItWorks: string;
+    };
+  };
   retailPrices: Record<string, number>;
   pricing: {
     baseBuildCents: number;

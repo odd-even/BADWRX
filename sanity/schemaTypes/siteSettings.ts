@@ -35,7 +35,20 @@ export const siteSettings = defineType({
       type: "object",
       fields: [
         defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
-        defineField({ name: "headline", title: "Headline", type: "string" }),
+        defineField({
+          name: "headlinePrefix",
+          title: "Hero headline prefix",
+          type: "string",
+          description: 'Fixed opening word(s), e.g. "Engineered "',
+        }),
+        defineField({
+          name: "headlines",
+          title: "Hero headline suffixes",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Rotating endings after the prefix",
+        }),
+        defineField({ name: "headline", title: "Headline (legacy)", type: "string" }),
         defineField({ name: "subheadline", title: "Subheadline", type: "text", rows: 4 }),
       ],
     }),

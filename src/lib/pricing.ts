@@ -15,9 +15,16 @@ export function formatPrice(cents: number): string {
   }).format(cents / 100);
 }
 
-export function formatPriceDelta(cents: number): string {
+export function formatPriceDelta(cents: number, stepKey?: StepKey): string | null {
+  if (cents === 0 && stepKey === "caliber") return null;
   if (cents === 0) return "Included";
   return cents > 0 ? `+${formatPrice(cents)}` : formatPrice(cents);
+}
+
+export function formatLineItemPrice(cents: number, stepKey?: StepKey): string {
+  if (cents === 0 && stepKey === "caliber") return "";
+  if (cents === 0) return "Included";
+  return formatPrice(cents);
 }
 
 export function getOptionPrice(optionId: string): number {
@@ -38,9 +45,7 @@ export function computeBuildTotal(config: BuildConfiguration): number {
 export function computeBuildLineItems(
   config: BuildConfiguration,
 ): { key: StepKey; label: string; cents: number }[] {
-  const items: { key: StepKey; label: string; cents: number }[] = [
-    { key: "platform", label: "Build & verification", cents: baseBuildCents },
-  ];
+  const items: { key: StepKey; label: string; cents: number }[] = [];
 
   for (const key of stepKeys) {
     const option = config[key];

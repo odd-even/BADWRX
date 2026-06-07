@@ -1,93 +1,99 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getBrandContent } from "@/lib/content";
+import { brand } from "@/lib/brand";
 import { images } from "@/lib/images";
+
+const navLinks = [
+  { href: "/builds", label: "Past Builds" },
+  { href: "/configure", label: "Configure a Rifle" },
+  { href: "/merch", label: "Merch" },
+  { href: "/university", label: "Long Range University" },
+  { href: "/about", label: "About BADWRX" },
+  { href: "/contact", label: "Request a Consultation" },
+];
 
 export async function Footer() {
   const content = await getBrandContent();
 
   return (
     <footer className="border-t border-white/10 bg-black-light">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:grid-cols-3">
-        <div>
-          <Link href="/" className="inline-block transition opacity-90 hover:opacity-100">
+      <div className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-6">
+          <Link
+            href="/"
+            className="order-1 inline-block transition opacity-90 hover:opacity-100 md:col-start-1 md:row-start-1"
+          >
             <Image
               src={images.logos.badge}
               alt={`${content.short} — ${content.name}`}
               width={220}
               height={208}
-              className="h-36 w-auto sm:h-44 md:h-52"
+              className="h-32 w-auto sm:h-40 md:h-44"
             />
           </Link>
-          <p className="mt-6 text-xl text-white">{content.name}</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-red">
-            {content.short}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-white-muted">
-            {content.buildPromise} {content.deliveryPackage}
-          </p>
-        </div>
 
-        <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-red">
-            Navigate
-          </p>
-          <ul className="space-y-2 text-sm text-white-muted">
-            <li>
-              <Link href="/builds" className="transition hover:text-white">
-                Past Builds
-              </Link>
-            </li>
-            <li>
-              <Link href="/configure" className="transition hover:text-white">
-                Configure a Rifle
-              </Link>
-            </li>
-            <li>
-              <Link href="/university" className="transition hover:text-white">
-                Long Range University
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="transition hover:text-white">
-                About the Builder
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="transition hover:text-white">
-                Request a Consultation
-              </Link>
-            </li>
-            <li>
-              <Link href="/studio" className="transition hover:text-white">
-                Content Studio
-              </Link>
-            </li>
-          </ul>
-        </div>
+          <div className="order-2 md:col-start-2 md:row-start-1">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-red">
+              Navigate
+            </p>
+            <ul className="space-y-1 text-sm text-white-muted">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="transition hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-red">
-            Contact
-          </p>
-          <ul className="space-y-2 text-sm text-white-muted">
-            <li>Jackson, Wyoming</li>
-            <li>
-              <a href={`mailto:${content.email}`} className="transition hover:text-white">
-                {content.email}
-              </a>
-            </li>
-            <li>(307) 555-0142</li>
-          </ul>
-          <p className="mt-6 text-xs text-white-muted/60">
-            Not a retail dealer. All builds by consultation and quote only.
+          <div className="order-4 md:col-start-3 md:row-span-2 md:row-start-1">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-red">
+              Contact
+            </p>
+            <ul className="space-y-2 text-sm text-white-muted">
+              <li>{brand.location}</li>
+              <li>By appointment only</li>
+              <li>
+                <a
+                  href={`mailto:${content.email}`}
+                  className="transition hover:text-white"
+                >
+                  {content.email}
+                </a>
+              </li>
+            </ul>
+            <p className="mt-6 text-sm leading-relaxed text-white-muted">
+              Every rifle is built to order — no inventory, no walk-ins. Configure
+              a platform online or email us to start a build quote.
+            </p>
+            <Link
+              href="/configure"
+              className="mt-4 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
+            >
+              Configure a rifle →
+            </Link>
+            <p className="mt-6 text-xs text-white-muted/60">
+              Not a retail dealer. All builds by consultation and quote only.
+            </p>
+          </div>
+
+          <p className="order-3 self-end text-2xl font-bold uppercase leading-[0.95] tracking-tight sm:text-3xl md:col-span-2 md:col-start-1 md:row-start-2 md:text-4xl lg:text-5xl xl:text-6xl">
+            <span className="text-red">Precision rifles</span>
+            <span className="text-white/30"> for</span>
+            <br />
+            <span className="text-white/30">the American patriot</span>
           </p>
         </div>
       </div>
 
       <div className="border-t border-white/5 px-6 py-6 text-center text-xs text-white-muted/50">
-        © {new Date().getFullYear()} {content.name} ({content.short}). All rights
-        reserved.
+        © {new Date().getFullYear()} {content.name} ({content.short}). All
+        rights reserved.
       </div>
     </footer>
   );

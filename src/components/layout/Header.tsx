@@ -6,10 +6,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { images } from "@/lib/images";
 import { brand } from "@/lib/brand";
+import { MerchCartLink } from "@/components/merch/MerchCartLink";
 
 const navLinks = [
   { href: "/builds", label: "Builds" },
   { href: "/configure", label: "Configure" },
+  { href: "/merch", label: "Merch" },
   { href: "/university", label: "University" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -238,48 +240,60 @@ export function Header() {
           </span>
         </nav>
 
-        <button
-          type="button"
-          className="flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 md:hidden"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-        >
-          <span
-            className={`block h-px w-6 bg-white transition-transform duration-200 ${
-              menuOpen ? "translate-y-[7px] rotate-45" : ""
+        <div className="flex items-center gap-2">
+          <MerchCartLink />
+          <button
+            type="button"
+            className={`relative z-[61] flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 md:hidden ${
+              menuOpen ? "pointer-events-auto" : ""
             }`}
-          />
-          <span
-            className={`block h-px w-6 bg-white transition-opacity duration-200 ${
-              menuOpen ? "opacity-0" : ""
-            }`}
-          />
-          <span
-            className={`block h-px w-6 bg-white transition-transform duration-200 ${
-              menuOpen ? "-translate-y-[7px] -rotate-45" : ""
-            }`}
-          />
-        </button>
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+          >
+            <span
+              className={`block h-px w-6 bg-white transition-transform duration-200 ${
+                menuOpen ? "translate-y-[7px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block h-px w-6 bg-white transition-opacity duration-200 ${
+                menuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`block h-px w-6 bg-white transition-transform duration-200 ${
+                menuOpen ? "-translate-y-[7px] -rotate-45" : ""
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       <div
         id="mobile-nav"
-        className={`fixed inset-0 z-[55] bg-black-light transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-[55] md:hidden ${
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
-        }`}
+        } transition-opacity duration-300`}
         aria-hidden={!menuOpen}
       >
-        <nav className="flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
+        <button
+          type="button"
+          className="absolute inset-0 bg-black-light"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Close menu"
+          tabIndex={menuOpen ? 0 : -1}
+        />
+        <nav className="pointer-events-none relative flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-colors ${
+              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-colors ${
                 pathname === link.href
                   ? "text-red"
                   : "text-white-muted hover:text-white"
@@ -289,9 +303,20 @@ export function Header() {
             </Link>
           ))}
           <Link
+            href="/merch/cart"
+            onClick={() => setMenuOpen(false)}
+            className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-colors ${
+              pathname === "/merch/cart"
+                ? "text-red"
+                : "text-white-muted hover:text-white"
+            }`}
+          >
+            Cart
+          </Link>
+          <Link
             href="/configure"
             onClick={() => setMenuOpen(false)}
-            className={`${ctaClassName} mt-6 w-full py-4 text-center`}
+            className={`${ctaClassName} pointer-events-auto mt-6 w-full py-4 text-center`}
             style={ctaButtonStyle()}
           >
             Build Yours
