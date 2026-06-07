@@ -36,7 +36,7 @@ export const configuratorSteps: ConfigStep[] = [
           "Precision platform with AICS compatibility. Built for timberline elk and mule deer at distance.",
         specs: { action: "Primus UL", type: "Push-feed bolt" },
         image: {
-          url: placeholderImage("actions", "cdx-x60-thumbnail.webp"),
+          url: placeholderImage("actions", "primus-ul.png"),
           alt: "Primus UL action",
         },
       },
