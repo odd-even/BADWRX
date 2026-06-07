@@ -1,0 +1,118 @@
+export interface RifleImage {
+  url: string;
+  alt: string;
+  caption?: string;
+}
+
+export interface RifleSpecs {
+  action?: string;
+  caliber?: string;
+  barrel?: string;
+  barrelLength?: string;
+  twistRate?: string;
+  stock?: string;
+  stockPaint?: string;
+  trigger?: string;
+  finish?: string;
+  weight?: string;
+  overallLength?: string;
+  accuracy?: string;
+  magazine?: string;
+}
+
+export type RifleCategory = "hunting" | "long-range" | "safari" | "precision";
+
+export interface Rifle {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  category: RifleCategory;
+  featured: boolean;
+  startingAt?: string;
+  description: string;
+  heroImage: RifleImage;
+  gallery: RifleImage[];
+  specs: RifleSpecs;
+  highlights: string[];
+}
+
+export interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  level: string;
+  price: string;
+  description: string;
+  topics: string[];
+  featured?: boolean;
+}
+
+export interface SiteSettings {
+  name: string;
+  short: string;
+  tagline: string;
+  email: string;
+  partnerBarrels: string;
+  partnerOptics: string;
+  buildPromise: string;
+  deliveryPackage: string;
+  trustMarqueeItems: string[];
+  homeHero: {
+    eyebrow: string;
+    headline: string;
+    subheadline: string;
+  };
+  fieldTested: {
+    eyebrow: string;
+    title: string;
+    body: string;
+  };
+  unrelenting: {
+    eyebrow: string;
+    title: string;
+    body: string;
+  };
+  testimonial: {
+    quote: string;
+    author: string;
+  };
+  contactSection: {
+    title: string;
+    body: string;
+  };
+  aboutPage: {
+    title: string;
+    body: string[];
+    philosophyQuote: string;
+  };
+}
+
+export interface ConfigOption {
+  id: string;
+  label: string;
+  description?: string;
+  specs?: Record<string, string>;
+  image?: {
+    url: string;
+    alt: string;
+  };
+}
+
+export interface ConfigStep {
+  id: string;
+  title: string;
+  subtitle: string;
+  options: ConfigOption[];
+}
+
+export type BuildConfiguration = Record<
+  | "platform"
+  | "caliber"
+  | "barrel"
+  | "stock"
+  | "stockPaint"
+  | "trigger"
+  | "finish",
+  ConfigOption | null
+>;

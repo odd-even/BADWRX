@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dark green base (almost black) + pure black accents — never lighter than base green */
+  --color-black: #080a07;
+  --color-black-light: #000000;
+  --color-black-muted: #000000;
+  --color-white: #fafafa;
+  --color-white-muted: #a3a3a3;
+  --color-red: #d22026;
+  --color-red-dark: #a9181e;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.12;
+}
+
+h1 {
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+h2 {
+  line-height: 1.1;
+}
+
+h3 {
+  line-height: 1.15;
+}
+
+::selection {
+  background-color: var(--color-red);
+  color: white;
+}
+
+@keyframes trust-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.trust-marquee-track {
+  animation: trust-marquee 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-marquee-track {
+    animation: none;
+  }
+}
