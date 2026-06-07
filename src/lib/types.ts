@@ -14,6 +14,11 @@ export interface RifleSpecs {
   stockPaint?: string;
   trigger?: string;
   finish?: string;
+  scope?: string;
+  rings?: string;
+  muzzleBrake?: string;
+  suppressor?: string;
+  rifleCase?: string;
   weight?: string;
   overallLength?: string;
   accuracy?: string;
@@ -113,6 +118,11 @@ export type BuildConfiguration = Record<
   | "stock"
   | "stockPaint"
   | "trigger"
-  | "finish",
+  | "finish"
+  | "scope"
+  | "rings"
+  | "muzzleBrake"
+  | "suppressor"
+  | "rifleCase",
   ConfigOption | null
 >;

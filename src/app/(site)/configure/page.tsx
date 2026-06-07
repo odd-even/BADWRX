@@ -4,7 +4,7 @@ import { Configurator } from "@/components/configurator/Configurator";
 export const metadata: Metadata = {
   title: "Configure Your Rifle",
   description:
-    "Step through platform, caliber, barrel, stock, trigger, and finish options. Submit your build for a consultation.",
+    "Step through action, barrel, stock, optics, muzzle devices, and case options. Submit your build for a consultation.",
 };
 
 export default function ConfigurePage() {
@@ -15,7 +15,8 @@ export default function ConfigurePage() {
         Configure Your Rifle
       </h1>
       <p className="mt-4 max-w-2xl text-white-muted">
-        Walk through platform, caliber, barrel, stock, trigger, and finish.
+        Walk through action, caliber, barrel, stock, trigger, finish, scope,
+        rings, muzzle brake, suppressor, and case.
         Every rifle is hand test-fired before it leaves the shop and delivered
         with a ballistics table and rifle-specific ammunition recommendation.
         Submit your spec for a consultation — no payment required.

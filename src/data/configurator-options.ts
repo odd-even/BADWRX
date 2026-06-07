@@ -323,6 +323,221 @@ export const configuratorSteps: ConfigStep[] = [
       },
     ],
   },
+  {
+    id: "scope",
+    title: "Scope",
+    subtitle: "NightForce optics — mounted, leveled, and bore-sighted in-house",
+    options: [
+      {
+        id: "nf-nx8-4-32",
+        label: "NightForce NX8 4-32×50 F1",
+        description: "Compact long-range optic with first focal plane MOAR reticle.",
+        specs: { scope: "NightForce NX8 4-32×50 F1", magnification: "4–32×" },
+        image: {
+          url: placeholderImage("scopes", "nightforce-scope.webp"),
+          alt: "NightForce NX8 scope",
+        },
+      },
+      {
+        id: "nf-atacr-5-25",
+        label: "NightForce ATACR 5-25×56 F1",
+        description: "Precision hunting and competition glass with exceptional clarity.",
+        specs: { scope: "NightForce ATACR 5-25×56 F1", magnification: "5–25×" },
+        image: {
+          url: placeholderImage("scopes", "nightforce-scope.webp"),
+          alt: "NightForce ATACR scope",
+        },
+      },
+      {
+        id: "nf-shv-4-14",
+        label: "NightForce SHV 4-14×50",
+        description: "Versatile second focal plane scope for western ridge hunting.",
+        specs: { scope: "NightForce SHV 4-14×50", magnification: "4–14×" },
+        image: {
+          url: placeholderImage("scopes", "nightforce-scope.webp"),
+          alt: "NightForce SHV scope",
+        },
+      },
+      {
+        id: "scope-none",
+        label: "No scope — optics ready",
+        description: "Picatinny or integral mount prepared; customer-supplied optic.",
+        specs: { scope: "None (optics ready)" },
+      },
+    ],
+  },
+  {
+    id: "rings",
+    title: "Rings",
+    subtitle: "Scope rings matched to tube diameter and rail height",
+    options: [
+      {
+        id: "nf-xtrm-30mm",
+        label: "NightForce XTRM — 30mm Medium",
+        description: "Steel rings for 30mm tube scopes on standard-height rails.",
+        specs: { rings: "NightForce XTRM 30mm Medium", tube: "30mm" },
+        image: {
+          url: placeholderImage("rings", "mount-rings.jpg"),
+          alt: "NightForce 30mm scope rings",
+        },
+      },
+      {
+        id: "nf-xtrm-34mm",
+        label: "NightForce XTRM — 34mm Medium",
+        description: "34mm rings for ATACR and large-tube precision optics.",
+        specs: { rings: "NightForce XTRM 34mm Medium", tube: "34mm" },
+        image: {
+          url: placeholderImage("rings", "mount-rings.jpg"),
+          alt: "NightForce 34mm scope rings",
+        },
+      },
+      {
+        id: "spuhr-30mm-cant",
+        label: "Spuhr 30mm Cantilever Mount",
+        description: "One-piece cantilever mount for 20 MOA rails and long scopes.",
+        specs: { rings: "Spuhr 30mm Cantilever", tube: "30mm" },
+        image: {
+          url: placeholderImage("rings", "mount-rings.jpg"),
+          alt: "Spuhr cantilever scope mount",
+        },
+      },
+      {
+        id: "rings-none",
+        label: "No rings — mount supplied separately",
+        description: "Customer provides mount or rings; rail prepared only.",
+        specs: { rings: "None" },
+      },
+    ],
+  },
+  {
+    id: "muzzleBrake",
+    title: "Muzzle Brake",
+    subtitle: "Threaded and timed — recoil management for long-range follow-up",
+    options: [
+      {
+        id: "apa-little-bighorn",
+        label: "APA Little Bighorn",
+        description: "Self-timing brake tuned for hunting calibers and carbon barrels.",
+        specs: { muzzleBrake: "APA Little Bighorn" },
+        image: {
+          url: placeholderImage("muzzle-brakes", "muzzle-brake.jpg"),
+          alt: "APA Little Bighorn muzzle brake",
+        },
+      },
+      {
+        id: "badger-fte",
+        label: "Badger Ordnance FTE",
+        description: "Compact 3-port brake with minimal blast signature.",
+        specs: { muzzleBrake: "Badger Ordnance FTE" },
+        image: {
+          url: placeholderImage("muzzle-brakes", "muzzle-brake.jpg"),
+          alt: "Badger Ordnance FTE muzzle brake",
+        },
+      },
+      {
+        id: "benchmark-brake",
+        label: "Benchmark Barrel Muzzle Brake",
+        description: "Precision-machined brake matched to barrel contour.",
+        specs: { muzzleBrake: "Benchmark Barrel Muzzle Brake" },
+        image: {
+          url: placeholderImage("muzzle-brakes", "muzzle-brake.jpg"),
+          alt: "Benchmark Barrel muzzle brake",
+        },
+      },
+      {
+        id: "muzzle-none",
+        label: "None — thread protector only",
+        description: "5/8×24 or M18×1 thread with flush protector. No brake.",
+        specs: { muzzleBrake: "Thread protector only" },
+      },
+    ],
+  },
+  {
+    id: "suppressor",
+    title: "Suppressor",
+    subtitle: "NFA items — we coordinate transfer and pin-and-weld if required",
+    options: [
+      {
+        id: "silencerco-omega-300",
+        label: "SilencerCo Omega 300",
+        description: "Modular .30 cal suppressor for hunting and range use.",
+        specs: { suppressor: "SilencerCo Omega 300", caliber: ".30 cal" },
+        image: {
+          url: placeholderImage("suppressors", "suppressor.jpg"),
+          alt: "SilencerCo Omega 300 suppressor",
+        },
+      },
+      {
+        id: "dead-air-sandman-s",
+        label: "Dead Air Sandman-S",
+        description: "Durable rifle suppressor with Stellite baffles.",
+        specs: { suppressor: "Dead Air Sandman-S", caliber: ".30 cal" },
+        image: {
+          url: placeholderImage("suppressors", "suppressor.jpg"),
+          alt: "Dead Air Sandman-S suppressor",
+        },
+      },
+      {
+        id: "tb-ultra-7",
+        label: "Thunder Beast Ultra 7",
+        description: "Precision suppressor favored for long-range hunting builds.",
+        specs: { suppressor: "Thunder Beast Ultra 7", caliber: ".30 cal" },
+        image: {
+          url: placeholderImage("suppressors", "suppressor.jpg"),
+          alt: "Thunder Beast Ultra 7 suppressor",
+        },
+      },
+      {
+        id: "suppressor-none",
+        label: "None",
+        description: "No suppressor. Muzzle device or thread protector only.",
+        specs: { suppressor: "None" },
+      },
+    ],
+  },
+  {
+    id: "rifleCase",
+    title: "Case",
+    subtitle: "Ship and travel protection — cut foam to your rifle profile",
+    options: [
+      {
+        id: "pelican-1750",
+        label: "Pelican 1750 Long Case",
+        description: "Full-length hard case with custom foam for scoped rifle.",
+        specs: { rifleCase: "Pelican 1750" },
+        image: {
+          url: placeholderImage("cases", "rifle-case.webp"),
+          alt: "Pelican 1750 rifle case",
+        },
+      },
+      {
+        id: "pelican-1700",
+        label: "Pelican 1700",
+        description: "Mid-length hard case for shorter barrels and compact scopes.",
+        specs: { rifleCase: "Pelican 1700" },
+        image: {
+          url: placeholderImage("cases", "rifle-case.webp"),
+          alt: "Pelican 1700 rifle case",
+        },
+      },
+      {
+        id: "badger-field-pack",
+        label: "Badger Field Pack — Soft Case",
+        description: "Padded soft case for vehicle transport and backcountry travel.",
+        specs: { rifleCase: "Badger Field Pack (soft)" },
+        image: {
+          url: placeholderImage("cases", "rifle-case.webp"),
+          alt: "Badger field pack soft rifle case",
+        },
+      },
+      {
+        id: "case-none",
+        label: "No case",
+        description: "Rifle ships in protective wrap only.",
+        specs: { rifleCase: "None" },
+      },
+    ],
+  },
 ];
 
 export const stepKeys = [
@@ -333,6 +548,11 @@ export const stepKeys = [
   "stockPaint",
   "trigger",
   "finish",
+  "scope",
+  "rings",
+  "muzzleBrake",
+  "suppressor",
+  "rifleCase",
 ] as const;
 
 export type StepKey = (typeof stepKeys)[number];

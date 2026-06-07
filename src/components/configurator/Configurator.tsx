@@ -9,6 +9,19 @@ import {
 } from "@/data/configurator-options";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
+import { BuildReview } from "@/components/configurator/BuildReview";
+import {
+  compileBuildSubmission,
+  type BuildContactDetails,
+} from "@/lib/build-submission";
+import {
+  computeBuildLineItems,
+  computeBuildTotal,
+  computeDepositCents,
+  formatPrice,
+  formatPriceDelta,
+  getOptionPrice,
+} from "@/lib/pricing";
 
 const emptyConfig: BuildConfiguration = {
   platform: null,
@@ -18,9 +31,16 @@ const emptyConfig: BuildConfiguration = {
   stockPaint: null,
   trigger: null,
   finish: null,
+  scope: null,
+  rings: null,
+  muzzleBrake: null,
+  suppressor: null,
+  rifleCase: null,
 };
 
-const swatchSteps: StepKey[] = ["stockPaint", "trigger", "finish"];
+const swatchSteps: StepKey[] = ["stockPaint", "trigger", "finish", "rings"];
+
+type ConfiguratorPhase = "configure" | "review" | "submitted";
 
 function configToSummary(config: BuildConfiguration): Record<string, string> {
   const summary: Record<string, string> = {};
@@ -37,16 +57,34 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
 }
 
 export function Configurator() {
+  const [phase, setPhase] = useState<ConfiguratorPhase>("configure");
   const [stepIndex, setStepIndex] = useState(0);
   const [config, setConfig] = useState<BuildConfiguration>(emptyConfig);
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const [form, setForm] = useState<BuildContactDetails>({
+    name: "",
+    email: "",
+    phone: "",
+    notes: "",
+    paymentMethod: "square-card",
+  });
 
   const currentStep = configuratorSteps[stepIndex];
   const currentKey = stepKeys[stepIndex] as StepKey;
   const summary = useMemo(() => configToSummary(config), [config]);
+  const submission = useMemo(() => compileBuildSubmission(config), [config]);
+  const buildTotalCents = useMemo(() => computeBuildTotal(config), [config]);
+  const buildLineItems = useMemo(() => computeBuildLineItems(config), [config]);
+  const depositCents = useMemo(
+    () => computeDepositCents(buildTotalCents),
+    [buildTotalCents],
+  );
+  const selectedCount = stepKeys.filter((key) => config[key] !== null).length;
   const isLastStep = stepIndex === configuratorSteps.length - 1;
   const canAdvance = config[currentKey] !== null;
+  const isBuildComplete = submission.isComplete;
   const isSwatchStep = swatchSteps.includes(currentKey);
   const isImageGridStep =
     currentStep.options.some((option) => option.image) && !isSwatchStep;
@@ -55,22 +93,59 @@ export function Configurator() {
     setConfig((prev) => ({ ...prev, [currentKey]: option }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("/api/build-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ config, contact: form }),
+      });
+
+      const data = (await response.json()) as {
+        ok?: boolean;
+        requestId?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !data.ok || !data.requestId) {
+        throw new Error(data.error ?? "Could not submit build request");
+      }
+
+      setRequestId(data.requestId);
+      setPhase("submitted");
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Could not submit build request",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  if (submitted) {
+  if (phase === "submitted") {
     return (
       <div className="border border-red/30 bg-black-muted p-10 text-center">
         <p className="text-xs uppercase tracking-widest text-red">Build submitted</p>
-        <h2 className="mt-4 text-3xl text-white">
-          We&apos;ll be in touch
-        </h2>
+        <h2 className="mt-4 text-3xl text-white">We&apos;ll be in touch</h2>
         <p className="mx-auto mt-4 max-w-md text-sm text-white-muted">
-          Your configuration has been recorded. A builder will review your spec
-          sheet and respond within 2 business days. No payment required at this
-          stage.
+          Your full spec sheet ({submission.totalFormatted} estimated) has been
+          recorded. A builder will review your configuration and respond within
+          2 business days.
+          {form.paymentMethod === "square-ach"
+            ? " We'll send a Square invoice for your deposit — choose bank transfer (ACH) when you pay on Square."
+            : " We'll send a Square invoice for your deposit when your build is approved."}
+          {requestId && (
+            <>
+              {" "}
+              Reference: <span className="text-white">{requestId}</span>
+            </>
+          )}
         </p>
         <Link
           href="/builds"
@@ -79,6 +154,21 @@ export function Configurator() {
           View Past Builds
         </Link>
       </div>
+    );
+  }
+
+  if (phase === "review") {
+    return (
+      <BuildReview
+        config={config}
+        submission={submission}
+        form={form}
+        onFormChange={setForm}
+        onSubmit={handleSubmit}
+        onEdit={() => setPhase("configure")}
+        submitting={submitting}
+        submitError={submitError}
+      />
     );
   }
 
@@ -102,9 +192,7 @@ export function Configurator() {
         <p className="text-xs uppercase tracking-widest text-red">
           Step {stepIndex + 1} of {configuratorSteps.length}
         </p>
-        <h2 className="mt-2 text-3xl text-white">
-          {currentStep.title}
-        </h2>
+        <h2 className="mt-2 text-3xl text-white">{currentStep.title}</h2>
         <p className="mt-2 text-sm text-white-muted">{currentStep.subtitle}</p>
 
         <div
@@ -116,6 +204,7 @@ export function Configurator() {
         >
           {currentStep.options.map((option) => {
             const selected = config[currentKey]?.id === option.id;
+            const optionPrice = getOptionPrice(option.id);
             return (
               <button
                 key={option.id}
@@ -123,9 +212,7 @@ export function Configurator() {
                 onClick={() => selectOption(option)}
                 className={`w-full border text-left transition ${
                   isImageGridStep ? "overflow-hidden p-0" : "p-5"
-                } ${
-                  isSwatchStep ? "flex items-start gap-4" : ""
-                } ${
+                } ${isSwatchStep ? "flex items-start gap-4" : ""} ${
                   selected
                     ? "border-red bg-red/5"
                     : "border-white/10 bg-black-muted hover:border-white/30"
@@ -151,6 +238,9 @@ export function Configurator() {
                         {option.description}
                       </p>
                     )}
+                    <p className="mt-2 text-xs uppercase tracking-widest text-red">
+                      {formatPriceDelta(optionPrice)}
+                    </p>
                   </div>
                   <span
                     className={`mt-1 h-4 w-4 shrink-0 border ${
@@ -162,6 +252,28 @@ export function Configurator() {
             );
           })}
         </div>
+
+        {isLastStep && isBuildComplete && (
+          <div className="mt-10 border border-red/40 bg-red/5 p-6 sm:p-8">
+            <p className="text-xs uppercase tracking-widest text-red">
+              Ready for review
+            </p>
+            <h3 className="mt-2 text-2xl text-white">
+              Your rifle is fully configured
+            </h3>
+            <p className="mt-2 text-sm text-white-muted">
+              Review your complete spec sheet, confirm pricing, and submit to a
+              builder for the next step.
+            </p>
+            <button
+              type="button"
+              onClick={() => setPhase("review")}
+              className="mt-6 w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
+            >
+              Review & Submit Build →
+            </button>
+          </div>
+        )}
 
         <div className="mt-8 flex gap-4">
           {stepIndex > 0 && (
@@ -184,80 +296,12 @@ export function Configurator() {
             </button>
           )}
         </div>
-
-        {isLastStep && canAdvance && (
-          <form onSubmit={handleSubmit} className="mt-10 border-t border-white/10 pt-10">
-            <h3 className="text-xl text-white">
-              Request a build consultation
-            </h3>
-            <p className="mt-2 text-sm text-white-muted">
-              No payment now — we&apos;ll review your spec and follow up to
-              discuss timeline and pricing.
-            </p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-xs uppercase tracking-widest text-white-muted">
-                  Name
-                </span>
-                <input
-                  required
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs uppercase tracking-widest text-white-muted">
-                  Email
-                </span>
-                <input
-                  required
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
-                />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className="text-xs uppercase tracking-widest text-white-muted">
-                  Phone (optional)
-                </span>
-                <input
-                  type="tel"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
-                />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className="text-xs uppercase tracking-widest text-white-muted">
-                  Notes — intended game, hunt style, left/right hand
-                </span>
-                <textarea
-                  rows={3}
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
-                />
-              </label>
-            </div>
-            <button
-              type="submit"
-              className="mt-6 w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
-            >
-              Submit Build Request
-            </button>
-          </form>
-        )}
       </div>
 
       <aside className="lg:col-span-2">
         <div className="sticky top-24 border border-white/10 bg-black-muted p-6">
           <p className="text-xs uppercase tracking-widest text-red">Live spec sheet</p>
-          <h3 className="mt-2 text-xl text-white">
-            Your Configuration
-          </h3>
+          <h3 className="mt-2 text-xl text-white">Your Configuration</h3>
 
           {Object.keys(summary).length === 0 ? (
             <p className="mt-6 text-sm text-white-muted">
@@ -297,16 +341,59 @@ export function Configurator() {
                 </div>
               )}
               <dl className="mt-6 space-y-3">
-              {Object.entries(summary).map(([key, value]) => (
-                <div key={key} className="border-b border-white/5 pb-3">
-                  <dt className="text-[10px] uppercase tracking-widest text-white-muted">
-                    {key.replace(/([A-Z])/g, " $1").trim()}
-                  </dt>
-                  <dd className="mt-1 text-sm text-white">{value}</dd>
+                {Object.entries(summary).map(([key, value]) => (
+                  <div key={key} className="border-b border-white/5 pb-3">
+                    <dt className="text-[10px] uppercase tracking-widest text-white-muted">
+                      {key.replace(/([A-Z])/g, " $1").trim()}
+                    </dt>
+                    <dd className="mt-1 text-sm text-white">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              {selectedCount > 0 && (
+                <div className="mt-6 border-t border-white/10 pt-6">
+                  <p className="text-[10px] uppercase tracking-widest text-white-muted">
+                    Price estimate
+                  </p>
+                  <ul className="mt-3 space-y-2">
+                    {buildLineItems.map((item) => (
+                      <li
+                        key={`${item.key}-${item.label}`}
+                        className="flex items-start justify-between gap-3 text-xs"
+                      >
+                        <span className="text-white-muted">{item.label}</span>
+                        <span className="shrink-0 text-white">
+                          {item.cents === 0 ? "Included" : formatPrice(item.cents)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 flex items-baseline justify-between border-t border-white/10 pt-4">
+                    <span className="text-xs uppercase tracking-widest text-white-muted">
+                      Estimated total
+                    </span>
+                    <span className="text-2xl text-white">
+                      {formatPrice(buildTotalCents)}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-[10px] text-white-muted/70">
+                    Suggested deposit (50%): {formatPrice(depositCents)} — due
+                    after builder review
+                  </p>
                 </div>
-              ))}
-            </dl>
+              )}
             </>
+          )}
+
+          {isBuildComplete && (
+            <button
+              type="button"
+              onClick={() => setPhase("review")}
+              className="mt-6 w-full border border-red bg-red py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+            >
+              Review & Submit Build
+            </button>
           )}
 
           <div className="mt-8 border-t border-white/10 pt-6">

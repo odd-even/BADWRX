@@ -34,7 +34,12 @@ export type PlaceholderCategory =
   | "stocks"
   | "triggers"
   | "camo"
-  | "barrels";
+  | "barrels"
+  | "scopes"
+  | "rings"
+  | "muzzle-brakes"
+  | "suppressors"
+  | "cases";
 
 /** Configurator option photos from `_assets/placeholder images/{category}/` */
 export function placeholderImage(
