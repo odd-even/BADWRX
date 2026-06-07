@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:local-node": "PATH=\"./.node/bin:$PATH\" next dev --turbopack",
-    "build": "next build",
+    "build": "node scripts/sync-public-images.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "seed:sanity": "tsx --env-file=.env.local sanity/seed/seed.ts"
