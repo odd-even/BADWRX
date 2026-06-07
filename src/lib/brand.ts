@@ -1,16 +1,17 @@
 export const brand = {
-  name: "Badger Rifleworks",
+  name: "Badger Gunworks",
   short: "BADWRX",
-  tagline: "Precision rifles, builder curated",
+  tagline: "Precision rifles, engineered without compromise",
   email: "info@badwrx.com",
+  location: "Diamondhead, Mississippi",
   partners: {
-    barrels: "Proof Research",
+    barrels: "Proof Research / Carbon Six",
     optics: "NightForce",
   },
   buildPromise:
-    "Every rifle is hand test-fired before it leaves the shop, built to work with specific components chosen by the builder.",
+    "Every BADWRX rifle is built to order, assembled by hand, and tested before it leaves the shop.",
   deliveryPackage:
-    "You receive a ballistics table and the specific grain weight and ammunition brand that works best for your rifle — so you can make the perfect shot every time.",
+    "Ballistic Package available — live fire to 1,000m with custom laser-engraved turrets.",
   colors: {
     green: "#080a07",
     black: "#000000",

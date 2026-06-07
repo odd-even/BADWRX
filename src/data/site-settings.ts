@@ -1,54 +1,82 @@
 import { brand } from "@/lib/brand";
+import { getCopy, sourceData } from "@/lib/source-data";
 import type { SiteSettings } from "@/lib/types";
+
+const { docxCopy } = sourceData;
+
+function pillarBody(key: "weight" | "accuracy" | "durability", fallback: string): string {
+  const line = docxCopy.pillars[key];
+  if (!line) return fallback;
+  const parts = line.split("—");
+  return parts.length > 1 ? parts.slice(1).join("—").trim() : line;
+}
 
 export const defaultSiteSettings: SiteSettings = {
   name: brand.name,
   short: brand.short,
   tagline: brand.tagline,
   email: brand.email,
-  partnerBarrels: brand.partners.barrels,
-  partnerOptics: brand.partners.optics,
-  buildPromise: brand.buildPromise,
-  deliveryPackage: brand.deliveryPackage,
+  partnerBarrels: "Proof Research / Carbon Six",
+  partnerOptics: "NightForce",
+  buildPromise:
+    docxCopy.brandStatement ||
+    "Every BADWRX rifle is built to order, assembled by hand, and tested before it leaves.",
+  deliveryPackage:
+    getCopy("BALLISTIC PACKAGE — Body") ||
+    brand.deliveryPackage,
   trustMarqueeItems: [
-    `${brand.partners.barrels} Barrels`,
-    `${brand.partners.optics} Optics`,
+    "NightForce Optics",
+    "Carbon Six Barrels",
     "Hand Test-Fired",
-    "Ballistics Table Included",
-    "Rifle-Specific Ammo Data",
+    "½ MOA Guarantee",
+    "Built to Order",
   ],
   homeHero: {
-    eyebrow: "Unrelenting Performance",
-    headline: "Precision built for the hunt",
-    subheadline: `${brand.buildPromise} ${brand.deliveryPackage}`,
+    eyebrow: "Engineered Without Compromise",
+    headline: docxCopy.homeHero.headline,
+    subheadline: docxCopy.homeHero.subheadline,
   },
   fieldTested: {
     eyebrow: "Field proven",
-    title: "Field tested in the harshest conditions",
-    body: "Every platform is field tested on real Alaska mountain hunts to confirm durability, reliability, and performance where it counts. These aren't bench rifles — they're built to work in the field, with your ammunition, on your hunt.",
+    title: "Built for hard country",
+    body: pillarBody(
+      "durability",
+      "Hard country breaks equipment. BADWRX rifles are built for conditions that end hunts — and built to deliver on target every time.",
+    ),
   },
   unrelenting: {
     eyebrow: "Our standard",
     title: "Unrelenting performance",
-    body: `${brand.buildPromise} ${brand.deliveryPackage} If it doesn't meet our ½ MOA standard, it doesn't ship—simple as that.`,
+    body: pillarBody(
+      "accuracy",
+      "Sub-MOA performance is the floor, not the ceiling. Our rifles are built, tested, and guaranteed to shoot ½ MOA with proper load development.",
+    ),
   },
   testimonial: {
     quote:
-      "Most 'custom' rifles still need work. This one didn't. Zeroed quick, tracked true, and the first round in the field ended the hunt. When your rifle does exactly what it's supposed to, everything gets simpler.",
-    author: "Tj",
+      "Most builders stop at zeroed. BADWRX takes your rifle to 1,000 meters — real data, engraved turrets, ready in the field.",
+    author: "BADWRX Ballistic Package",
   },
   contactSection: {
-    title: "Start the conversation",
-    body: "Questions about platforms, chamberings, or what goes into a build? Reach out to discuss your next rifle — every component is selected by the builder to meet precision standards, not pulled from a parts bin.",
+    title: "Request a build quote",
+    body:
+      docxCopy.customQuoteCta ||
+      getCopy(
+        "CONTACT / QUOTE REQUEST",
+        "Every BADWRX rifle is built to order. Tell us what you need.",
+      ),
   },
   aboutPage: {
-    title: "Built to precision standards",
+    title: getCopy("ABOUT — Headline", "Built Different. On Purpose."),
     body: [
-      `${brand.buildPromise} Barrels are ${brand.partners.barrels}. Optics are ${brand.partners.optics}. Actions, triggers, stocks, and the rest of the component stack are selected the same way — not because they're popular, but because they meet the standard the builder holds every rifle to before it leaves the shop.`,
-      brand.deliveryPackage,
-      "Each rifle is pillar bedded and verified to ½\" three-shot groups at 100 yards with the recommended factory ammunition. You receive the targets. If it doesn't meet that standard, it doesn't ship.",
-    ],
-    philosophyQuote:
-      "Hand test-fired before it leaves the shop. You get the ballistics table, the ammo that works, and a rifle ready to put the shot where it needs to go.",
+      getCopy("ABOUT — Body", brand.buildPromise),
+      getCopy("ABOUT — Pillar 1: PRECISION", ""),
+      getCopy("ABOUT — Pillar 2: WEIGHT", ""),
+      getCopy("ABOUT — Pillar 3: RELIABILITY", ""),
+    ].filter(Boolean),
+    philosophyQuote: getCopy(
+      "BALLISTIC PACKAGE — Headline",
+      "Your rifle ships zeroed. Most builders stop there. We don't.",
+    ),
   },
 };

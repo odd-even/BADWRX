@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    // Avoid WasmHash crash on Vercel's Node 22 build image
+    config.output.hashFunction = "xxhash64";
+    return config;
+  },
 };
 
 export default nextConfig;

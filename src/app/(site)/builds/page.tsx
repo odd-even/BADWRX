@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
 import { RifleCard } from "@/components/rifles/RifleCard";
-import { getAllRifles, getBrandContent } from "@/lib/content";
+import { getAllRifles } from "@/lib/content";
 import { categoryLabels } from "@/data/rifles";
+import { sourceData } from "@/lib/source-data";
 
 export const metadata: Metadata = {
-  title: "Past Builds",
-  description: "Gallery of custom hunting and precision rifles built by Badger Rifleworks.",
+  title: "Rifle Builds",
+  description: sourceData.docxCopy.buildsPage.subcopy,
 };
 
 export default async function BuildsPage() {
-  const [rifles, brand] = await Promise.all([getAllRifles(), getBrandContent()]);
+  const rifles = await getAllRifles();
   const categories = Object.keys(categoryLabels) as (keyof typeof categoryLabels)[];
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <p className="text-xs uppercase tracking-widest text-red">Portfolio</p>
-      <h1 className="mt-2 text-5xl text-white">Past Builds</h1>
+      <p className="text-xs uppercase tracking-widest text-red">Platforms</p>
+      <h1 className="mt-2 text-5xl text-white">
+        {sourceData.docxCopy.buildsPage.headline}
+      </h1>
       <p className="mt-4 max-w-2xl text-white-muted">
-        {brand.buildPromise} {brand.deliveryPackage}
+        {sourceData.docxCopy.buildsPage.subcopy}
       </p>
 
       <div className="mt-8 flex flex-wrap gap-3">

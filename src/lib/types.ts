@@ -114,11 +114,7 @@ export interface ConfigStep {
 export type BuildConfiguration = Record<
   | "platform"
   | "caliber"
-  | "barrel"
-  | "stock"
   | "stockPaint"
-  | "trigger"
-  | "finish"
   | "scope"
   | "rings"
   | "muzzleBrake"

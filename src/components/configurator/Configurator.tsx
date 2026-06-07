@@ -26,11 +26,7 @@ import {
 const emptyConfig: BuildConfiguration = {
   platform: null,
   caliber: null,
-  barrel: null,
-  stock: null,
   stockPaint: null,
-  trigger: null,
-  finish: null,
   scope: null,
   rings: null,
   muzzleBrake: null,
@@ -38,7 +34,7 @@ const emptyConfig: BuildConfiguration = {
   rifleCase: null,
 };
 
-const swatchSteps: StepKey[] = ["stockPaint", "trigger", "finish", "rings"];
+const swatchSteps: StepKey[] = ["stockPaint", "rings"];
 
 type ConfiguratorPhase = "configure" | "review" | "submitted";
 

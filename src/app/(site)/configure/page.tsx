@@ -4,7 +4,7 @@ import { Configurator } from "@/components/configurator/Configurator";
 export const metadata: Metadata = {
   title: "Configure Your Rifle",
   description:
-    "Step through action, barrel, stock, optics, muzzle devices, and case options. Submit your build for a consultation.",
+    "Configure a BADWRX platform, caliber, finish, optics, and packages. Submit your build for a quote.",
 };
 
 export default function ConfigurePage() {
@@ -15,8 +15,8 @@ export default function ConfigurePage() {
         Configure Your Rifle
       </h1>
       <p className="mt-4 max-w-2xl text-white-muted">
-        Walk through action, caliber, barrel, stock, trigger, finish, scope,
-        rings, muzzle brake, suppressor, and case.
+        Walk through platform, caliber, finish, scope, rings, muzzle brake,
+        suppressor, and case options on all six BADWRX builds.
         Every rifle is hand test-fired before it leaves the shop and delivered
         with a ballistics table and rifle-specific ammunition recommendation.
         Submit your spec for a consultation — no payment required.
