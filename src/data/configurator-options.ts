@@ -58,7 +58,8 @@ export const configuratorSteps: ConfigStep[] = [
   {
     id: "scope",
     title: "Scope",
-    subtitle: sourceData.website.copyBlocks["OPTICS PACKAGE — Body"]?.slice(0, 120) + "…" ||
+    subtitle:
+      sourceData.website.copyBlocks["OPTICS PACKAGE — Body"] ||
       "NightForce optics — mounted, leveled, and bore-sighted in-house",
     options: [
       ...sourceData.website.optics.map((o) => ({
@@ -171,7 +172,7 @@ export const configuratorSteps: ConfigStep[] = [
         id: "basecamp-package",
         label: "BADWRX Basecamp Package",
         description:
-          sourceData.website.copyBlocks["BASECAMP PACKAGE — Body"]?.slice(0, 160) + "…" ||
+          sourceData.website.copyBlocks["BASECAMP PACKAGE — Body"] ||
           "Hard case, Garmin Xero Chronograph, and Fix It Sticks field kit.",
         specs: { rifleCase: "Basecamp Package" },
         image: {

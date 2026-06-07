@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Course } from "@/lib/types";
+import { TruncatedText } from "@/components/ui/TruncatedText";
 
 interface CourseCardProps {
   course: Course;
@@ -23,7 +24,12 @@ export function CourseCard({ course }: CourseCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-6 md:p-8">
-        <p className="text-white-muted leading-relaxed">{course.description}</p>
+        <TruncatedText
+          text={course.description}
+          title={course.title}
+          maxLines={4}
+          className="text-white-muted leading-relaxed"
+        />
 
         <p className="mt-8 text-xs uppercase tracking-widest text-red">
           In this class we cover

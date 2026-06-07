@@ -9,6 +9,7 @@ import {
 } from "@/data/configurator-options";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
+import { TruncatedText } from "@/components/ui/TruncatedText";
 import { BuildReview } from "@/components/configurator/BuildReview";
 import {
   compileBuildSubmission,
@@ -189,7 +190,14 @@ export function Configurator() {
           Step {stepIndex + 1} of {configuratorSteps.length}
         </p>
         <h2 className="mt-2 text-3xl text-white">{currentStep.title}</h2>
-        <p className="mt-2 text-sm text-white-muted">{currentStep.subtitle}</p>
+        <p className="mt-2 text-sm text-white-muted">
+          <TruncatedText
+            text={currentStep.subtitle}
+            title={currentStep.title}
+            maxLines={2}
+            minCharsForMore={100}
+          />
+        </p>
 
         <div
           className={
@@ -230,9 +238,15 @@ export function Configurator() {
                   <div>
                     <p className="font-medium text-white">{option.label}</p>
                     {option.description && (
-                      <p className="mt-1 text-sm text-white-muted">
-                        {option.description}
-                      </p>
+                      <div className="mt-1">
+                        <TruncatedText
+                          text={option.description}
+                          title={option.label}
+                          maxLines={isImageGridStep ? 2 : 3}
+                          className="text-sm text-white-muted"
+                          minCharsForMore={90}
+                        />
+                      </div>
                     )}
                     <p className="mt-2 text-xs uppercase tracking-widest text-red">
                       {formatPriceDelta(optionPrice)}

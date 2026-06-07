@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
+import { TruncatedText } from "@/components/ui/TruncatedText";
 import { categoryLabels } from "@/data/rifles";
 import { getAllRifles, getRifleBySlug } from "@/lib/content";
 
@@ -70,7 +71,12 @@ export default async function BuildDetailPage({ params }: PageProps) {
         <div className="grid gap-16 lg:grid-cols-5">
           <div className="lg:col-span-3">
             <h2 className="text-xs uppercase tracking-widest text-red">Overview</h2>
-            <p className="mt-4 text-white-muted leading-relaxed">{rifle.description}</p>
+            <TruncatedText
+              text={rifle.description}
+              title={rifle.title}
+              maxLines={5}
+              className="text-white-muted leading-relaxed"
+            />
 
             <h2 className="mt-12 text-xs uppercase tracking-widest text-red">
               Build highlights

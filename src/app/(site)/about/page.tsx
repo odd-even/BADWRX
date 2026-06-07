@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { TruncatedText } from "@/components/ui/TruncatedText";
 import { getSiteSettings } from "@/lib/content";
 import { riflePlaceholder, riflePlaceholderAlt } from "@/lib/images";
 
@@ -17,9 +18,15 @@ export default async function AboutPage() {
         <div>
           <p className="text-xs uppercase tracking-widest text-red">Our story</p>
           <h1 className="mt-2 text-5xl text-white">{site.aboutPage.title}</h1>
-          <div className="mt-8 space-y-6 text-white-muted leading-relaxed">
+          <div className="mt-8 space-y-6">
             {site.aboutPage.body.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+              <TruncatedText
+                key={paragraph.slice(0, 32)}
+                text={paragraph}
+                title={site.aboutPage.title}
+                maxLines={5}
+                className="text-white-muted leading-relaxed"
+              />
             ))}
           </div>
 
@@ -51,9 +58,12 @@ export default async function AboutPage() {
           </div>
           <div className="border border-white/10 bg-black-muted p-8">
             <p className="text-xs uppercase tracking-widest text-red">Philosophy</p>
-            <blockquote className="mt-4 text-xl leading-relaxed text-white">
-              &ldquo;{site.aboutPage.philosophyQuote}&rdquo;
-            </blockquote>
+            <TruncatedText
+              text={`"${site.aboutPage.philosophyQuote}"`}
+              title="Philosophy"
+              maxLines={4}
+              className="mt-4 text-xl leading-relaxed text-white"
+            />
             <p className="mt-4 text-sm text-white-muted">— Founder, {site.name}</p>
           </div>
         </div>

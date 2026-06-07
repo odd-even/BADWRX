@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { RifleCard } from "@/components/rifles/RifleCard";
+import { TruncatedText } from "@/components/ui/TruncatedText";
 import { getFeaturedRifles, getSiteSettings } from "@/lib/content";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 
@@ -61,7 +62,13 @@ export default async function HomePage() {
           <div>
             <p className="text-xs uppercase tracking-widest text-red">Featured builds</p>
             <h2 className="mt-2 text-4xl text-white">Past work</h2>
-            <p className="mt-4 max-w-xl text-white-muted">{site.deliveryPackage}</p>
+            <p className="mt-4 max-w-xl text-white-muted">
+              <TruncatedText
+                text={site.deliveryPackage}
+                title="Delivery & verification"
+                maxLines={3}
+              />
+            </p>
           </div>
           <Link
             href="/builds"
@@ -94,9 +101,12 @@ export default async function HomePage() {
               {site.fieldTested.eyebrow}
             </p>
             <h2 className="mt-2 text-4xl text-white">{site.fieldTested.title}</h2>
-            <p className="mt-6 text-white-muted leading-relaxed">
-              {site.fieldTested.body}
-            </p>
+            <TruncatedText
+              text={site.fieldTested.body}
+              title={site.fieldTested.title}
+              maxLines={4}
+              className="text-white-muted leading-relaxed"
+            />
           </div>
         </div>
       </section>
@@ -119,9 +129,12 @@ export default async function HomePage() {
             <h2 className="mt-2 text-4xl text-white md:text-5xl">
               {site.unrelenting.title}
             </h2>
-            <p className="mt-6 text-white-muted leading-relaxed">
-              {site.unrelenting.body}
-            </p>
+            <TruncatedText
+              text={site.unrelenting.body}
+              title={site.unrelenting.title}
+              maxLines={4}
+              className="text-white-muted leading-relaxed"
+            />
           </div>
         </div>
       </section>
@@ -129,9 +142,12 @@ export default async function HomePage() {
       <section className="border-y border-white/10 bg-black-light">
         <div className="mx-auto max-w-4xl px-6 py-24 text-center">
           <p className="text-xs uppercase tracking-widest text-red">From the field</p>
-          <blockquote className="mt-8 text-xl text-white md:text-2xl">
-            &ldquo;{site.testimonial.quote}&rdquo;
-          </blockquote>
+          <TruncatedText
+            text={`"${site.testimonial.quote}"`}
+            title="From the field"
+            maxLines={4}
+            className="mt-8 text-xl text-white md:text-2xl"
+          />
           <p className="mt-8 text-sm uppercase tracking-widest text-white-muted">
             — {site.testimonial.author}
           </p>
@@ -143,9 +159,12 @@ export default async function HomePage() {
           <div>
             <p className="text-xs uppercase tracking-widest text-red">Get in touch</p>
             <h2 className="mt-2 text-4xl text-white">{site.contactSection.title}</h2>
-            <p className="mt-6 text-white-muted leading-relaxed">
-              {site.contactSection.body}
-            </p>
+            <TruncatedText
+              text={site.contactSection.body}
+              title={site.contactSection.title}
+              maxLines={4}
+              className="text-white-muted leading-relaxed"
+            />
             <a
               href={`mailto:${site.email}`}
               className="mt-6 inline-block text-lg text-white transition hover:text-red"
