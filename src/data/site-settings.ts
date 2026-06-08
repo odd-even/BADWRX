@@ -1,4 +1,5 @@
 import { brand } from "@/lib/brand";
+import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
 import type { SiteSettings } from "@/lib/types";
 
@@ -47,10 +48,10 @@ export const defaultSiteSettings: SiteSettings = {
   },
   homePlatforms: {
     eyebrow: "Our platforms",
-    title: docxCopy.buildsPage.headline,
-    body:
-      "Every rifle is built to order — your timeline, your specs, your caliber. Explore the line or configure a build when you're ready.",
+    title: cleanDocxCopy(docxCopy.rifleLineupPreview) || docxCopy.buildsPage.headline,
+    body: docxCopy.buildsPage.subcopy,
   },
+  packageCta: cleanDocxCopy(docxCopy.packageCta),
   homeIntro: {
     eyebrow: "Who we build for",
     body: docxCopy.brandStatement,
@@ -82,8 +83,7 @@ export const defaultSiteSettings: SiteSettings = {
   },
   contactSection: {
     title: "Request a build quote",
-    body:
-      "Every BADWRX rifle is built to order. No inventory. No compromises. Tell us what you need and we'll get to work.",
+    body: cleanDocxCopy(docxCopy.customQuoteCta),
   },
   aboutPage: {
     title: getCopy("ABOUT — Headline", "Built Different. On Purpose."),
@@ -94,8 +94,8 @@ export const defaultSiteSettings: SiteSettings = {
       getCopy("ABOUT — Pillar 3: RELIABILITY", ""),
     ].filter(Boolean),
     philosophyQuote: getCopy(
-      "BALLISTIC PACKAGE — Headline",
-      "Your rifle ships zeroed. Most builders stop there. We don't.",
+      "ABOUT — Headline",
+      "Built Different. On Purpose.",
     ),
   },
 };

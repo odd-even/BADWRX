@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/restart-dev-after-major-edit.mjs"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node .cursor/hooks/restart-dev-after-shell.mjs",
+        "matcher": "sync:source|sync-source-data|sync-public-images|npm run build|restart-dev"
+      }
+    ]
+  }
+}

@@ -5,7 +5,7 @@ import { brand } from "@/lib/brand";
 import { images } from "@/lib/images";
 
 const navLinks = [
-  { href: "/builds", label: "Past Builds" },
+  { href: "/builds", label: "Our Rifles" },
   { href: "/configure", label: "Configure a Rifle" },
   { href: "/merch", label: "Merch" },
   { href: "/university", label: "Long Range University" },

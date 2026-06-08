@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Configurator } from "@/components/configurator/Configurator";
 
 export const metadata: Metadata = {
@@ -22,7 +23,13 @@ export default function ConfigurePage() {
       </p>
 
       <div className="mt-12">
-        <Configurator />
+        <Suspense
+          fallback={
+            <p className="text-sm text-white-muted">Loading configurator…</p>
+          }
+        >
+          <Configurator />
+        </Suspense>
       </div>
     </div>
   );

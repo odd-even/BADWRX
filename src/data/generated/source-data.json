@@ -1,6 +1,6 @@
 {
   "meta": {
-    "syncedAt": "2026-06-07T20:21:11.049Z",
+    "syncedAt": "2026-06-08T10:17:10.220Z",
     "sources": [
       "Pricing_List_BADWRX_Final_43.xlsx",
       "BADWRX_Website_Copy_7.docx"
@@ -24,7 +24,13 @@
       "subcopy": "Every BADWRX rifle is built to order on your timeline, to your specifications, in the caliber you need. Select a platform below to view full specifications, available calibers, and configuration options. When you are ready, request a build quote and we will get to work."
     },
     "customQuoteCta": "Every BADWRX rifle is built to order. No inventory. No compromises. Tell us what you need.\n[CTA Button: Request a Build Quote]",
-    "packageCta": "The Complete System. Every BADWRX build is available with the BADWRX Basecamp Package — a laser-cut BADWRX hard case, Garmin Xero Chronograph, and Fix It Sticks field tool kit. Everything you need from the bench to the backcountry."
+    "packageCta": "The Complete System. Every BADWRX build is available with the BADWRX Basecamp Package — a laser-cut BADWRX hard case, Garmin Xero Chronograph, and Fix It Sticks field tool kit. Everything you need from the bench to the backcountry.",
+    "rifleLineupPreview": "Six purpose-built platforms. One standard.\n[Display rifle cards: Specter / Reaper / Imperium / Invictus / Sentinel / G.O.A.T. — each with photo, one-line description, and View Build button]",
+    "contactPage": {
+      "headline": "Start Your Build.",
+      "intro": "Every BADWRX rifle is built to order. Fill out the form below with your build details and we will be in touch within [X] business days to discuss your configuration, timeline, and pricing. There are no stock rifles. There are no shortcuts. There is just your rifle, built right.",
+      "expectations": "What happens next: We review every build request personally. You will receive a response from us directly — not a form email — within [X] business days. We will confirm your configuration, discuss lead time, and provide a build quote. We do not take deposits until we are both confident in the build."
+    }
   },
   "website": {
     "rifles": [
@@ -512,6 +518,121 @@
       "ABOUT — Pillar 3: RELIABILITY": "A precision rifle that fails in the field is worse than useless. Every BADWRX build is tested, verified, and guaranteed before it ships."
     }
   },
+  "contactFormFields": [
+    {
+      "id": "first-name",
+      "label": "First Name",
+      "type": "Text input",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "last-name",
+      "label": "Last Name",
+      "type": "Text input",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "email-address",
+      "label": "Email Address",
+      "type": "Email input",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "phone-number",
+      "label": "Phone Number",
+      "type": "Tel input",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "platform-of-interest",
+      "label": "Platform of Interest",
+      "type": "Dropdown",
+      "required": true,
+      "options": [
+        "Specter",
+        "Reaper",
+        "Imperium",
+        "Invictus",
+        "Sentinel",
+        "G.O.A.T.",
+        "Not Sure Yet"
+      ]
+    },
+    {
+      "id": "caliber-of-interest",
+      "label": "Caliber of Interest",
+      "type": "Dropdown",
+      "required": false,
+      "options": [
+        "6.5 Creedmoor",
+        "6.5 PRC",
+        "7 PRC",
+        "300 PRC",
+        "7mm BC",
+        "375 Ruger",
+        "375 H&H",
+        "Other"
+      ]
+    },
+    {
+      "id": "intended-use",
+      "label": "Intended Use",
+      "type": "Dropdown",
+      "required": false,
+      "options": [
+        "Mountain Hunting",
+        "Dangerous Game",
+        "Precision Shooting",
+        "Other"
+      ]
+    },
+    {
+      "id": "optics-package",
+      "label": "Optics Package?",
+      "type": "Radio",
+      "required": false,
+      "options": [
+        "Yes",
+        "No",
+        "Tell me more"
+      ]
+    },
+    {
+      "id": "basecamp-package",
+      "label": "Basecamp Package?",
+      "type": "Radio",
+      "required": false,
+      "options": [
+        "Yes",
+        "No",
+        "Tell me more"
+      ]
+    },
+    {
+      "id": "ballistic-package",
+      "label": "Ballistic Package?",
+      "type": "Radio",
+      "required": false,
+      "options": [
+        "Yes",
+        "No",
+        "Tell me more"
+      ]
+    },
+    {
+      "id": "additional-details",
+      "label": "Additional Details",
+      "type": "Textarea",
+      "required": false,
+      "options": [
+        "Custom requests, colors, calibers, timeline..."
+      ]
+    }
+  ],
   "configurator": {
     "platformDefaults": {
       "specter": {
@@ -527,7 +648,6 @@
         "trigger": "TriggerTech Special"
       },
       "invictus": {
-        "muzzleBrake": "SRS Titanium",
         "trigger": "TriggerTech Special"
       },
       "sentinel": {
@@ -550,9 +670,9 @@
       "headline": "The Complete System.",
       "description": "Every BADWRX rifle is built to perform. The BADWRX Basecamp Package ensures it is protected, verified, and maintainable everywhere you take it. Available on all six BADWRX platforms, the Basecamp Package includes a laser-cut BADWRX hard case foam insert fitted precisely to your rifle configuration, a Garmin Xero Chronograph for verified ballistic data in the field, and a Fix It Sticks field tool kit with the tools you need to maintain your rifle anywhere on earth. This is not a bundle. It is a system.",
       "items": [
-        "Custom laser-cut foam insert fitted to the exact dimensions of your rifle, scope, and accessories. Your rifle sits exactly where it belongs. Nothing moves.",
-        "Wireless, compact, accurate. Know your actual velocity in any condition. Not what a chart says — what your rifle says.",
-        "The torque driver system used by professional gunsmiths and field hunters worldwide. The tools you need to maintain zero, tighten components, and solve problems in the field."
+        "Laser-Cut BADWRX Hard Case — Custom laser-cut foam insert fitted to your exact rifle config",
+        "Garmin Xero Chronograph — Wireless, compact, accurate velocity measurement",
+        "Fix It Sticks Field Tool Kit — Torque driver system — complete rifle maintenance in the field"
       ]
     },
     "ballistic": {
@@ -560,7 +680,14 @@
       "label": "BADWRX Ballistic Package",
       "headline": "Your rifle ships zeroed. Most builders stop there. We don't.",
       "description": "The BADWRX Ballistic Package takes your rifle to 1,000 meters. We shoot it, collect real velocity data, build your ballistic solution, true the data against actual impacts, calculate density altitude and firing solution corrections, and laser engrave your custom turret with the drop data for your exact load. Tell us where you hunt and what time of year — we account for the atmospherics. When your rifle arrives, your turrets are engraved for your elevation, your conditions, and your load. You dial, you shoot, you connect. This is not a ballistic app. This is your rifle, your data, your turrets — done right before it ever leaves our hands.",
-      "howItWorks": "When you order the Ballistic Package, tell us where you are hunting and what time of year. We use that information to set atmospheric parameters that match your conditions. Your rifle is shot at distance, the data is collected and trued, corrections are applied, and your turrets are engraved before the rifle ships. You arrive in the field with a rifle that is ready."
+      "howItWorks": "When you order the Ballistic Package, tell us where you are hunting and what time of year. We use that information to set atmospheric parameters that match your conditions. Your rifle is shot at distance, the data is collected and trued, corrections are applied, and your turrets are engraved before the rifle ships. You arrive in the field with a rifle that is ready.",
+      "deliverables": [
+        "Live Fire to 1,000m — Real impacts, real data — not a calculator estimate",
+        "Velocity Data Collection — Correct for actual muzzle velocity, not the box",
+        "Ballistic Solution Build — Complete solution for your load, rifle, and barrel",
+        "DSF / Density Alt. Corrections — Corrected for your hunt location and season",
+        "Custom Laser Engraved Turrets — Drop data engraved on your scope turrets — no cards, no guessing"
+      ]
     }
   },
   "retailPrices": {

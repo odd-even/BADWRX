@@ -4,8 +4,8 @@ import type { StepKey } from "@/data/configurator-options";
 
 export function calibersForPlatform(platformSlug: string | undefined) {
   return sourceData.website.caliberMatrix.filter((row) => {
-    if (row.caliber === "Other / Custom") return false;
     if (!platformSlug) return true;
+    if (row.caliber === "Other / Custom") return true;
     return row.platforms[platformSlug as keyof typeof row.platforms];
   });
 }
@@ -36,16 +36,21 @@ export function filterStepOptions(
 }
 
 /** Platform spec defaults from source (not user-selectable steps). */
-export function platformSpecDefaults(platformSlug: string | undefined) {
+export function platformSpecDefaults(
+  platformSlug: string | undefined,
+): Record<string, string> {
   if (!platformSlug) return {};
   const defaults = sourceData.configurator.platformDefaults[platformSlug];
   if (!defaults) return {};
-  return {
-    action: sourceData.website.rifles.find((r) => r.slug === platformSlug)
-      ?.action,
-    muzzleBrake: defaults.muzzleBrake,
+
+  const specs: Record<string, string> = {
     trigger: defaults.trigger,
   };
+  const action = sourceData.website.rifles.find((r) => r.slug === platformSlug)
+    ?.action;
+  if (action) specs.action = action;
+  if (defaults.muzzleBrake) specs.muzzleBrake = defaults.muzzleBrake;
+  return specs;
 }
 
 export function companionSelection(

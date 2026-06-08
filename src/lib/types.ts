@@ -17,6 +17,7 @@ export interface RifleSpecs {
   scope?: string;
   rings?: string;
   muzzleBrake?: string;
+  bottomMetal?: string;
   suppressor?: string;
   rifleCase?: string;
   weight?: string;
@@ -127,6 +128,7 @@ export interface SiteSettings {
     title: string;
     body: string;
   };
+  packageCta?: string;
   homeIntro: {
     eyebrow: string;
     body: string;

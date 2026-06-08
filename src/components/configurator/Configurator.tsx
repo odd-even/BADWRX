@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   configuratorSteps,
+  getPlatformOption,
   stepKeys,
   type StepKey,
 } from "@/data/configurator-options";
@@ -66,6 +68,8 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
 }
 
 export function Configurator() {
+  const searchParams = useSearchParams();
+  const appliedInitialPlatform = useRef(false);
   const [phase, setPhase] = useState<ConfiguratorPhase>("configure");
   const [stepIndex, setStepIndex] = useState(0);
   const [config, setConfig] = useState<BuildConfiguration>(emptyConfig);
@@ -102,6 +106,20 @@ export function Configurator() {
     () => filterStepOptions(currentKey, currentStep.options, config),
     [currentKey, currentStep.options, config],
   );
+
+  useEffect(() => {
+    if (appliedInitialPlatform.current) return;
+
+    const slug = searchParams.get("platform");
+    if (!slug) return;
+
+    const platform = getPlatformOption(slug);
+    if (!platform) return;
+
+    appliedInitialPlatform.current = true;
+    setConfig((prev) => ({ ...prev, platform }));
+    setStepIndex(1);
+  }, [searchParams]);
 
   function selectOption(option: ConfigOption) {
     setConfig((prev) => {
@@ -441,7 +459,7 @@ export function Configurator() {
 
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-xs text-white-muted">
-              Estimated lead time: <span className="text-white">12–16 weeks</span>
+              Estimated lead time: <span className="text-white">24–30 weeks</span>
             </p>
             <p className="mt-2 text-xs text-white-muted">
               All builds include accuracy verification and test targets.

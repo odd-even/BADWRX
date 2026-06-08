@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:local-node": "PATH=\"./.node/bin:$PATH\" next dev --turbopack",
+    "dev:watch": "PATH=\"./.node/bin:$PATH\" node scripts/dev-watch.mjs",
+    "dev:restart": "node scripts/restart-dev.mjs --clean",
+    "dev:stop": "node scripts/stop-dev.mjs",
     "build": "node scripts/sync-source-data.mjs && node scripts/sync-public-images.mjs && next build",
     "sync:source": "node scripts/sync-source-data.mjs",
     "start": "next start",

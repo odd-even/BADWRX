@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
 import { TruncatedText } from "@/components/ui/TruncatedText";
+import { configureHref } from "@/data/configurator-options";
 import { categoryLabels } from "@/data/rifles";
 import { getAllRifles, getRifleBySlug } from "@/lib/content";
 
@@ -131,13 +132,26 @@ export default async function BuildDetailPage({ params }: PageProps) {
                 <div className="mt-4">
                   <SpecTable specs={rifle.specs} />
                 </div>
+                <div className="mt-6 space-y-3 text-sm text-white-muted leading-relaxed">
+                  <p>
+                    <span className="text-xs uppercase tracking-widest text-red">
+                      Available packages
+                    </span>
+                    <br />
+                    Optics Package · Basecamp Package · Ballistic Package
+                  </p>
+                  <p>
+                    Custom Cerakote and paint available on all components. Contact
+                    us to configure your build.
+                  </p>
+                </div>
               </div>
 
               <Link
-                href="/configure"
+                href={configureHref(rifle.slug)}
                 className="block w-full border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
               >
-                Configure Similar Build
+                Configure {rifle.title}
               </Link>
               <Link
                 href="/contact"

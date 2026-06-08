@@ -73,6 +73,17 @@ function buildCopyFromDocx(paras) {
     },
     customQuoteCta: findAfter("CUSTOM QUOTE CTA"),
     packageCta: findAfter("PACKAGE CTA"),
+    rifleLineupPreview:
+      findAfter("RIFLE LINEUP PREVIEW") || "Six purpose-built platforms. One standard.",
+    contactPage: {
+      headline: findAfter("CONTACT / QUOTE REQUEST") || "Start Your Build.",
+      intro:
+        findAfter("Start Your Build.") ||
+        "Every BADWRX rifle is built to order. Fill out the form below with your build details and we will be in touch to discuss your configuration, timeline, and pricing.",
+      expectations:
+        paras.find((p) => p.startsWith("What happens next:")) ||
+        "We review every build request personally. You will receive a response from us directly within 2 business days.",
+    },
   };
 }
 
@@ -83,7 +94,11 @@ function parseWebsiteData(rows) {
   const optics = [];
   const caliberMatrix = [];
   const copyBlocks = {};
+  const contactFormFields = [];
+  const basecampItems = [];
+  const ballisticDeliverables = [];
   let section = "";
+  let section4Mode = "";
   let currentSpecSlug = null;
 
   for (const row of rows) {
@@ -92,6 +107,7 @@ function parseWebsiteData(rows) {
 
     if (a.startsWith("SECTION")) {
       section = a;
+      section4Mode = "";
       currentSpecSlug = null;
       continue;
     }
@@ -176,20 +192,66 @@ function parseWebsiteData(rows) {
     }
 
     if (section.includes("SECTION 4")) {
-      if (a === "Brand" && b === "Model") continue;
-      if (a.startsWith("NX") && !b) continue;
-      if (a === "Nightforce" && b) {
-        optics.push({
-          id: slugify(`${b}-${row[2]}-${row[4]}`),
-          brand: a,
-          model: b,
-          magnification: String(row[2] ?? ""),
-          focalPlane: String(row[3] ?? ""),
-          reticle: String(row[4] ?? ""),
-          tube: String(row[5] ?? ""),
-          msrp: String(row[6] ?? ""),
-          msrpCents: parseMoney(row[6]),
-          notes: String(row[8] ?? ""),
+      if (a.includes("OPTICS PACKAGE")) {
+        section4Mode = "optics";
+        continue;
+      }
+      if (a.includes("BASECAMP PACKAGE")) {
+        section4Mode = "basecamp";
+        continue;
+      }
+      if (a.includes("BALLISTIC PACKAGE")) {
+        section4Mode = "ballistic";
+        continue;
+      }
+      if (section4Mode === "basecamp" && a === "Item") continue;
+      if (section4Mode === "ballistic" && a === "Deliverable") continue;
+      if (section4Mode === "basecamp" && a && b && !a.startsWith("Rings")) {
+        basecampItems.push({
+          name: a,
+          description: b,
+          brand: String(row[2] ?? ""),
+          detail: String(row[3] ?? ""),
+        });
+        continue;
+      }
+      if (section4Mode === "ballistic" && a && b) {
+        ballisticDeliverables.push({ title: a, description: b });
+        continue;
+      }
+      if (section4Mode === "optics" || !section4Mode) {
+        if (a === "Brand" && b === "Model") continue;
+        if (a.startsWith("NX") && !b) continue;
+        if (a === "Nightforce" && b) {
+          optics.push({
+            id: slugify(`${b}-${row[2]}-${row[4]}`),
+            brand: a,
+            model: b,
+            magnification: String(row[2] ?? ""),
+            focalPlane: String(row[3] ?? ""),
+            reticle: String(row[4] ?? ""),
+            tube: String(row[5] ?? ""),
+            msrp: String(row[6] ?? ""),
+            msrpCents: parseMoney(row[6]),
+            notes: String(row[8] ?? ""),
+          });
+        }
+      }
+      continue;
+    }
+
+    if (section.includes("SECTION 6")) {
+      if (a === "Field Name" || a === "Submit Button") continue;
+      if (a && b) {
+        contactFormFields.push({
+          id: slugify(a),
+          label: a,
+          type: b,
+          required: String(row[2] ?? "").toLowerCase() === "yes",
+          options: String(row[3] ?? "")
+            .split("/")
+            .map((s) => s.trim())
+            .filter(Boolean),
         });
       }
       continue;
@@ -222,18 +284,41 @@ function parseWebsiteData(rows) {
     if (copyBlocks[key]) rifleSpecs[rifle.slug] = { ...spec, description: copyBlocks[key] };
   }
 
-  return { rifles, rifleSpecs, stockColors, optics, caliberMatrix, copyBlocks };
+  return {
+    rifles,
+    rifleSpecs,
+    stockColors,
+    optics,
+    caliberMatrix,
+    copyBlocks,
+    contactFormFields,
+    basecampItems,
+    ballisticDeliverables,
+  };
 }
 
-function buildConfiguratorMeta(website, copyBlocks) {
+function buildConfiguratorMeta(website, copyBlocks, basecampItems, ballisticDeliverables) {
   const platformDefaults = {};
   for (const rifle of website.rifles) {
     const spec = website.rifleSpecs[rifle.slug]?.specs ?? {};
     platformDefaults[rifle.slug] = {
-      muzzleBrake: spec.muzzle_brake || "SRS Titanium",
+      ...(spec.muzzle_brake ? { muzzleBrake: spec.muzzle_brake } : {}),
       trigger: spec.trigger || "TriggerTech Special",
     };
   }
+
+  const basecampCopyItems = [
+    copyBlocks["BASECAMP — Laser-Cut Hard Case"],
+    copyBlocks["BASECAMP — Garmin Xero Chronograph"],
+    copyBlocks["BASECAMP — Fix It Sticks Field Kit"],
+  ].filter(Boolean);
+
+  const basecampItemLines =
+    basecampItems.length > 0
+      ? basecampItems.map((item) =>
+          [item.name, item.description].filter(Boolean).join(" — "),
+        )
+      : basecampCopyItems;
 
   return {
     platformDefaults,
@@ -251,11 +336,7 @@ function buildConfiguratorMeta(website, copyBlocks) {
       description:
         copyBlocks["BASECAMP PACKAGE — Body"] ||
         "Laser-cut hard case, Garmin Xero Chronograph, and Fix It Sticks field kit.",
-      items: [
-        copyBlocks["BASECAMP — Laser-Cut Hard Case"],
-        copyBlocks["BASECAMP — Garmin Xero Chronograph"],
-        copyBlocks["BASECAMP — Fix It Sticks Field Kit"],
-      ].filter(Boolean),
+      items: basecampItemLines,
     },
     ballistic: {
       id: "ballistic-package",
@@ -265,6 +346,12 @@ function buildConfiguratorMeta(website, copyBlocks) {
         "Your rifle ships zeroed. Most builders stop there. We don't.",
       description: copyBlocks["BALLISTIC PACKAGE — Body"] || "",
       howItWorks: copyBlocks["BALLISTIC PACKAGE — How It Works"] || "",
+      deliverables:
+        ballisticDeliverables.length > 0
+          ? ballisticDeliverables.map((d) =>
+              [d.title, d.description].filter(Boolean).join(" — "),
+            )
+          : [],
     },
   };
 }
@@ -341,7 +428,15 @@ function main() {
           : 0;
   }
 
-  const configurator = buildConfiguratorMeta(website, website.copyBlocks);
+  const configurator = buildConfiguratorMeta(
+    website,
+    website.copyBlocks,
+    website.basecampItems,
+    website.ballisticDeliverables,
+  );
+
+  const { basecampItems, ballisticDeliverables, contactFormFields, ...websitePublic } =
+    website;
 
   const payload = {
     meta: {
@@ -353,7 +448,8 @@ function main() {
         .slice(0, 12),
     },
     docxCopy,
-    website,
+    website: websitePublic,
+    contactFormFields,
     configurator,
     retailPrices,
     pricing,

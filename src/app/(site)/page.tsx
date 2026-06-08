@@ -3,12 +3,12 @@ import Link from "next/link";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { RifleCard } from "@/components/rifles/RifleCard";
-import { getFeaturedRifles, getSiteSettings } from "@/lib/content";
+import { getAllRifles, getSiteSettings } from "@/lib/content";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 
 export default async function HomePage() {
-  const [featured, site] = await Promise.all([
-    getFeaturedRifles(),
+  const [rifles, site] = await Promise.all([
+    getAllRifles(),
     getSiteSettings(),
   ]);
 
@@ -77,11 +77,27 @@ export default async function HomePage() {
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {featured.map((rifle, i) => (
+          {rifles.map((rifle, i) => (
             <RifleCard key={rifle.id} rifle={rifle} priority={i === 0} />
           ))}
         </div>
       </section>
+
+      {site.packageCta && (
+        <section className="border-y border-white/10 bg-black-light">
+          <div className="mx-auto max-w-7xl px-6 py-16 md:flex md:items-center md:justify-between md:gap-12">
+            <p className="max-w-3xl text-lg text-white leading-relaxed">
+              {site.packageCta}
+            </p>
+            <Link
+              href="/configure"
+              className="mt-8 inline-block shrink-0 border border-red bg-red px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark md:mt-0"
+            >
+              Configure Your Rifle
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className="border-y border-white/10 bg-black-muted">
         <div className="mx-auto max-w-7xl px-6 py-24">

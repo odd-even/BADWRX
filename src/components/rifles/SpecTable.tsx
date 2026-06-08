@@ -18,6 +18,7 @@ const specLabels: Record<keyof RifleSpecs, string> = {
   scope: "Scope",
   rings: "Rings",
   muzzleBrake: "Muzzle Brake",
+  bottomMetal: "Bottom Metal",
   suppressor: "Suppressor",
   rifleCase: "Case",
   weight: "Weight",

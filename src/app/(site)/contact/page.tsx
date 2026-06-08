@@ -3,6 +3,8 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { getCourseBySlug, getBrandContent } from "@/lib/content";
 import { getMerchBySlug } from "@/data/merch";
 import { brand as siteBrand } from "@/lib/brand";
+import { cleanDocxCopy } from "@/lib/copy-utils";
+import { sourceData } from "@/lib/source-data";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -22,6 +24,8 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
   ]);
   const isRegistration = Boolean(course);
   const isMerchInquiry = Boolean(merch);
+  const isBuildRequest = !isRegistration && !isMerchInquiry;
+  const contactCopy = sourceData.docxCopy.contactPage;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -33,15 +37,20 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               ? "Register for class"
               : isMerchInquiry
                 ? "Merch inquiry"
-                : "Request a consultation"}
+                : contactCopy.headline}
           </h1>
           <p className="mt-6 text-white-muted leading-relaxed">
             {isRegistration
               ? "Complete the form and our team will follow up with availability, class details, and next steps. No payment required to register your interest."
               : isMerchInquiry
                 ? "Tell us what you want — size, color, and quantity — and we'll confirm availability and shipping."
-                : "Have questions about chambering, component selection, or lead times? Every build uses parts chosen by the builder to precision standards — Proof Research barrels and NightForce optics. Send a message — we respond within 2 business days."}
+                : cleanDocxCopy(contactCopy.intro)}
           </p>
+          {isBuildRequest && (
+            <p className="mt-6 text-sm text-white-muted/80 leading-relaxed">
+              {cleanDocxCopy(contactCopy.expectations)}
+            </p>
+          )}
 
           <div className="mt-10 space-y-6 border-t border-white/10 pt-10">
             <div>
@@ -52,10 +61,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               >
                 {brand.email}
               </a>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-widest text-red">Phone</p>
-              <p className="mt-2 text-white">(307) 555-0142</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest text-red">Shop</p>
@@ -76,6 +81,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
           <ContactForm
             courseTitle={course?.title}
             merchTitle={merch?.title}
+            buildFields={isBuildRequest ? sourceData.contactFormFields : undefined}
             submitLabel={
               isRegistration ? "Register Now" : isMerchInquiry ? "Send Inquiry" : "Send Message"
             }

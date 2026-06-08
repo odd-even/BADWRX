@@ -24,7 +24,20 @@ export interface SourceData {
     buildsPage: { headline: string; subcopy: string };
     customQuoteCta: string;
     packageCta: string;
+    rifleLineupPreview: string;
+    contactPage: {
+      headline: string;
+      intro: string;
+      expectations: string;
+    };
   };
+  contactFormFields: {
+    id: string;
+    label: string;
+    type: string;
+    required: boolean;
+    options: string[];
+  }[];
   website: {
     rifles: SourceRifle[];
     rifleSpecs: Record<
@@ -66,7 +79,7 @@ export interface SourceData {
   configurator: {
     platformDefaults: Record<
       string,
-      { muzzleBrake: string; trigger: string }
+      { muzzleBrake?: string; trigger: string }
     >;
     rings: { id: string; label: string; description: string };
     basecamp: {
@@ -82,6 +95,7 @@ export interface SourceData {
       headline: string;
       description: string;
       howItWorks: string;
+      deliverables: string[];
     };
   };
   retailPrices: Record<string, number>;

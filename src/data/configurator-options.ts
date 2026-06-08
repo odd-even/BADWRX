@@ -1,5 +1,5 @@
 import { sourceData } from "@/lib/source-data";
-import type { ConfigStep } from "@/lib/types";
+import type { ConfigOption, ConfigStep } from "@/lib/types";
 import {
   placeholderImage,
   platformImages,
@@ -31,7 +31,7 @@ export const configuratorSteps: ConfigStep[] = [
           barrel: r.barrel,
           platform: r.platform,
           use: r.primaryUse,
-          muzzleBrake: defaults?.muzzleBrake,
+          ...(defaults?.muzzleBrake ? { muzzleBrake: defaults.muzzleBrake } : {}),
           trigger: defaults?.trigger,
         },
         image: {
@@ -45,9 +45,7 @@ export const configuratorSteps: ConfigStep[] = [
     id: "caliber",
     title: "Caliber",
     subtitle: "Chambered and proofed for your platform — see caliber matrix in source data",
-    options: website.caliberMatrix
-      .filter((c) => c.caliber !== "Other / Custom")
-      .map((c) => ({
+    options: website.caliberMatrix.map((c) => ({
         id: c.id,
         label: c.caliber,
         description:
@@ -77,8 +75,12 @@ export const configuratorSteps: ConfigStep[] = [
   {
     id: "scope",
     title: "Optics Package",
-    subtitle:
-      website.copyBlocks["OPTICS PACKAGE — Body"] ||
+    subtitle: [
+      website.copyBlocks["OPTICS PACKAGE — Headline"],
+      website.copyBlocks["OPTICS PACKAGE — Body"],
+    ]
+      .filter(Boolean)
+      .join(" — ") ||
       "NightForce optics — mounted, leveled, and bore-sighted in-house",
     options: [
       ...website.optics.map((o) => ({
@@ -133,7 +135,10 @@ export const configuratorSteps: ConfigStep[] = [
       {
         id: cfg.basecamp.id,
         label: cfg.basecamp.label,
-        description: [cfg.basecamp.headline, ...cfg.basecamp.items].join(" "),
+        description: [
+          cfg.basecamp.headline,
+          ...cfg.basecamp.items.map((item) => `• ${item}`),
+        ].join("\n"),
         specs: { basecampPackage: cfg.basecamp.label },
         image: {
           url: placeholderImage("cases", "Mockup.png"),
@@ -156,9 +161,13 @@ export const configuratorSteps: ConfigStep[] = [
       {
         id: cfg.ballistic.id,
         label: cfg.ballistic.label,
-        description: [cfg.ballistic.headline, cfg.ballistic.howItWorks]
+        description: [
+          cfg.ballistic.headline,
+          cfg.ballistic.howItWorks,
+          ...cfg.ballistic.deliverables.map((item) => `• ${item}`),
+        ]
           .filter(Boolean)
-          .join(" "),
+          .join("\n"),
         specs: { ballisticPackage: cfg.ballistic.label },
       },
       {
@@ -182,3 +191,13 @@ export const stepKeys = [
 ] as const;
 
 export type StepKey = (typeof stepKeys)[number];
+
+export function getPlatformOption(slug: string): ConfigOption | undefined {
+  return configuratorSteps[0].options.find((option) => option.id === slug);
+}
+
+export function configureHref(platformSlug?: string): string {
+  return platformSlug
+    ? `/configure?platform=${encodeURIComponent(platformSlug)}`
+    : "/configure";
+}

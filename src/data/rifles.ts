@@ -68,12 +68,15 @@ export const rifles: Rifle[] = sourceData.website.rifles.map((r, index) => {
     ],
     specs: {
       action: specs.action ?? r.action,
-      caliber: spec.calibers?.split("·")[0]?.trim() ?? r.caliberFamily,
+      caliber: spec.calibers?.replace(/\s*·\s*/g, ", ") ?? r.caliberFamily,
       barrel: specs.barrel ?? r.barrel,
       stock: specs.chassis ?? specs.stock ?? r.platform,
+      bottomMetal: specs.bottom_metal,
       trigger: specs.trigger ?? "TriggerTech Special",
-      finish: specs.finish ?? "Custom Cerakote",
-      muzzleBrake: specs.muzzle_brake,
+      finish: specs.finish_notes
+        ? `${specs.finish ?? "Custom Cerakote"} (${specs.finish_notes})`
+        : specs.finish ?? "Custom Cerakote",
+      ...(specs.muzzle_brake ? { muzzleBrake: specs.muzzle_brake } : {}),
       weight: specs.weight !== "TBD" ? specs.weight : undefined,
     },
     highlights: [
