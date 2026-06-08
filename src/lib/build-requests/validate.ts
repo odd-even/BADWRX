@@ -26,15 +26,45 @@ export function validateBuildSubmissionBody(body: unknown):
   }
 
   const details = contact as Partial<BuildContactDetails>;
-  const name = details.name?.trim();
+  const firstName = details.firstName?.trim();
+  const lastName = details.lastName?.trim();
+  const addressLine1 = details.addressLine1?.trim();
+  const city = details.city?.trim();
+  const state = details.state?.trim();
+  const postalCode = details.postalCode?.trim();
   const email = details.email?.trim();
+  const phone = details.phone?.trim();
 
-  if (!name) {
-    return { ok: false, error: "Name is required" };
+  if (!firstName) {
+    return { ok: false, error: "First name is required" };
+  }
+
+  if (!lastName) {
+    return { ok: false, error: "Last name is required" };
+  }
+
+  if (!addressLine1) {
+    return { ok: false, error: "Street address is required" };
+  }
+
+  if (!city) {
+    return { ok: false, error: "City is required" };
+  }
+
+  if (!state) {
+    return { ok: false, error: "State is required" };
+  }
+
+  if (!postalCode) {
+    return { ok: false, error: "ZIP / postal code is required" };
   }
 
   if (!email || !isValidEmail(email)) {
     return { ok: false, error: "A valid email is required" };
+  }
+
+  if (!phone) {
+    return { ok: false, error: "Phone number is required" };
   }
 
   if (
@@ -48,9 +78,15 @@ export function validateBuildSubmissionBody(body: unknown):
     ok: true,
     config: config as BuildConfiguration,
     contact: {
-      name,
+      firstName,
+      lastName,
+      addressLine1,
+      addressLine2: details.addressLine2?.trim() ?? "",
+      city,
+      state,
+      postalCode,
       email,
-      phone: details.phone?.trim() ?? "",
+      phone,
       notes: details.notes?.trim() ?? "",
       paymentMethod: details.paymentMethod,
     },

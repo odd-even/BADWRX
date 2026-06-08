@@ -98,6 +98,13 @@ export const configuratorSteps: ConfigStep[] = [
         },
       })),
       {
+        id: "scope-consult",
+        label: "Discuss optics with the BADWRX team",
+        description:
+          "Contact us to discuss your specific optic configuration. We will match the right glass to your platform, your caliber, and your intended use.",
+        specs: { scope: "BADWRX optics consult" },
+      },
+      {
         id: "scope-none",
         label: "No optics package",
         description: "Picatinny prepared; customer-supplied optic.",

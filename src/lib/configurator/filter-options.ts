@@ -58,6 +58,15 @@ export function companionSelection(
   option: ConfigOption,
 ): Partial<BuildConfiguration> {
   if (stepId === "scope") {
+    if (option.id === "scope-consult") {
+      return {
+        rings: {
+          id: "rings-none",
+          label: "Discuss with team",
+          specs: { rings: "Discuss with team" },
+        },
+      };
+    }
     if (option.id === "scope-none") {
       return { rings: { id: "rings-none", label: "No rings", specs: { rings: "None" } } };
     }

@@ -7,15 +7,24 @@ import type { Rifle } from "@/lib/types";
 interface RifleCardProps {
   rifle: Rifle;
   priority?: boolean;
+  compact?: boolean;
 }
 
-export function RifleCard({ rifle, priority = false }: RifleCardProps) {
+export function RifleCard({
+  rifle,
+  priority = false,
+  compact = false,
+}: RifleCardProps) {
   const isCroppedHero = rifle.heroImage.url.includes("cropped");
 
   return (
     <article className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
       <Link href={`/builds/${rifle.slug}`} className="block flex-1">
-        <div className="relative aspect-[4/3] overflow-hidden">
+        <div
+          className={`relative overflow-hidden ${
+            compact ? "aspect-[3/2]" : "aspect-[4/3]"
+          }`}
+        >
           <Image
             src={rifle.heroImage.url}
             alt={rifle.heroImage.alt}
@@ -34,7 +43,7 @@ export function RifleCard({ rifle, priority = false }: RifleCardProps) {
           </span>
         </div>
 
-        <div className="p-6 pb-4">
+        <div className={compact ? "p-5 pb-3" : "p-6 pb-4"}>
           <h3 className="text-xl text-white transition group-hover:text-red">
             {rifle.title}
           </h3>

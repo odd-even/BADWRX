@@ -209,7 +209,7 @@ export function Header() {
         </Link>
 
         <nav
-          className="hidden items-center gap-8 md:flex will-change-[transform,opacity]"
+          className="ml-auto hidden items-center gap-8 md:flex will-change-[transform,opacity]"
           style={{
             opacity: navOpacity,
             transform: `translateY(${navY}px)`,
@@ -240,7 +240,7 @@ export function Header() {
           </span>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 md:ml-6">
           <MerchCartLink />
           <button
             type="button"

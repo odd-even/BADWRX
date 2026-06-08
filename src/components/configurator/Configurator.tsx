@@ -13,6 +13,7 @@ import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
 import { TruncatedText } from "@/components/ui/TruncatedText";
 import { BuildReview } from "@/components/configurator/BuildReview";
+import { BasecampPackageStep } from "@/components/configurator/BasecampPackageStep";
 import {
   compileBuildSubmission,
   type BuildContactDetails,
@@ -44,6 +45,15 @@ const emptyConfig: BuildConfiguration = {
 };
 
 const swatchSteps: StepKey[] = ["stockPaint", "rings"];
+
+/**
+ * Rings are determined automatically from the optics selection (see
+ * companionSelection), so the rings step is hidden from configurator navigation.
+ */
+const hiddenStepKeys: StepKey[] = ["rings"];
+const navigableStepIndices = configuratorSteps
+  .map((_, index) => index)
+  .filter((index) => !hiddenStepKeys.includes(stepKeys[index] as StepKey));
 
 type ConfiguratorPhase = "configure" | "review" | "submitted";
 
@@ -77,7 +87,13 @@ export function Configurator() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
   const [form, setForm] = useState<BuildContactDetails>({
-    name: "",
+    firstName: "",
+    lastName: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
     email: "",
     phone: "",
     notes: "",
@@ -95,12 +111,26 @@ export function Configurator() {
     [buildTotalCents],
   );
   const selectedCount = stepKeys.filter((key) => config[key] !== null).length;
-  const isLastStep = stepIndex === configuratorSteps.length - 1;
+  const navPosition = navigableStepIndices.indexOf(stepIndex);
+  const isLastStep = navPosition === navigableStepIndices.length - 1;
+  const goToStep = (position: number) => {
+    const target = navigableStepIndices[position];
+    if (target !== undefined) setStepIndex(target);
+  };
   const canAdvance = config[currentKey] !== null;
   const isBuildComplete = submission.isComplete;
   const isSwatchStep = swatchSteps.includes(currentKey);
+  const isBasecampStep = currentKey === "basecampPackage";
   const isImageGridStep =
-    currentStep.options.some((option) => option.image) && !isSwatchStep;
+    currentStep.options.some((option) => option.image) &&
+    !isSwatchStep &&
+    !isBasecampStep;
+  const basecampPackageOption = currentStep.options.find(
+    (option) => option.id !== "case-none",
+  );
+  const basecampNoneOption = currentStep.options.find(
+    (option) => option.id === "case-none",
+  );
 
   const visibleOptions = useMemo(
     () => filterStepOptions(currentKey, currentStep.options, config),
@@ -221,32 +251,38 @@ export function Configurator() {
     <div className="grid gap-8 lg:grid-cols-5">
       <div className="lg:col-span-3">
         <div className="mb-8 flex gap-2">
-          {configuratorSteps.map((step, i) => (
-            <button
-              key={step.id}
-              type="button"
-              onClick={() => i <= stepIndex && setStepIndex(i)}
-              className={`h-1 flex-1 transition ${
-                i <= stepIndex ? "bg-red" : "bg-white/10"
-              }`}
-              aria-label={`Step ${i + 1}: ${step.title}`}
-            />
-          ))}
+          {navigableStepIndices.map((stepIdx, position) => {
+            const step = configuratorSteps[stepIdx];
+            return (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => position <= navPosition && goToStep(position)}
+                className={`h-1 flex-1 transition ${
+                  position <= navPosition ? "bg-red" : "bg-white/10"
+                }`}
+                aria-label={`Step ${position + 1}: ${step.title}`}
+              />
+            );
+          })}
         </div>
 
         <p className="text-xs uppercase tracking-widest text-red">
-          Step {stepIndex + 1} of {configuratorSteps.length}
+          Step {navPosition + 1} of {navigableStepIndices.length}
         </p>
         <h2 className="mt-2 text-3xl text-white">{currentStep.title}</h2>
-        <p className="mt-2 text-sm text-white-muted">
-          <TruncatedText
-            text={currentStep.subtitle}
-            title={currentStep.title}
-            maxLines={2}
-            minCharsForMore={100}
-          />
+        <p className="mt-2 text-sm leading-relaxed text-white-muted">
+          {currentStep.subtitle}
         </p>
 
+        {isBasecampStep && basecampPackageOption && basecampNoneOption ? (
+          <BasecampPackageStep
+            packageOption={basecampPackageOption}
+            noneOption={basecampNoneOption}
+            selectedId={config.basecampPackage?.id}
+            onSelect={selectOption}
+          />
+        ) : (
         <div
           className={
             isImageGridStep
@@ -313,6 +349,7 @@ export function Configurator() {
             );
           })}
         </div>
+        )}
 
         {isLastStep && isBuildComplete && (
           <div className="mt-10 border border-red/40 bg-red/5 p-6 sm:p-8">
@@ -337,10 +374,10 @@ export function Configurator() {
         )}
 
         <div className="mt-8 flex gap-4">
-          {stepIndex > 0 && (
+          {navPosition > 0 && (
             <button
               type="button"
-              onClick={() => setStepIndex((i) => i - 1)}
+              onClick={() => goToStep(navPosition - 1)}
               className="border border-white/20 px-6 py-3 text-xs uppercase tracking-widest text-white-muted transition hover:border-white hover:text-white"
             >
               Back
@@ -350,7 +387,7 @@ export function Configurator() {
             <button
               type="button"
               disabled={!canAdvance}
-              onClick={() => setStepIndex((i) => i + 1)}
+              onClick={() => goToStep(navPosition + 1)}
               className="border border-red bg-red px-6 py-3 text-xs uppercase tracking-widest text-white transition hover:bg-red-dark disabled:cursor-not-allowed disabled:opacity-40"
             >
               Continue
@@ -440,7 +477,8 @@ export function Configurator() {
                   </div>
                   <p className="mt-2 text-[10px] text-white-muted/70">
                     Suggested deposit (50%): {formatPrice(depositCents)} — due
-                    after builder review
+                    after builder review. Full payment is due prior to build —
+                    we won&apos;t start building until full payment is received.
                   </p>
                 </div>
               )}

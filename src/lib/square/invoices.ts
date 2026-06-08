@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type {
-  BuildRequestPayload,
-  SquareInvoiceMethod,
+import {
+  getContactFullName,
+  type BuildRequestPayload,
+  type SquareInvoiceMethod,
 } from "@/lib/build-submission";
 import { getSquareClient } from "@/lib/square/client";
 import {
@@ -15,6 +16,13 @@ export interface CreateDepositInvoiceInput {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
+  customerAddress?: {
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+  };
   depositCents: number;
   buildSummary: string;
   preferredMethod: SquareInvoiceMethod;
@@ -60,12 +68,23 @@ export async function createDepositInvoice(
   const { locationId } = getSquareConfig();
   const { givenName, familyName } = splitName(input.customerName);
 
+  const address = input.customerAddress;
   const customerResponse = await client.customers.create({
     idempotencyKey: randomUUID(),
     givenName,
     familyName,
     emailAddress: input.customerEmail,
     phoneNumber: input.customerPhone || undefined,
+    address: address?.addressLine1
+      ? {
+          addressLine1: address.addressLine1,
+          addressLine2: address.addressLine2 || undefined,
+          locality: address.city || undefined,
+          administrativeDistrictLevel1: address.state || undefined,
+          postalCode: address.postalCode || undefined,
+          country: "US",
+        }
+      : undefined,
     referenceId: input.requestId,
     note: `BADWRX build request ${input.requestId}`,
   });
@@ -165,9 +184,16 @@ export function createDepositInvoiceFromBuildRequest(
 
   return createDepositInvoice({
     requestId,
-    customerName: payload.contact.name,
+    customerName: getContactFullName(payload.contact),
     customerEmail: payload.contact.email,
     customerPhone: payload.contact.phone || undefined,
+    customerAddress: {
+      addressLine1: payload.contact.addressLine1,
+      addressLine2: payload.contact.addressLine2,
+      city: payload.contact.city,
+      state: payload.contact.state,
+      postalCode: payload.contact.postalCode,
+    },
     depositCents: payload.depositCents,
     buildSummary,
     preferredMethod: payload.squareInvoice.method,

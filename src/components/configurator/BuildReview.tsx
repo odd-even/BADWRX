@@ -126,13 +126,35 @@ export function BuildReview({
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="text-xs uppercase tracking-widest text-white-muted">
-              Name
+              First name
             </span>
             <input
               required
+              id="build-firstName"
+              name="firstName"
               type="text"
-              value={form.name}
-              onChange={(e) => onFormChange({ ...form, name: e.target.value })}
+              autoComplete="given-name"
+              value={form.firstName}
+              onChange={(e) =>
+                onFormChange({ ...form, firstName: e.target.value })
+              }
+              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs uppercase tracking-widest text-white-muted">
+              Last name
+            </span>
+            <input
+              required
+              id="build-lastName"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              value={form.lastName}
+              onChange={(e) =>
+                onFormChange({ ...form, lastName: e.target.value })
+              }
               className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
@@ -142,18 +164,26 @@ export function BuildReview({
             </span>
             <input
               required
+              id="build-email"
+              name="email"
               type="email"
+              autoComplete="email"
               value={form.email}
               onChange={(e) => onFormChange({ ...form, email: e.target.value })}
               className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
-          <label className="block sm:col-span-2">
+          <label className="block">
             <span className="text-xs uppercase tracking-widest text-white-muted">
-              Phone (optional)
+              Phone
             </span>
             <input
+              required
+              id="build-phone"
+              name="phone"
               type="tel"
+              autoComplete="tel"
+              inputMode="tel"
               value={form.phone}
               onChange={(e) => onFormChange({ ...form, phone: e.target.value })}
               className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
@@ -161,9 +191,96 @@ export function BuildReview({
           </label>
           <label className="block sm:col-span-2">
             <span className="text-xs uppercase tracking-widest text-white-muted">
+              Street address
+            </span>
+            <input
+              required
+              id="build-addressLine1"
+              name="address-line1"
+              type="text"
+              autoComplete="address-line1"
+              value={form.addressLine1}
+              onChange={(e) =>
+                onFormChange({ ...form, addressLine1: e.target.value })
+              }
+              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="text-xs uppercase tracking-widest text-white-muted">
+              Apartment, suite, etc. (optional)
+            </span>
+            <input
+              id="build-addressLine2"
+              name="address-line2"
+              type="text"
+              autoComplete="address-line2"
+              value={form.addressLine2}
+              onChange={(e) =>
+                onFormChange({ ...form, addressLine2: e.target.value })
+              }
+              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs uppercase tracking-widest text-white-muted">
+              City
+            </span>
+            <input
+              required
+              id="build-city"
+              name="city"
+              type="text"
+              autoComplete="address-level2"
+              value={form.city}
+              onChange={(e) => onFormChange({ ...form, city: e.target.value })}
+              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+            />
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-xs uppercase tracking-widest text-white-muted">
+                State
+              </span>
+              <input
+                required
+                id="build-state"
+                name="state"
+                type="text"
+                autoComplete="address-level1"
+                value={form.state}
+                onChange={(e) =>
+                  onFormChange({ ...form, state: e.target.value })
+                }
+                className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs uppercase tracking-widest text-white-muted">
+                ZIP
+              </span>
+              <input
+                required
+                id="build-postalCode"
+                name="postal-code"
+                type="text"
+                autoComplete="postal-code"
+                inputMode="numeric"
+                value={form.postalCode}
+                onChange={(e) =>
+                  onFormChange({ ...form, postalCode: e.target.value })
+                }
+                className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              />
+            </label>
+          </div>
+          <label className="block sm:col-span-2">
+            <span className="text-xs uppercase tracking-widest text-white-muted">
               Notes — intended game, hunt style, left/right hand
             </span>
             <textarea
+              id="build-notes"
+              name="notes"
               rows={3}
               value={form.notes}
               onChange={(e) => onFormChange({ ...form, notes: e.target.value })}
@@ -179,7 +296,8 @@ export function BuildReview({
           <p className="mt-2 text-sm text-white-muted">
             After approval, we&apos;ll email a Square invoice for the{" "}
             {submission.depositFormatted} deposit. Choose how you&apos;d like to
-            pay on Square.
+            pay on Square. Full payment is due prior to build — we won&apos;t
+            start building until full payment is received.
           </p>
           <div className="mt-4 space-y-3">
             <label

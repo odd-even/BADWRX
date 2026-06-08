@@ -72,11 +72,35 @@ export function getSquareInvoiceMethod(
 }
 
 export interface BuildContactDetails {
-  name: string;
+  firstName: string;
+  lastName: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  postalCode: string;
   email: string;
   phone: string;
   notes: string;
   paymentMethod: PaymentMethod;
+}
+
+export function getContactFullName(contact: BuildContactDetails): string {
+  return `${contact.firstName} ${contact.lastName}`.trim();
+}
+
+/** Single-line, human-readable mailing address. */
+export function getContactAddress(contact: BuildContactDetails): string {
+  const cityStateZip = [contact.city, contact.state]
+    .filter(Boolean)
+    .join(", ");
+  return [
+    contact.addressLine1,
+    contact.addressLine2,
+    [cityStateZip, contact.postalCode].filter(Boolean).join(" "),
+  ]
+    .filter(Boolean)
+    .join(", ");
 }
 
 export interface BuildRequestPayload extends BuildSubmission {

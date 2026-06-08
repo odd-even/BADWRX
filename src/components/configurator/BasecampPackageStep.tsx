@@ -1,0 +1,144 @@
+"use client";
+
+import Image from "next/image";
+import type { ConfigOption } from "@/lib/types";
+import { sourceData } from "@/lib/source-data";
+import { formatPriceDelta, getOptionPrice } from "@/lib/pricing";
+
+interface BasecampPackageStepProps {
+  packageOption: ConfigOption;
+  noneOption: ConfigOption;
+  selectedId: string | undefined;
+  onSelect: (option: ConfigOption) => void;
+}
+
+function splitItem(item: string): { title: string; detail: string } {
+  const [title, ...rest] = item.split(" — ");
+  return { title: title.trim(), detail: rest.join(" — ").trim() };
+}
+
+export function BasecampPackageStep({
+  packageOption,
+  noneOption,
+  selectedId,
+  onSelect,
+}: BasecampPackageStepProps) {
+  const basecamp = sourceData.configurator.basecamp;
+  const items = basecamp.items.map(splitItem);
+  const priceLabel = formatPriceDelta(
+    getOptionPrice(packageOption.id),
+    "basecampPackage",
+  );
+  const packageSelected = selectedId === packageOption.id;
+  const noneSelected = selectedId === noneOption.id;
+
+  return (
+    <div className="mt-8 space-y-6">
+      <div className="overflow-hidden border border-white/10 bg-black-muted">
+        {packageOption.image && (
+          <div className="relative aspect-[16/9] w-full bg-black-light">
+            <Image
+              src={packageOption.image.url}
+              alt={packageOption.image.alt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 640px"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-6 sm:p-8">
+              <p className="text-xs uppercase tracking-widest text-red">
+                {basecamp.label}
+              </p>
+              <h3 className="mt-1 text-3xl text-white sm:text-4xl">
+                {basecamp.headline}
+              </h3>
+            </div>
+          </div>
+        )}
+
+        <div className="p-6 sm:p-8">
+          <p className="text-sm leading-relaxed text-white-muted">
+            {basecamp.description}
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {items.map((item, index) => (
+              <div
+                key={item.title}
+                className="flex h-full flex-col border border-white/10 bg-black-light p-5"
+              >
+                <span className="text-xs font-semibold text-red">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-3 font-medium leading-snug text-white">
+                  {item.title}
+                </p>
+                {item.detail && (
+                  <p className="mt-2 text-sm leading-relaxed text-white-muted">
+                    {item.detail}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-xs uppercase tracking-widest text-white-muted/70">
+            This is not a bundle. It is a system.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => onSelect(packageOption)}
+          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+            packageSelected
+              ? "border-red bg-red/5"
+              : "border-white/10 bg-black-muted hover:border-white/30"
+          }`}
+        >
+          <div>
+            <p className="font-medium text-white">
+              Add the {basecamp.label}
+            </p>
+            {priceLabel && (
+              <p className="mt-1 text-xs uppercase tracking-widest text-red">
+                {priceLabel}
+              </p>
+            )}
+          </div>
+          <span
+            className={`mt-1 h-4 w-4 shrink-0 border ${
+              packageSelected ? "border-red bg-red" : "border-white/30"
+            }`}
+          />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onSelect(noneOption)}
+          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+            noneSelected
+              ? "border-red bg-red/5"
+              : "border-white/10 bg-black-muted hover:border-white/30"
+          }`}
+        >
+          <div>
+            <p className="font-medium text-white">{noneOption.label}</p>
+            {noneOption.description && (
+              <p className="mt-1 text-sm text-white-muted">
+                {noneOption.description}
+              </p>
+            )}
+          </div>
+          <span
+            className={`mt-1 h-4 w-4 shrink-0 border ${
+              noneSelected ? "border-red bg-red" : "border-white/30"
+            }`}
+          />
+        </button>
+      </div>
+    </div>
+  );
+}

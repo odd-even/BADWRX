@@ -2,7 +2,7 @@
 
 @theme {
   /* Dark green base (almost black) + pure black accents — never lighter than base green */
-  --color-black: #080a07;
+  --color-black: #0c0e0b;
   --color-black-light: #000000;
   --color-black-muted: #000000;
   --color-white: #fafafa;

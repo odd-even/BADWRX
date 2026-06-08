@@ -10,10 +10,27 @@ import {
 } from "@/lib/age-verification";
 import { images } from "@/lib/images";
 
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export function AgeVerification() {
   const [checked, setChecked] = useState(false);
   const [verified, setVerified] = useState(false);
-  const [dob, setDob] = useState("");
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,12 +45,24 @@ export function AgeVerification() {
     };
   }, [checked, verified]);
 
+  useEffect(() => {
+    if (!year || !month || !day) return;
+    const maxDay = new Date(Number(year), Number(month), 0).getDate();
+    if (Number(day) > maxDay) setDay("");
+  }, [year, month, day]);
+
   if (!checked || verified) return null;
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
 
+    if (!year || !month || !day) {
+      setError("Select your full date of birth.");
+      return;
+    }
+
+    const dob = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     const birthDate = parseBirthDate(dob);
     if (!birthDate) {
       setError("Enter a valid date of birth.");
@@ -54,7 +83,18 @@ export function AgeVerification() {
     setVerified(true);
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) =>
+    String(currentYear - i),
+  );
+  const daysInMonth =
+    year && month
+      ? new Date(Number(year), Number(month), 0).getDate()
+      : 31;
+  const days = Array.from({ length: daysInMonth }, (_, i) => String(i + 1));
+
+  const selectClass =
+    "mt-1 w-full border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none focus:border-red [color-scheme:dark]";
 
   return (
     <div
@@ -70,7 +110,7 @@ export function AgeVerification() {
             alt={`${brand.short} logo`}
             width={120}
             height={113}
-            className="h-20 w-auto"
+            className="h-40 w-auto"
             priority
           />
         </div>
@@ -90,23 +130,82 @@ export function AgeVerification() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <label className="block">
-            <span className="text-xs uppercase tracking-widest text-white-muted">
-              Date of birth
-            </span>
-            <input
-              required
-              type="date"
-              value={dob}
-              max={today}
-              min="1900-01-01"
-              onChange={(event) => {
-                setDob(event.target.value);
-                setError(null);
-              }}
-              className="mt-1 w-full border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none focus:border-red [color-scheme:dark]"
-            />
-          </label>
+          <span className="text-xs uppercase tracking-widest text-white-muted">
+            Date of birth
+          </span>
+          <div className="grid grid-cols-3 gap-3">
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-widest text-white-muted/70">
+                Year
+              </span>
+              <select
+                required
+                value={year}
+                onChange={(event) => {
+                  setYear(event.target.value);
+                  setError(null);
+                }}
+                className={selectClass}
+              >
+                <option value="" disabled>
+                  Year
+                </option>
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-widest text-white-muted/70">
+                Month
+              </span>
+              <select
+                required
+                value={month}
+                onChange={(event) => {
+                  setMonth(event.target.value);
+                  setError(null);
+                }}
+                className={selectClass}
+              >
+                <option value="" disabled>
+                  Month
+                </option>
+                {MONTHS.map((label, index) => (
+                  <option key={label} value={String(index + 1)}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-widest text-white-muted/70">
+                Day
+              </span>
+              <select
+                required
+                value={day}
+                onChange={(event) => {
+                  setDay(event.target.value);
+                  setError(null);
+                }}
+                className={selectClass}
+              >
+                <option value="" disabled>
+                  Day
+                </option>
+                {days.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           {error && (
             <p className="text-sm text-red" role="alert">
