@@ -139,6 +139,17 @@ a:hover {
   letter-spacing: 0.05em;
 }
 
+/* Desktop header nav: expand tracking on hover (overrides generic a:hover) */
+header .header-nav a:hover {
+  letter-spacing: 0.08em;
+}
+
+@media (min-width: 1024px) {
+  header .header-nav a:hover {
+    letter-spacing: 0.14em;
+  }
+}
+
 a.tracking-wider:hover,
 .tracking-wider:is(a):hover {
   letter-spacing: 0.08em;

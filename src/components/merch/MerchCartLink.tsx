@@ -6,11 +6,13 @@ import { useMerchCart } from "@/components/merch/CartProvider";
 export function MerchCartLink() {
   const { itemCount } = useMerchCart();
 
+  if (itemCount === 0) return null;
+
   return (
     <Link
       href="/merch/cart"
-      className="relative flex h-10 w-10 items-center justify-center text-white-muted transition hover:text-white"
-      aria-label={`Cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
+      className="relative flex h-9 w-9 items-center justify-center text-white-muted transition hover:text-white lg:h-10 lg:w-10"
+      aria-label={`Cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
     >
       <svg
         viewBox="0 0 24 24"
@@ -25,11 +27,9 @@ export function MerchCartLink() {
         <circle cx="9" cy="20" r="1.5" />
         <circle cx="18" cy="20" r="1.5" />
       </svg>
-      {itemCount > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-red px-1 text-[10px] font-semibold text-white">
-          {itemCount > 9 ? "9+" : itemCount}
-        </span>
-      ) : null}
+      <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-red px-1 text-[10px] font-semibold text-white">
+        {itemCount > 9 ? "9+" : itemCount}
+      </span>
     </Link>
   );
 }

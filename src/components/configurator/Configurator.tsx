@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -78,7 +78,7 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
 }
 
 function scrollConfiguratorToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 }
 
 import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
@@ -119,7 +119,6 @@ export function Configurator() {
     const target = navigableStepIndices[position];
     if (target !== undefined) {
       setStepIndex(target);
-      scrollConfiguratorToTop();
     }
   };
   const canAdvance = config[currentKey] !== null;
@@ -163,6 +162,10 @@ export function Configurator() {
     setConfig((prev) => ({ ...prev, platform }));
     setStepIndex(1);
   }, [searchParams]);
+
+  useLayoutEffect(() => {
+    scrollConfiguratorToTop();
+  }, [stepIndex, phase]);
 
   function selectOption(option: ConfigOption) {
     setConfig((prev) => {
@@ -251,10 +254,7 @@ export function Configurator() {
         form={form}
         onFormChange={setForm}
         onSubmit={handleSubmit}
-        onEdit={() => {
-          setPhase("configure");
-          scrollConfiguratorToTop();
-        }}
+        onEdit={() => setPhase("configure")}
         submitting={submitting}
         submitError={submitError}
       />
@@ -386,10 +386,7 @@ export function Configurator() {
             </p>
             <button
               type="button"
-              onClick={() => {
-                setPhase("review");
-                scrollConfiguratorToTop();
-              }}
+              onClick={() => setPhase("review")}
               className="mt-6 w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
             >
               Review & Submit Build →
@@ -481,10 +478,7 @@ export function Configurator() {
           {isBuildComplete && (
             <button
               type="button"
-              onClick={() => {
-                setPhase("review");
-                scrollConfiguratorToTop();
-              }}
+              onClick={() => setPhase("review")}
               className="mt-6 w-full border border-red bg-red py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
             >
               Review & Submit Build

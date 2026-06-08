@@ -76,7 +76,7 @@ function buildCopyFromDocx(paras) {
     rifleLineupPreview:
       findAfter("RIFLE LINEUP PREVIEW") || "Six purpose-built platforms. One standard.",
     contactPage: {
-      headline: findAfter("CONTACT / QUOTE REQUEST") || "Start Your Build.",
+      headline: findAfter("CONTACT / QUOTE REQUEST") || "Start Your Build",
       intro:
         findAfter("Start Your Build.") ||
         "Every BADWRX rifle is built to order. Fill out the form below with your build details and we will be in touch to discuss your configuration, timeline, and pricing.",

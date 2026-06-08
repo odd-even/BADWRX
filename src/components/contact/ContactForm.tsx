@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-interface ContactField {
+
+export type ContactInquiryMode = "platform" | "university" | "merch";
+
+export interface ContactField {
   id: string;
   label: string;
   type: string;
@@ -13,10 +16,13 @@ const inputClassName =
   "mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red";
 
 interface ContactFormProps {
-  courseTitle?: string;
-  merchTitle?: string;
+  mode: ContactInquiryMode;
   submitLabel?: string;
   buildFields?: ContactField[];
+  courses?: { slug: string; title: string }[];
+  merchItems?: { slug: string; title: string }[];
+  initialCourseSlug?: string;
+  initialMerchSlug?: string;
 }
 
 function isRadioField(field: ContactField) {
@@ -30,17 +36,33 @@ function isTextAreaField(field: ContactField) {
   );
 }
 
+function successCopy(mode: ContactInquiryMode) {
+  if (mode === "university") {
+    return { eyebrow: "Registration received", body: "Thank you. We'll respond within 2 business days." };
+  }
+  if (mode === "merch") {
+    return { eyebrow: "Inquiry received", body: "Thank you. We'll respond within 2 business days." };
+  }
+  return { eyebrow: "Build request received", body: "Thank you. We'll respond within 2 business days." };
+}
+
 export function ContactForm({
-  courseTitle,
-  merchTitle,
+  mode,
   submitLabel = "Send",
   buildFields,
+  courses = [],
+  merchItems = [],
+  initialCourseSlug,
+  initialMerchSlug,
 }: ContactFormProps) {
-  const inquiryTitle = courseTitle ?? merchTitle;
-  const inquiryLabel = courseTitle ? "Registering for" : merchTitle ? "Inquiring about" : null;
-  const isBuildForm = Boolean(buildFields?.length) && !inquiryTitle;
   const [submitted, setSubmitted] = useState(false);
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string>>(() => ({
+    course: initialCourseSlug ?? courses[0]?.slug ?? "",
+    merch: initialMerchSlug ?? "",
+  }));
+
+  const selectedCourse = courses.find((course) => course.slug === values.course);
+  const selectedMerch = merchItems.find((item) => item.slug === values.merch);
 
   function setValue(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
@@ -52,19 +74,16 @@ export function ContactForm({
   }
 
   if (submitted) {
+    const copy = successCopy(mode);
     return (
-      <div className="border border-red/30 bg-black-muted p-8">
-        <p className="text-xs uppercase tracking-widest text-red">
-          {inquiryTitle ? (courseTitle ? "Registration received" : "Inquiry received") : "Build request received"}
-        </p>
-        <p className="mt-4 text-white">
-          Thank you. We&apos;ll respond within 2 business days.
-        </p>
+      <div className="border border-red/30 bg-black-light p-8">
+        <p className="text-xs uppercase tracking-widest text-red">{copy.eyebrow}</p>
+        <p className="mt-4 text-white">{copy.body}</p>
       </div>
     );
   }
 
-  if (isBuildForm && buildFields) {
+  if (mode === "platform" && buildFields?.length) {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -88,9 +107,7 @@ export function ContactForm({
 
         {buildFields
           .filter(
-            (field) =>
-              field.id === "email-address" ||
-              field.id === "phone-number",
+            (field) => field.id === "email-address" || field.id === "phone-number",
           )
           .map((field) => (
             <label key={field.id} className="block">
@@ -168,53 +185,240 @@ export function ContactForm({
           </label>
         ))}
 
-        <button
-          type="submit"
-          className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
-        >
-          {submitLabel}
-        </button>
+        <SubmitButton label={submitLabel} />
+      </form>
+    );
+  }
+
+  if (mode === "university") {
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {courses.length > 1 ? (
+          <label className="block">
+            <span className="text-xs uppercase tracking-widest text-white-muted">
+              Class
+            </span>
+            <select
+              required
+              value={values.course ?? ""}
+              onChange={(event) => setValue("course", event.target.value)}
+              className={inputClassName}
+            >
+              <option value="">Select a class…</option>
+              {courses.map((course) => (
+                <option key={course.slug} value={course.slug}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : selectedCourse ? (
+          <div className="border border-red/30 bg-black-light px-4 py-3">
+            <p className="text-xs uppercase tracking-widest text-red">Registering for</p>
+            <p className="mt-1 text-sm text-white">{selectedCourse.title}</p>
+          </div>
+        ) : null}
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">Full name</span>
+          <input
+            required
+            type="text"
+            autoComplete="name"
+            value={values["full-name"] ?? ""}
+            onChange={(event) => setValue("full-name", event.target.value)}
+            className={inputClassName}
+          />
+        </label>
+
+        <fieldset className="space-y-4">
+          <legend className="text-xs uppercase tracking-widest text-white-muted">
+            Address
+          </legend>
+          <label className="block">
+            <span className="text-xs uppercase tracking-widest text-white-muted/80">
+              Street address
+            </span>
+            <input
+              required
+              type="text"
+              autoComplete="address-line1"
+              value={values["address-line1"] ?? ""}
+              onChange={(event) => setValue("address-line1", event.target.value)}
+              className={inputClassName}
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs uppercase tracking-widest text-white-muted/80">
+              Apartment, suite, etc.
+            </span>
+            <input
+              type="text"
+              autoComplete="address-line2"
+              value={values["address-line2"] ?? ""}
+              onChange={(event) => setValue("address-line2", event.target.value)}
+              className={inputClassName}
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block sm:col-span-2">
+              <span className="text-xs uppercase tracking-widest text-white-muted/80">
+                City
+              </span>
+              <input
+                required
+                type="text"
+                autoComplete="address-level2"
+                value={values.city ?? ""}
+                onChange={(event) => setValue("city", event.target.value)}
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs uppercase tracking-widest text-white-muted/80">
+                State
+              </span>
+              <input
+                required
+                type="text"
+                autoComplete="address-level1"
+                value={values.state ?? ""}
+                onChange={(event) => setValue("state", event.target.value)}
+                className={inputClassName}
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs uppercase tracking-widest text-white-muted/80">
+                ZIP code
+              </span>
+              <input
+                required
+                type="text"
+                autoComplete="postal-code"
+                inputMode="numeric"
+                value={values["postal-code"] ?? ""}
+                onChange={(event) => setValue("postal-code", event.target.value)}
+                className={inputClassName}
+              />
+            </label>
+          </div>
+        </fieldset>
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">
+            Phone number
+          </span>
+          <input
+            required
+            type="tel"
+            autoComplete="tel"
+            value={values.phone ?? ""}
+            onChange={(event) => setValue("phone", event.target.value)}
+            className={inputClassName}
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">Email</span>
+          <input
+            required
+            type="email"
+            autoComplete="email"
+            value={values.email ?? ""}
+            onChange={(event) => setValue("email", event.target.value)}
+            className={inputClassName}
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">
+            Additional details
+          </span>
+          <textarea
+            rows={4}
+            placeholder="Experience level, preferred dates, rifle setup, or any questions about the class..."
+            value={values.message ?? ""}
+            onChange={(event) => setValue("message", event.target.value)}
+            className={`${inputClassName} placeholder:text-white-muted/40`}
+          />
+        </label>
+
+        <SubmitButton label={submitLabel} />
       </form>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {inquiryTitle && inquiryLabel && (
+      <label className="block">
+        <span className="text-xs uppercase tracking-widest text-white-muted">
+          Product
+        </span>
+        <select
+          value={values.merch ?? ""}
+          onChange={(event) => setValue("merch", event.target.value)}
+          className={inputClassName}
+        >
+          <option value="">General merch inquiry</option>
+          {merchItems.map((item) => (
+            <option key={item.slug} value={item.slug}>
+              {item.title}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {selectedMerch && (
         <div className="border border-red/30 bg-black-light px-4 py-3">
-          <p className="text-xs uppercase tracking-widest text-red">{inquiryLabel}</p>
-          <p className="mt-1 text-sm text-white">{inquiryTitle}</p>
+          <p className="text-xs uppercase tracking-widest text-red">Inquiring about</p>
+          <p className="mt-1 text-sm text-white">{selectedMerch.title}</p>
         </div>
       )}
+
       <label className="block">
         <span className="text-xs uppercase tracking-widest text-white-muted">Name</span>
-        <input required type="text" className={inputClassName} />
+        <input
+          required
+          type="text"
+          autoComplete="name"
+          value={values.name ?? ""}
+          onChange={(event) => setValue("name", event.target.value)}
+          className={inputClassName}
+        />
       </label>
       <label className="block">
         <span className="text-xs uppercase tracking-widest text-white-muted">Email</span>
-        <input required type="email" className={inputClassName} />
+        <input
+          required
+          type="email"
+          autoComplete="email"
+          value={values.email ?? ""}
+          onChange={(event) => setValue("email", event.target.value)}
+          className={inputClassName}
+        />
       </label>
       <label className="block">
         <span className="text-xs uppercase tracking-widest text-white-muted">Message</span>
         <textarea
           required
           rows={5}
-          placeholder={
-            courseTitle
-              ? "Tell us about your experience level, preferred dates, or any questions about the class..."
-              : merchTitle
-                ? "Tell us your size, color preference, quantity, or shipping questions..."
-                : "Tell us about your hunt, preferred caliber, or questions about a past build..."
-          }
+          placeholder="Tell us your size, color preference, quantity, or shipping questions..."
+          value={values.message ?? ""}
+          onChange={(event) => setValue("message", event.target.value)}
           className={`${inputClassName} placeholder:text-white-muted/40`}
         />
       </label>
-      <button
-        type="submit"
-        className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
-      >
-        {submitLabel}
-      </button>
+
+      <SubmitButton label={submitLabel} />
     </form>
+  );
+}
+
+function SubmitButton({ label }: { label: string }) {
+  return (
+    <button
+      type="submit"
+      className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
+    >
+      {label}
+    </button>
   );
 }

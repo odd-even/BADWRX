@@ -56,6 +56,21 @@ function useScrollProgress() {
   return progress;
 }
 
+/** md–lg viewports: tighter header so full nav fits before mobile menu */
+function useCompactHeader() {
+  const [compact, setCompact] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const update = () => setCompact(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return compact;
+}
+
 function lerp(from: number, to: number, t: number) {
   return from + (to - from) * t;
 }
@@ -77,10 +92,11 @@ function ctaRevealStyle(progress: number, maxWidth: number): CSSProperties {
 }
 
 const ctaClassName =
-  "block whitespace-nowrap border px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white transition-[background-color,border-color] duration-200 active:scale-[0.98]";
+  "block whitespace-nowrap border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white transition-[background-color,border-color] duration-200 active:scale-[0.98] lg:px-5 lg:py-2 lg:text-xs lg:tracking-widest";
 
 export function Header() {
   const progress = useScrollProgress();
+  const compact = useCompactHeader();
   const scrolled = progress > 0.02;
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -105,10 +121,13 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
 
-  const padY = lerp(22, 12, progress);
+  const padY = lerp(compact ? 16 : 22, compact ? 10 : 12, progress);
   // Full-name SVG ~365×95 — scale width with larger resting logo
-  const logoWidth = lerp(270, 60, progress);
-  const logoHeight = lerp(56, 48, progress);
+  const logoRestWidth = compact ? 200 : 270;
+  const logoRestHeight = compact ? 44 : 56;
+  const logoWidth = lerp(logoRestWidth, 56, progress);
+  const logoHeight = lerp(logoRestHeight, 48, progress);
+  const ctaMaxWidth = compact ? 112 : 140;
   const bgOpacity = lerp(0, 0.95, progress);
   const borderOpacity = lerp(0, 0.1, progress);
   const blur = lerp(0, 16, progress);
@@ -159,7 +178,7 @@ export function Header() {
         aria-hidden
       />
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-5 lg:px-6">
         <Link
           href="/"
           className="relative block shrink-0 overflow-visible will-change-[width]"
@@ -182,7 +201,7 @@ export function Header() {
               width={270}
               height={70}
               priority
-              className="h-11 w-auto max-w-none md:h-12"
+              className="h-9 w-auto max-w-none md:h-10 lg:h-12"
             />
           </div>
 
@@ -203,13 +222,13 @@ export function Header() {
               width={56}
               height={45}
               priority
-              className="h-10 w-auto max-w-none md:h-11"
+              className="h-9 w-auto max-w-none md:h-10 lg:h-11"
             />
           </div>
         </Link>
 
         <nav
-          className="ml-auto hidden items-center gap-8 md:flex will-change-[transform,opacity]"
+          className="header-nav ml-auto hidden items-center gap-3 md:flex lg:gap-8 will-change-[transform,opacity]"
           style={{
             opacity: navOpacity,
             transform: `translateY(${navY}px)`,
@@ -219,14 +238,14 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm uppercase tracking-widest text-white-muted transition-colors duration-200 hover:text-white"
+              className="whitespace-nowrap text-xs uppercase tracking-wide text-white/80 transition-[color,text-decoration-color,letter-spacing] duration-200 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em] lg:text-sm lg:tracking-widest"
             >
               {link.label}
             </Link>
           ))}
           <span
             className="inline-flex shrink-0"
-            style={ctaRevealStyle(progress, 140)}
+            style={ctaRevealStyle(progress, ctaMaxWidth)}
             aria-hidden={progress <= 0.05}
           >
             <Link
@@ -240,7 +259,7 @@ export function Header() {
           </span>
         </nav>
 
-        <div className="flex items-center gap-2 md:ml-6">
+        <div className="flex items-center gap-1 md:ml-2 lg:ml-6 lg:gap-2">
           <MerchCartLink />
           <button
             type="button"
@@ -293,10 +312,10 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-colors ${
+              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
                 pathname === link.href
                   ? "text-red"
-                  : "text-white-muted hover:text-white"
+                  : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
               }`}
             >
               {link.label}
@@ -305,10 +324,10 @@ export function Header() {
           <Link
             href="/merch/cart"
             onClick={() => setMenuOpen(false)}
-            className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-colors ${
+            className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
               pathname === "/merch/cart"
                 ? "text-red"
-                : "text-white-muted hover:text-white"
+                : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
             }`}
           >
             Cart
