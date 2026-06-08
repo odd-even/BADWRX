@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useMerchCart } from "@/components/merch/CartProvider";
 
 export function MerchCartLink() {
+  const pathname = usePathname();
   const { itemCount } = useMerchCart();
 
-  if (itemCount === 0) return null;
+  if (itemCount === 0 || pathname === "/configure") return null;
 
   return (
     <Link
       href="/merch/cart"
       className="relative flex h-9 w-9 items-center justify-center text-white-muted transition hover:text-white lg:h-10 lg:w-10"
-      aria-label={`Cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
+      aria-label={`Merch cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
     >
       <svg
         viewBox="0 0 24 24"

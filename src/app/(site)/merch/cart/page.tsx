@@ -21,8 +21,8 @@ export default function MerchCartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <p className="text-xs uppercase tracking-widest text-red">Cart</p>
-        <h1 className="mt-2 text-5xl text-white">Your cart</h1>
+        <p className="text-xs uppercase tracking-widest text-red">Merch cart</p>
+        <h1 className="mt-2 text-5xl text-white">Merch cart</h1>
         <div className="mt-10">
           <MerchEmptyCart />
         </div>
@@ -32,8 +32,8 @@ export default function MerchCartPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <p className="text-xs uppercase tracking-widest text-red">Cart</p>
-      <h1 className="mt-2 text-5xl text-white">Your cart</h1>
+      <p className="text-xs uppercase tracking-widest text-red">Merch cart</p>
+      <h1 className="mt-2 text-5xl text-white">Merch cart</h1>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
         <div className="border border-white/10 bg-black-muted px-6">

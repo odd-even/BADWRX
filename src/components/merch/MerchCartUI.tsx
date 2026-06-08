@@ -216,13 +216,25 @@ export function MerchOrderSummary({
 export function MerchEmptyCart() {
   return (
     <div className="border border-white/10 bg-black-muted p-10 text-center">
-      <p className="text-white">Your cart is empty.</p>
-      <Link
-        href="/merch"
-        className="mt-6 inline-block border border-white/20 px-8 py-4 text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"
-      >
-        Shop merch
-      </Link>
+      <p className="text-white">Your merch cart is empty.</p>
+      <p className="mx-auto mt-3 max-w-sm text-sm text-white-muted">
+        Configuring a rifle? Your build stays on the configure page — it is not
+        added to this cart.
+      </p>
+      <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <Link
+          href="/configure"
+          className="inline-block border border-red bg-red px-8 py-4 text-xs uppercase tracking-widest text-white transition hover:bg-red-dark"
+        >
+          Continue building
+        </Link>
+        <Link
+          href="/merch"
+          className="inline-block border border-white/20 px-8 py-4 text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"
+        >
+          Shop merch
+        </Link>
+      </div>
     </div>
   );
 }

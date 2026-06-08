@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { images } from "@/lib/images";
 import { brand } from "@/lib/brand";
 import { MerchCartLink } from "@/components/merch/MerchCartLink";
+import { useMerchCart } from "@/components/merch/CartProvider";
 
 const navLinks = [
   { href: "/builds", label: "Builds" },
@@ -99,7 +100,9 @@ export function Header() {
   const compact = useCompactHeader();
   const scrolled = progress > 0.02;
   const pathname = usePathname();
+  const { itemCount } = useMerchCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const onConfigure = pathname === "/configure";
 
   useEffect(() => {
     setMenuOpen(false);
@@ -321,17 +324,19 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/merch/cart"
-            onClick={() => setMenuOpen(false)}
-            className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
-              pathname === "/merch/cart"
-                ? "text-red"
-                : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
-            }`}
-          >
-            Cart
-          </Link>
+          {itemCount > 0 && !onConfigure ? (
+            <Link
+              href="/merch/cart"
+              onClick={() => setMenuOpen(false)}
+              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
+                pathname === "/merch/cart"
+                  ? "text-red"
+                  : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
+              }`}
+            >
+              Merch cart ({itemCount})
+            </Link>
+          ) : null}
           <Link
             href="/configure"
             onClick={() => setMenuOpen(false)}
