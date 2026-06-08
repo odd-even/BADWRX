@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { usdPriceField } from "./shared";
 
 export const rifle = defineType({
   name: "rifle",
@@ -151,12 +152,16 @@ export const rifle = defineType({
       group: "configurator",
       description: 'Short barrel line for configurator (e.g. 22" Carbon Wrapped)',
     }),
-    defineField({
-      name: "configuratorPriceCents",
-      title: "Configurator price (cents)",
-      type: "number",
+    usdPriceField("configuratorPrice", "Configurator price", {
       group: "configurator",
       description: "Platform price shown in the build configurator",
+    }),
+    defineField({
+      name: "configuratorPriceCents",
+      title: "Configurator price (legacy cents)",
+      type: "number",
+      group: "configurator",
+      hidden: true,
     }),
     defineField({
       name: "showInConfigurator",

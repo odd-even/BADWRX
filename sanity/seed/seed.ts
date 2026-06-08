@@ -22,6 +22,7 @@ import {
   stockPaintFilenames,
 } from "../../src/lib/images";
 import type { SiteSettings } from "../../src/lib/types";
+import { centsToSanityPrice } from "../../src/sanity/lib/price";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "../..");
@@ -222,7 +223,9 @@ async function seedRifles(
       chassis: sourceRifle?.platform,
       actionName: sourceRifle?.action,
       barrelSummary: sourceRifle?.barrel,
-      configuratorPriceCents: sourceData.pricing.optionPriceCents[rifle.slug],
+      configuratorPrice: centsToSanityPrice(
+        sourceData.pricing.optionPriceCents[rifle.slug] ?? 0,
+      ),
       showInConfigurator: true,
       heroImage: imageRef(heroAsset, rifle.heroImage.alt || defaultAlt),
       configuratorImage: imageRef(
@@ -262,7 +265,7 @@ async function seedConfiguratorSettings(
   await client.createOrReplace({
     _id: "configuratorSettings",
     _type: "configuratorSettings",
-    baseBuildCents: pricing.baseBuildCents,
+    baseBuildPrice: centsToSanityPrice(pricing.baseBuildCents),
     platformDefaults: Object.entries(cfg.platformDefaults).map(
       ([platformSlug, defaults], index) => ({
         _key: `platform-${index}`,
@@ -293,7 +296,7 @@ async function seedConfiguratorSettings(
       optionId: slugField(row.id),
       label: row.caliber,
       notes: row.notes,
-      priceCents: pricing.optionPriceCents[row.id] ?? 0,
+      price: centsToSanityPrice(pricing.optionPriceCents[row.id] ?? 0),
       platformSlugs: Object.entries(row.platforms)
         .filter(([, enabled]) => enabled)
         .map(([slug]) => slug),
@@ -306,7 +309,7 @@ async function seedConfiguratorSettings(
       code: color.code,
       description: color.description,
       bestFor: color.bestFor,
-      priceCents: pricing.optionPriceCents[color.id] ?? 0,
+      price: centsToSanityPrice(pricing.optionPriceCents[color.id] ?? 0),
       image: imageRef(
         camoAssets[color.id] ?? camoAssets.custom,
         `${color.label} finish`,
@@ -327,7 +330,9 @@ async function seedConfiguratorSettings(
         tube: optic.tube,
         msrp: optic.msrp,
         notes: optic.notes,
-        priceCents: pricing.optionPriceCents[optic.id] ?? optic.msrpCents ?? 0,
+        price: centsToSanityPrice(
+          pricing.optionPriceCents[optic.id] ?? optic.msrpCents ?? 0,
+        ),
         image: imageRef(
           scopeAssetId,
           `Nightforce ${optic.model} ${optic.magnification} ${optic.reticle}`,
@@ -347,7 +352,7 @@ async function seedConfiguratorSettings(
       optionId: cfg.rings.id,
       label: cfg.rings.label,
       description: cfg.rings.description,
-      priceCents: pricing.optionPriceCents[cfg.rings.id] ?? 0,
+      price: centsToSanityPrice(pricing.optionPriceCents[cfg.rings.id] ?? 0),
       image: imageRef(ringsAssetId, "Hawkins precision rings"),
     },
     basecamp: {
@@ -356,7 +361,7 @@ async function seedConfiguratorSettings(
       headline: cfg.basecamp.headline,
       description: cfg.basecamp.description,
       items: cfg.basecamp.items,
-      priceCents: pricing.optionPriceCents[cfg.basecamp.id] ?? 0,
+      price: centsToSanityPrice(pricing.optionPriceCents[cfg.basecamp.id] ?? 0),
       image: imageRef(basecampAssetId, cfg.basecamp.label),
       noneLabel: "No Basecamp Package",
       noneDescription: "Rifle ships in protective wrap only.",
@@ -368,7 +373,7 @@ async function seedConfiguratorSettings(
       description: cfg.ballistic.description,
       howItWorks: cfg.ballistic.howItWorks,
       deliverables: cfg.ballistic.deliverables,
-      priceCents: pricing.optionPriceCents[cfg.ballistic.id] ?? 0,
+      price: centsToSanityPrice(pricing.optionPriceCents[cfg.ballistic.id] ?? 0),
       noneLabel: "No Ballistic Package",
       noneDescription: "Standard zero and function verification only.",
     },

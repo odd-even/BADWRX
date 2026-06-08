@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { usdPriceField } from "./shared";
 
 const optionImageFields = [
   defineField({ name: "alt", title: "Alt text", type: "string" }),
@@ -18,13 +19,18 @@ export const configuratorSettings = defineType({
     { name: "ballistic", title: "Ballistic package" },
   ],
   fields: [
+    usdPriceField("baseBuildPrice", "Base build price", {
+      group: "general",
+      description:
+        "Starting price before options. Use 0 if platform price is the base.",
+      initialValue: 0,
+    }),
     defineField({
       name: "baseBuildCents",
-      title: "Base build price (cents)",
+      title: "Base build price (legacy cents)",
       type: "number",
       group: "general",
-      description: "Starting price before options. Use 0 if platform price is the base.",
-      initialValue: 0,
+      hidden: true,
     }),
     defineField({
       name: "platformDefaults",
@@ -102,12 +108,7 @@ export const configuratorSettings = defineType({
               validation: (rule) => rule.required(),
             }),
             defineField({ name: "notes", title: "Notes", type: "text", rows: 2 }),
-            defineField({
-              name: "priceCents",
-              title: "Price add-on (cents)",
-              type: "number",
-              initialValue: 0,
-            }),
+            usdPriceField("price", "Price add-on", { initialValue: 0 }),
             defineField({
               name: "platformSlugs",
               title: "Available on platforms",
@@ -149,12 +150,7 @@ export const configuratorSettings = defineType({
             defineField({ name: "code", title: "Color code", type: "string" }),
             defineField({ name: "description", title: "Description", type: "string" }),
             defineField({ name: "bestFor", title: "Best for", type: "string" }),
-            defineField({
-              name: "priceCents",
-              title: "Price add-on (cents)",
-              type: "number",
-              initialValue: 0,
-            }),
+            usdPriceField("price", "Price add-on", { initialValue: 0 }),
             defineField({
               name: "image",
               title: "Swatch image",
@@ -195,12 +191,7 @@ export const configuratorSettings = defineType({
             defineField({ name: "tube", title: "Tube diameter", type: "string" }),
             defineField({ name: "msrp", title: "MSRP label", type: "string" }),
             defineField({ name: "notes", title: "Notes", type: "string" }),
-            defineField({
-              name: "priceCents",
-              title: "Package price (cents)",
-              type: "number",
-              validation: (rule) => rule.required(),
-            }),
+            usdPriceField("price", "Package price", { required: true }),
             defineField({
               name: "image",
               title: "Product image",
@@ -249,12 +240,7 @@ export const configuratorSettings = defineType({
         defineField({ name: "optionId", title: "ID", type: "string" }),
         defineField({ name: "label", title: "Label", type: "string" }),
         defineField({ name: "description", title: "Description", type: "text", rows: 3 }),
-        defineField({
-          name: "priceCents",
-          title: "Price (cents)",
-          type: "number",
-          initialValue: 0,
-        }),
+        usdPriceField("price", "Price", { initialValue: 0 }),
         defineField({
           name: "image",
           title: "Image",
@@ -281,11 +267,7 @@ export const configuratorSettings = defineType({
           type: "array",
           of: [{ type: "string" }],
         }),
-        defineField({
-          name: "priceCents",
-          title: "Price (cents)",
-          type: "number",
-        }),
+        usdPriceField("price", "Price"),
         defineField({
           name: "image",
           title: "Hero image",
@@ -324,11 +306,7 @@ export const configuratorSettings = defineType({
           type: "array",
           of: [{ type: "string" }],
         }),
-        defineField({
-          name: "priceCents",
-          title: "Price (cents)",
-          type: "number",
-        }),
+        usdPriceField("price", "Price"),
         defineField({
           name: "noneLabel",
           title: "Decline label",

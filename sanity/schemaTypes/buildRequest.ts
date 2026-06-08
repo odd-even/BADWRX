@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { usdPriceField } from "./shared";
 
 export const buildRequest = defineType({
   name: "buildRequest",
@@ -96,10 +97,12 @@ export const buildRequest = defineType({
       title: "Payment method",
       type: "string",
     }),
+    usdPriceField("totalPrice", "Estimated total"),
     defineField({
       name: "totalCents",
-      title: "Estimated total (cents)",
+      title: "Estimated total (legacy cents)",
       type: "number",
+      hidden: true,
     }),
     defineField({
       name: "totalFormatted",
@@ -121,10 +124,12 @@ export const buildRequest = defineType({
               title: "Option",
               type: "string",
             }),
+            usdPriceField("price", "Price"),
             defineField({
               name: "priceCents",
-              title: "Price (cents)",
+              title: "Price (legacy cents)",
               type: "number",
+              hidden: true,
             }),
           ],
           preview: {

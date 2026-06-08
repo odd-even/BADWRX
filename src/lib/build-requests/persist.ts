@@ -7,6 +7,7 @@ import {
   getSanityWriteClient,
   isSanityWriteConfigured,
 } from "@/sanity/lib/serverClient";
+import { centsToSanityPrice } from "@/sanity/lib/price";
 
 /**
  * Persist a build request to Sanity as the durable source of truth.
@@ -39,7 +40,7 @@ export async function persistBuildRequestToSanity(
       postalCode: payload.contact.postalCode,
       notes: payload.contact.notes || undefined,
       paymentMethod: payload.paymentMethod,
-      totalCents: payload.totalCents,
+      totalPrice: centsToSanityPrice(payload.totalCents),
       totalFormatted: payload.totalFormatted,
       selections: payload.selections.map((line) => ({
         _key: line.stepKey,
@@ -47,7 +48,7 @@ export async function persistBuildRequestToSanity(
         stepKey: line.stepKey,
         stepTitle: line.stepTitle,
         optionLabel: line.optionLabel,
-        priceCents: line.priceCents,
+        price: centsToSanityPrice(line.priceCents),
       })),
     });
     return doc._id;
