@@ -8,6 +8,14 @@ export const metadata: Metadata = {
   },
   description:
     "Precision rifles built to order by Badger Rifleworks (BADWRX). Hand test-fired before delivery with a ballistics table and rifle-specific ammunition data.",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({
