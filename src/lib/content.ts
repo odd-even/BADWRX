@@ -4,8 +4,12 @@ import { defaultSiteSettings } from "@/data/site-settings";
 import type { Course, Rifle, SiteSettings } from "@/lib/types";
 import { isSanityConfigured } from "@/sanity/env";
 import { client } from "@/sanity/lib/client";
-import { mapCourse, mapRifle, mapSiteSettings } from "@/sanity/lib/map";
+import { mapCourse, mapRifle, mapSiteSettings, normalizeHeadlines } from "@/sanity/lib/map";
+import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
+import type { ConfiguratorData } from "@/lib/configurator/types";
+import { mapConfiguratorData } from "@/sanity/lib/map-configurator";
 import {
+  configuratorSettingsQuery,
   courseBySlugQuery,
   coursesQuery,
   rifleBySlugQuery,
@@ -26,6 +30,21 @@ export async function getAllRifles(): Promise<Rifle[]> {
 export async function getFeaturedRifles(): Promise<Rifle[]> {
   const rifles = await getAllRifles();
   return rifles.filter((r) => r.featured);
+}
+
+export async function getConfiguratorData(): Promise<ConfiguratorData> {
+  const fallback = buildConfiguratorDataFromSource();
+  if (!isSanityConfigured()) return fallback;
+  try {
+    const [settings, rifleDocs] = await Promise.all([
+      client.fetch(configuratorSettingsQuery),
+      client.fetch(riflesQuery),
+    ]);
+    if (!settings) return fallback;
+    return mapConfiguratorData(settings, rifleDocs ?? []);
+  } catch {
+    return fallback;
+  }
 }
 
 export async function getRifleBySlug(slug: string): Promise<Rifle | undefined> {
@@ -61,17 +80,20 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
 function normalizeHomeHero(
   hero: SiteSettings["homeHero"],
 ): SiteSettings["homeHero"] {
+  const headlines = normalizeHeadlines(hero.headlines as Parameters<typeof normalizeHeadlines>[0]);
+  const normalized = { ...hero, headlines };
+
   if (
-    hero.headlines?.some((item) => {
+    headlines.some((item) => {
       if (Array.isArray(item)) {
         return /^(Crafted|Engineered|Built)$/i.test(item[0] ?? "");
       }
       return /^(Crafted|Engineered|Built)\s/i.test(item);
     })
   ) {
-    return { ...hero, headlinePrefix: "" };
+    return { ...normalized, headlinePrefix: "" };
   }
-  return hero;
+  return normalized;
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {

@@ -1,16 +1,18 @@
-import { configuratorSteps, stepKeys } from "@/data/configurator-options";
+import { stepKeys } from "@/data/configurator-options";
 import { showsInSpecPreview } from "@/lib/configurator/spec-preview";
-import type { BuildConfiguration } from "@/lib/types";
+import type { BuildConfiguration, ConfigStep } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
 
 interface SpecPreviewGridProps {
   config: BuildConfiguration;
+  steps: ConfigStep[];
   className?: string;
   variant?: "live" | "review";
 }
 
 export function SpecPreviewGrid({
   config,
+  steps,
   className = "",
   variant = "live",
 }: SpecPreviewGridProps) {
@@ -31,7 +33,7 @@ export function SpecPreviewGrid({
       {stepKeys.map((key) => {
         const option = config[key];
         if (!option || !showsInSpecPreview(key, option)) return null;
-        const stepTitle = configuratorSteps.find((step) => step.id === key)?.title;
+        const stepTitle = steps.find((step) => step.id === key)?.title;
         return (
           <div key={key} className="min-w-0">
             <div className="overflow-hidden border border-white/10">

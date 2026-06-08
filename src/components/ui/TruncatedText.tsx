@@ -68,17 +68,25 @@ export function TruncatedText({
         {text}
       </p>
       {showMore && (
-        <button
-          type="button"
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             setOpen(true);
           }}
-          className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-red transition hover:text-red-dark"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              setOpen(true);
+            }
+          }}
+          className="mt-1.5 inline-block cursor-pointer text-[10px] font-semibold uppercase tracking-widest text-red transition hover:text-red-dark"
         >
           More
-        </button>
+        </span>
       )}
 
       {open && (

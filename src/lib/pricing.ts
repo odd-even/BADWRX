@@ -1,11 +1,14 @@
 import { stepKeys, type StepKey } from "@/data/configurator-options";
-import { sourceData } from "@/lib/source-data";
+import type { ConfiguratorPricing } from "@/lib/configurator/types";
+import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
 import type { BuildConfiguration } from "@/lib/types";
 
-export const optionPriceCents: Record<string, number> =
-  sourceData.pricing.optionPriceCents;
+const defaultPricing = buildConfiguratorDataFromSource().pricing;
 
-export const baseBuildCents = sourceData.pricing.baseBuildCents;
+export const optionPriceCents: Record<string, number> =
+  defaultPricing.optionPriceCents;
+
+export const baseBuildCents = defaultPricing.baseBuildCents;
 
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -15,7 +18,10 @@ export function formatPrice(cents: number): string {
   }).format(cents / 100);
 }
 
-export function formatPriceDelta(cents: number, stepKey?: StepKey): string | null {
+export function formatPriceDelta(
+  cents: number,
+  stepKey?: StepKey,
+): string | null {
   if (cents === 0 && stepKey === "caliber") return null;
   if (cents === 0) return "Included";
   return cents > 0 ? `+${formatPrice(cents)}` : formatPrice(cents);
@@ -27,16 +33,22 @@ export function formatLineItemPrice(cents: number, stepKey?: StepKey): string {
   return formatPrice(cents);
 }
 
-export function getOptionPrice(optionId: string): number {
-  return optionPriceCents[optionId] ?? 0;
+export function getOptionPrice(
+  optionId: string,
+  pricing: ConfiguratorPricing = defaultPricing,
+): number {
+  return pricing.optionPriceCents[optionId] ?? 0;
 }
 
-export function computeBuildTotal(config: BuildConfiguration): number {
-  let total = baseBuildCents;
+export function computeBuildTotal(
+  config: BuildConfiguration,
+  pricing: ConfiguratorPricing = defaultPricing,
+): number {
+  let total = pricing.baseBuildCents;
   for (const key of stepKeys) {
     const option = config[key];
     if (option) {
-      total += getOptionPrice(option.id);
+      total += getOptionPrice(option.id, pricing);
     }
   }
   return total;
@@ -44,6 +56,7 @@ export function computeBuildTotal(config: BuildConfiguration): number {
 
 export function computeBuildLineItems(
   config: BuildConfiguration,
+  pricing: ConfiguratorPricing = defaultPricing,
 ): { key: StepKey; label: string; cents: number }[] {
   const items: { key: StepKey; label: string; cents: number }[] = [];
 
@@ -53,10 +66,9 @@ export function computeBuildLineItems(
     items.push({
       key,
       label: option.label,
-      cents: getOptionPrice(option.id),
+      cents: getOptionPrice(option.id, pricing),
     });
   }
 
   return items;
 }
-

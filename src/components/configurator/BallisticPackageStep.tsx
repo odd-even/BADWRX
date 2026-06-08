@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import type { ConfigOption } from "@/lib/types";
+import type { ConfiguratorPricing, PackageDetails } from "@/lib/configurator/types";
 import { images } from "@/lib/images";
-import { sourceData } from "@/lib/source-data";
 import { formatPriceDelta, getOptionPrice } from "@/lib/pricing";
 
 interface BallisticPackageStepProps {
+  details: PackageDetails;
+  pricing: ConfiguratorPricing;
   packageOption: ConfigOption;
   noneOption: ConfigOption;
   selectedId: string | undefined;
@@ -19,15 +21,16 @@ function splitItem(item: string): { title: string; detail: string } {
 }
 
 export function BallisticPackageStep({
+  details,
+  pricing,
   packageOption,
   noneOption,
   selectedId,
   onSelect,
 }: BallisticPackageStepProps) {
-  const ballistic = sourceData.configurator.ballistic;
-  const deliverables = ballistic.deliverables.map(splitItem);
+  const deliverables = details.items.map(splitItem);
   const priceLabel = formatPriceDelta(
-    getOptionPrice(packageOption.id),
+    getOptionPrice(packageOption.id, pricing),
     "ballisticPackage",
   );
   const packageSelected = selectedId === packageOption.id;
@@ -39,7 +42,7 @@ export function BallisticPackageStep({
         <div className="relative aspect-[16/9] w-full bg-black-light">
           <Image
             src={images.rifle.studioCropped}
-            alt={packageOption.image?.alt ?? ballistic.label}
+            alt={packageOption.image?.alt ?? details.label}
             fill
             className="object-cover object-[center_26%]"
             sizes="(max-width: 1024px) 100vw, 640px"
@@ -59,22 +62,22 @@ export function BallisticPackageStep({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 from-0% to-transparent to-[30%]" />
           <div className="absolute bottom-0 left-0 p-6 sm:p-8">
             <p className="text-xs uppercase tracking-widest text-red">
-              {ballistic.label}
+              {details.label}
             </p>
             <h3 className="mt-1 text-3xl text-white sm:text-4xl">
-              {ballistic.headline}
+              {details.headline}
             </h3>
           </div>
         </div>
 
         <div className="p-6 sm:p-8">
           <p className="text-sm leading-relaxed text-white-muted">
-            {ballistic.description}
+            {details.description}
           </p>
 
-          {ballistic.howItWorks && (
+          {details.howItWorks && (
             <p className="mt-6 text-sm leading-relaxed text-white-muted">
-              {ballistic.howItWorks}
+              {details.howItWorks}
             </p>
           )}
 
@@ -117,7 +120,7 @@ export function BallisticPackageStep({
         >
           <div>
             <p className="font-medium text-white">
-              Add the {ballistic.label}
+              Add the {details.label}
             </p>
             {priceLabel && (
               <p className="mt-1 text-xs uppercase tracking-widest text-red">

@@ -4,17 +4,23 @@ export const rifle = defineType({
   name: "rifle",
   title: "Rifle Build",
   type: "document",
+  groups: [
+    { name: "content", title: "Content", default: true },
+    { name: "configurator", title: "Configurator" },
+  ],
   fields: [
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "content",
       options: { source: "title", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
@@ -22,12 +28,14 @@ export const rifle = defineType({
       name: "tagline",
       title: "Tagline",
       type: "string",
+      group: "content",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "category",
       title: "Category",
       type: "string",
+      group: "content",
       options: {
         list: [
           { title: "Hunting", value: "hunting" },
@@ -42,17 +50,20 @@ export const rifle = defineType({
       name: "featured",
       title: "Featured on home page",
       type: "boolean",
+      group: "content",
       initialValue: false,
     }),
     defineField({
       name: "startingAt",
       title: "Starting price",
       type: "string",
+      group: "content",
     }),
     defineField({
       name: "description",
       title: "Description",
       type: "text",
+      group: "content",
       rows: 5,
       validation: (rule) => rule.required(),
     }),
@@ -60,6 +71,7 @@ export const rifle = defineType({
       name: "heroImage",
       title: "Hero image",
       type: "image",
+      group: "content",
       options: { hotspot: true },
       fields: [
         defineField({ name: "alt", title: "Alt text", type: "string" }),
@@ -70,6 +82,7 @@ export const rifle = defineType({
       name: "gallery",
       title: "Gallery",
       type: "array",
+      group: "content",
       of: [
         {
           type: "image",
@@ -85,6 +98,7 @@ export const rifle = defineType({
       name: "specs",
       title: "Specifications",
       type: "object",
+      group: "content",
       fields: [
         defineField({ name: "action", title: "Action", type: "string" }),
         defineField({ name: "caliber", title: "Caliber", type: "string" }),
@@ -104,7 +118,61 @@ export const rifle = defineType({
       name: "highlights",
       title: "Build highlights",
       type: "array",
+      group: "content",
       of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "primaryUse",
+      title: "Primary use",
+      type: "string",
+      group: "configurator",
+      description: "Shown in the build configurator (e.g. Ultralight Backcountry)",
+    }),
+    defineField({
+      name: "chassis",
+      title: "Chassis / platform",
+      type: "string",
+      group: "configurator",
+      description: "Stock or chassis name for configurator specs",
+    }),
+    defineField({
+      name: "actionName",
+      title: "Action name",
+      type: "string",
+      group: "configurator",
+      description: "Action label for configurator specs",
+    }),
+    defineField({
+      name: "barrelSummary",
+      title: "Barrel summary",
+      type: "string",
+      group: "configurator",
+      description: 'Short barrel line for configurator (e.g. 22" Carbon Wrapped)',
+    }),
+    defineField({
+      name: "configuratorPriceCents",
+      title: "Configurator price (cents)",
+      type: "number",
+      group: "configurator",
+      description: "Platform price shown in the build configurator",
+    }),
+    defineField({
+      name: "showInConfigurator",
+      title: "Show in configurator",
+      type: "boolean",
+      group: "configurator",
+      initialValue: true,
+    }),
+    defineField({
+      name: "configuratorImage",
+      title: "Configurator card image",
+      type: "image",
+      group: "configurator",
+      options: { hotspot: true },
+      fields: [
+        defineField({ name: "alt", title: "Alt text", type: "string" }),
+      ],
+      description: "Optional override; defaults to hero image",
     }),
   ],
   preview: {

@@ -7,7 +7,14 @@ export const riflesQuery = `*[_type == "rifle"] | order(title asc) {
   featured,
   startingAt,
   description,
+  primaryUse,
+  chassis,
+  actionName,
+  barrelSummary,
+  configuratorPriceCents,
+  showInConfigurator,
   heroImage { asset->{ _id, url }, alt },
+  configuratorImage { asset->{ _id, url }, alt },
   gallery[] { asset->{ _id, url }, alt, caption },
   specs,
   highlights
@@ -22,7 +29,14 @@ export const rifleBySlugQuery = `*[_type == "rifle" && slug.current == $slug][0]
   featured,
   startingAt,
   description,
+  primaryUse,
+  chassis,
+  actionName,
+  barrelSummary,
+  configuratorPriceCents,
+  showInConfigurator,
   heroImage { asset->{ _id, url }, alt },
+  configuratorImage { asset->{ _id, url }, alt },
   gallery[] { asset->{ _id, url }, alt, caption },
   specs,
   highlights
@@ -34,8 +48,16 @@ export const coursesQuery = `*[_type == "course"] | order(title asc) {
   "slug": slug.current,
   level,
   price,
+  tagline,
+  duration,
+  format,
   description,
   topics,
+  outcomes,
+  curriculum[]{ title, detail },
+  audience,
+  includes,
+  heroImage { asset->{ _id, url }, alt },
   featured
 }`;
 
@@ -45,8 +67,16 @@ export const courseBySlugQuery = `*[_type == "course" && slug.current == $slug][
   "slug": slug.current,
   level,
   price,
+  tagline,
+  duration,
+  format,
   description,
   topics,
+  outcomes,
+  curriculum[]{ title, detail },
+  audience,
+  includes,
+  heroImage { asset->{ _id, url }, alt },
   featured
 }`;
 
@@ -61,9 +91,80 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   deliveryPackage,
   trustMarqueeItems,
   homeHero,
+  homePlatforms,
+  packageCta,
+  homeIntro,
+  homePillars,
   fieldTested,
   unrelenting,
   testimonial,
+  testimonials,
   contactSection,
   aboutPage
+}`;
+
+export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] {
+  baseBuildCents,
+  platformDefaults[]{ platformSlug, trigger, muzzleBrake },
+  stepCopy,
+  calibers[]{
+    optionId,
+    label,
+    notes,
+    priceCents,
+    platformSlugs
+  },
+  finishes[]{
+    optionId,
+    label,
+    code,
+    description,
+    bestFor,
+    priceCents,
+    image { asset->{ _id, url }, alt }
+  },
+  optics[]{
+    optionId,
+    brand,
+    model,
+    magnification,
+    focalPlane,
+    reticle,
+    tube,
+    msrp,
+    notes,
+    priceCents,
+    image { asset->{ _id, url }, alt }
+  },
+  opticsConsult,
+  opticsNone,
+  rings{
+    optionId,
+    label,
+    description,
+    priceCents,
+    image { asset->{ _id, url }, alt }
+  },
+  basecamp{
+    optionId,
+    label,
+    headline,
+    description,
+    items,
+    priceCents,
+    image { asset->{ _id, url }, alt },
+    noneLabel,
+    noneDescription
+  },
+  ballistic{
+    optionId,
+    label,
+    headline,
+    description,
+    howItWorks,
+    deliverables,
+    priceCents,
+    noneLabel,
+    noneDescription
+  }
 }`;

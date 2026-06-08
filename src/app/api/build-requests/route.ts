@@ -5,6 +5,7 @@ import { persistBuildRequestToSanity } from "@/lib/build-requests/persist";
 import { sendBuildRequestEmail } from "@/lib/build-requests/notify";
 import { validateBuildSubmissionBody } from "@/lib/build-requests/validate";
 import { isSquareConfigured } from "@/lib/square/config";
+import { getConfiguratorData } from "@/lib/content";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -20,9 +21,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validated.error }, { status: 400 });
   }
 
+  const configuratorData = await getConfiguratorData();
   const payload = createBuildRequestPayload(
     validated.config,
     validated.contact,
+    configuratorData.steps,
+    configuratorData.pricing,
   );
 
   if (!payload.isComplete) {

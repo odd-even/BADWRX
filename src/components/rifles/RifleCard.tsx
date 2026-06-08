@@ -15,7 +15,9 @@ export function RifleCard({
   priority = false,
   compact = false,
 }: RifleCardProps) {
-  const isCroppedHero = rifle.heroImage.url.includes("cropped");
+  const isTightHero =
+    rifle.heroImage.url.includes("cropped") ||
+    rifle.heroImage.url.includes("copy.webp");
 
   return (
     <article className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
@@ -31,7 +33,7 @@ export function RifleCard({
             fill
             priority={priority}
             className={
-              isCroppedHero
+              isTightHero
                 ? "object-contain bg-black-light p-2 transition duration-500 group-hover:scale-[1.02]"
                 : "object-contain bg-black-light p-4 transition duration-500 group-hover:scale-[1.02]"
             }

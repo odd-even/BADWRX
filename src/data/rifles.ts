@@ -1,6 +1,6 @@
 import { sourceData } from "@/lib/source-data";
 import type { Rifle, RifleCategory } from "@/lib/types";
-import { platformImage, riflePlaceholder, riflePlaceholderAlt } from "@/lib/images";
+import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
 
 const categoryBySlug: Record<string, RifleCategory> = {
   specter: "hunting",
@@ -25,14 +25,14 @@ function formatStartingAt(slug: string): string | undefined {
 
 function rifleImage(caption?: string) {
   return {
-    url: riflePlaceholder,
+    url: configuratorPlaceholder,
     alt: riflePlaceholderAlt,
     ...(caption ? { caption } : {}),
   };
 }
 
 const heroImage = {
-  url: platformImage,
+  url: configuratorPlaceholder,
   alt: riflePlaceholderAlt,
 };
 

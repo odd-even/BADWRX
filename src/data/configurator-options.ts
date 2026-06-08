@@ -1,8 +1,10 @@
 import { sourceData } from "@/lib/source-data";
 import type { ConfigOption, ConfigStep } from "@/lib/types";
 import {
-  placeholderImage,
+  basecampPackageImage,
+  configuratorPlaceholder,
   platformImages,
+  ringsImage,
   scopeImageForMagnification,
   stockPaintImages,
 } from "@/lib/images";
@@ -35,7 +37,7 @@ export const configuratorSteps: ConfigStep[] = [
           trigger: defaults?.trigger,
         },
         image: {
-          url: platformImages[r.slug] ?? placeholderImage("actions", "action.png"),
+          url: platformImages[r.slug] ?? configuratorPlaceholder,
           alt: `${r.title} platform`,
         },
       };
@@ -63,11 +65,9 @@ export const configuratorSteps: ConfigStep[] = [
       id: c.id,
       label: c.label,
       description: `${c.description}. Best for ${c.bestFor}.`,
-      specs: { stockPaint: c.label, code: c.code },
+      specs: { stockPaint: c.label },
       image: {
-        url:
-          stockPaintImages[c.id] ??
-          placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
+        url: stockPaintImages[c.id] ?? configuratorPlaceholder,
         alt: `${c.label} finish`,
       },
     })),
@@ -123,7 +123,7 @@ export const configuratorSteps: ConfigStep[] = [
         description: cfg.rings.description,
         specs: { rings: cfg.rings.label, tube: "30mm" },
         image: {
-          url: placeholderImage("rings", "348525-300147_main.avif"),
+          url: ringsImage,
           alt: "Hawkins precision rings",
         },
       },
@@ -148,7 +148,7 @@ export const configuratorSteps: ConfigStep[] = [
         ].join("\n"),
         specs: { basecampPackage: cfg.basecamp.label },
         image: {
-          url: placeholderImage("cases", "Mockup.png"),
+          url: basecampPackageImage,
           alt: cfg.basecamp.label,
         },
       },

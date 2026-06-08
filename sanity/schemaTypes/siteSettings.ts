@@ -1,99 +1,218 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
+import { pillarFields, sectionFields } from "./shared";
 
 export const siteSettings = defineType({
   name: "siteSettings",
   title: "Site Settings",
   type: "document",
+  groups: [
+    { name: "brand", title: "Brand", default: true },
+    { name: "home", title: "Home page" },
+    { name: "about", title: "About page" },
+  ],
   fields: [
-    defineField({ name: "name", title: "Business name", type: "string" }),
-    defineField({ name: "short", title: "Short name / acronym", type: "string" }),
-    defineField({ name: "tagline", title: "Tagline", type: "string" }),
-    defineField({ name: "email", title: "Contact email", type: "string" }),
-    defineField({ name: "partnerBarrels", title: "Barrel partner", type: "string" }),
-    defineField({ name: "partnerOptics", title: "Optics partner", type: "string" }),
+    defineField({
+      name: "name",
+      title: "Business name",
+      type: "string",
+      group: "brand",
+    }),
+    defineField({
+      name: "short",
+      title: "Short name / acronym",
+      type: "string",
+      group: "brand",
+    }),
+    defineField({ name: "tagline", title: "Tagline", type: "string", group: "brand" }),
+    defineField({ name: "email", title: "Contact email", type: "string", group: "brand" }),
+    defineField({
+      name: "partnerBarrels",
+      title: "Barrel partner",
+      type: "string",
+      group: "brand",
+    }),
+    defineField({
+      name: "partnerOptics",
+      title: "Optics partner",
+      type: "string",
+      group: "brand",
+    }),
     defineField({
       name: "buildPromise",
       title: "Build promise",
       type: "text",
       rows: 3,
+      group: "brand",
     }),
     defineField({
       name: "deliveryPackage",
       title: "Delivery package copy",
       type: "text",
       rows: 3,
+      group: "brand",
     }),
     defineField({
       name: "trustMarqueeItems",
       title: "Trust bar items",
       type: "array",
+      group: "brand",
       of: [{ type: "string" }],
+      description: "Scrolling partner badges on the home page",
     }),
+
     defineField({
       name: "homeHero",
-      title: "Home — hero",
+      title: "Hero banner",
       type: "object",
+      group: "home",
       fields: [
         defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
         defineField({
           name: "headlinePrefix",
-          title: "Hero headline prefix",
+          title: "Headline prefix (legacy)",
           type: "string",
-          description: 'Fixed opening word(s), e.g. "Crafted "',
+          description: "Leave empty when using rotating phrases below",
         }),
         defineField({
           name: "headlines",
-          title: "Hero headline suffixes",
+          title: "Rotating headline phrases",
           type: "array",
-          of: [{ type: "string" }],
-          description: "Rotating endings after the prefix",
+          description:
+            "Each phrase rotates on the hero. Add one row per line (e.g. Crafted → Without → Compromise).",
+          of: [
+            defineArrayMember({
+              type: "object",
+              name: "headlinePhrase",
+              fields: [
+                defineField({
+                  name: "lines",
+                  title: "Lines",
+                  type: "array",
+                  of: [{ type: "string" }],
+                  validation: (rule) => rule.min(1),
+                }),
+              ],
+              preview: {
+                select: { lines: "lines" },
+                prepare({ lines }) {
+                  const parts = Array.isArray(lines) ? lines : [];
+                  return { title: parts.join(" / ") || "Headline phrase" };
+                },
+              },
+            }),
+          ],
         }),
         defineField({ name: "headline", title: "Headline (legacy)", type: "string" }),
-        defineField({ name: "subheadline", title: "Subheadline", type: "text", rows: 4 }),
+        defineField({
+          name: "subheadline",
+          title: "Subheadline",
+          type: "text",
+          rows: 4,
+        }),
+      ],
+    }),
+    defineField({
+      name: "homePlatforms",
+      title: "Platforms section",
+      type: "object",
+      group: "home",
+      fields: sectionFields(),
+    }),
+    defineField({
+      name: "packageCta",
+      title: "Basecamp package CTA blurb",
+      type: "text",
+      rows: 3,
+      group: "home",
+    }),
+    defineField({
+      name: "homeIntro",
+      title: "Who we build for",
+      type: "object",
+      group: "home",
+      fields: [
+        defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
+        defineField({
+          name: "body",
+          title: "Body",
+          type: "text",
+          rows: 4,
+        }),
+      ],
+    }),
+    defineField({
+      name: "homePillars",
+      title: "Weight / accuracy / durability pillars",
+      type: "array",
+      group: "home",
+      of: [
+        defineArrayMember({
+          type: "object",
+          fields: pillarFields(),
+          preview: {
+            select: { title: "title" },
+          },
+        }),
       ],
     }),
     defineField({
       name: "fieldTested",
-      title: "Home — field tested",
+      title: "Field proven section",
       type: "object",
-      fields: [
-        defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
-        defineField({ name: "title", title: "Title", type: "string" }),
-        defineField({ name: "body", title: "Body", type: "text", rows: 4 }),
-      ],
+      group: "home",
+      fields: sectionFields(),
     }),
     defineField({
       name: "unrelenting",
-      title: "Home — unrelenting performance",
+      title: "Ballistic package section",
       type: "object",
-      fields: [
-        defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
-        defineField({ name: "title", title: "Title", type: "string" }),
-        defineField({ name: "body", title: "Body", type: "text", rows: 4 }),
-      ],
+      group: "home",
+      fields: sectionFields(),
     }),
     defineField({
       name: "testimonial",
-      title: "Home — testimonial",
+      title: "Featured testimonial (legacy)",
       type: "object",
+      group: "home",
       fields: [
         defineField({ name: "quote", title: "Quote", type: "text", rows: 4 }),
         defineField({ name: "author", title: "Author", type: "string" }),
       ],
     }),
     defineField({
+      name: "testimonials",
+      title: "Testimonial carousel",
+      type: "array",
+      group: "home",
+      of: [
+        defineArrayMember({
+          type: "object",
+          fields: [
+            defineField({ name: "quote", title: "Quote", type: "text", rows: 4 }),
+            defineField({ name: "author", title: "Author", type: "string" }),
+          ],
+          preview: {
+            select: { title: "author", subtitle: "quote" },
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: "contactSection",
-      title: "Home — contact section",
+      title: "Contact / quote section",
       type: "object",
+      group: "home",
       fields: [
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({ name: "body", title: "Body", type: "text", rows: 4 }),
       ],
     }),
+
     defineField({
       name: "aboutPage",
       title: "About page",
       type: "object",
+      group: "about",
       fields: [
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({
@@ -113,16 +232,14 @@ export const siteSettings = defineType({
         }),
         defineField({
           name: "pillars",
-          title: "Pillars",
+          title: "Story pillars",
           type: "array",
           of: [
-            {
+            defineArrayMember({
               type: "object",
-              fields: [
-                defineField({ name: "title", title: "Title", type: "string" }),
-                defineField({ name: "body", title: "Body", type: "text", rows: 3 }),
-              ],
-            },
+              fields: pillarFields(),
+              preview: { select: { title: "title" } },
+            }),
           ],
         }),
         defineField({

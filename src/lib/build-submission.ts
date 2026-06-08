@@ -1,5 +1,7 @@
-import { configuratorSteps, stepKeys, type StepKey } from "@/data/configurator-options";
+import { stepKeys, type StepKey } from "@/data/configurator-options";
+import type { ConfigStep } from "@/lib/types";
 import type { BuildConfiguration } from "@/lib/types";
+import type { ConfiguratorPricing } from "@/lib/configurator/types";
 import {
   computeBuildLineItems,
   computeBuildTotal,
@@ -25,25 +27,27 @@ export interface BuildSubmission {
 
 export function compileBuildSubmission(
   config: BuildConfiguration,
+  steps: ConfigStep[],
+  pricing: ConfiguratorPricing,
 ): BuildSubmission {
   const selections: BuildSubmissionLine[] = stepKeys
     .map((key) => {
       const option = config[key];
       if (!option) return null;
-      const step = configuratorSteps.find((s) => s.id === key);
+      const step = steps.find((s) => s.id === key);
       if (!step) return null;
       return {
         stepKey: key,
         stepTitle: step.title,
         optionLabel: option.label,
         specs: option.specs ?? {},
-        priceCents: getOptionPrice(option.id),
+        priceCents: getOptionPrice(option.id, pricing),
       };
     })
     .filter((line): line is BuildSubmissionLine => line !== null);
 
-  const lineItems = computeBuildLineItems(config);
-  const totalCents = computeBuildTotal(config);
+  const lineItems = computeBuildLineItems(config, pricing);
+  const totalCents = computeBuildTotal(config, pricing);
 
   return {
     selections,
@@ -100,9 +104,11 @@ export interface BuildRequestPayload extends BuildSubmission {
 export function createBuildRequestPayload(
   config: BuildConfiguration,
   contact: BuildContactDetails,
+  steps: ConfigStep[],
+  pricing: ConfiguratorPricing,
 ): BuildRequestPayload {
   return {
-    ...compileBuildSubmission(config),
+    ...compileBuildSubmission(config, steps, pricing),
     contact,
     paymentMethod: contact.paymentMethod,
     squareInvoice: {

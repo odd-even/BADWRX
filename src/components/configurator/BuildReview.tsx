@@ -1,4 +1,4 @@
-import type { BuildConfiguration } from "@/lib/types";
+import type { BuildConfiguration, ConfigStep } from "@/lib/types";
 import type { BuildContactDetails, BuildSubmission } from "@/lib/build-submission";
 import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 import { formatPrice, formatLineItemPrice } from "@/lib/pricing";
@@ -12,6 +12,7 @@ interface BuildReviewProps {
   onEdit: () => void;
   submitting?: boolean;
   submitError?: string | null;
+  steps: ConfigStep[];
 }
 
 export function BuildReview({
@@ -23,6 +24,7 @@ export function BuildReview({
   onEdit,
   submitting = false,
   submitError = null,
+  steps,
 }: BuildReviewProps) {
   return (
     <div className="space-y-10">
@@ -41,7 +43,7 @@ export function BuildReview({
         </p>
       </div>
 
-      <SpecPreviewGrid config={config} variant="review" />
+      <SpecPreviewGrid config={config} steps={steps} variant="review" />
 
       <div className="border border-white/10 bg-black-muted">
         <div className="border-b border-white/10 px-6 py-4">
@@ -55,7 +57,9 @@ export function BuildReview({
               </dt>
               <dd>
                 <p className="font-medium text-white">{line.optionLabel}</p>
-                {Object.entries(line.specs).map(([specKey, value]) => (
+                {Object.entries(line.specs)
+                  .filter(([specKey]) => specKey !== "code")
+                  .map(([specKey, value]) => (
                   <p key={specKey} className="mt-1 text-sm text-white-muted">
                     {value}
                   </p>

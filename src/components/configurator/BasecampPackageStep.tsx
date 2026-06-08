@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import type { ConfigOption } from "@/lib/types";
-import { sourceData } from "@/lib/source-data";
+import type { ConfiguratorPricing, PackageDetails } from "@/lib/configurator/types";
 import { formatPriceDelta, getOptionPrice } from "@/lib/pricing";
 
 interface BasecampPackageStepProps {
+  details: PackageDetails;
+  pricing: ConfiguratorPricing;
   packageOption: ConfigOption;
   noneOption: ConfigOption;
   selectedId: string | undefined;
@@ -18,15 +20,16 @@ function splitItem(item: string): { title: string; detail: string } {
 }
 
 export function BasecampPackageStep({
+  details,
+  pricing,
   packageOption,
   noneOption,
   selectedId,
   onSelect,
 }: BasecampPackageStepProps) {
-  const basecamp = sourceData.configurator.basecamp;
-  const items = basecamp.items.map(splitItem);
+  const items = details.items.map(splitItem);
   const priceLabel = formatPriceDelta(
-    getOptionPrice(packageOption.id),
+    getOptionPrice(packageOption.id, pricing),
     "basecampPackage",
   );
   const packageSelected = selectedId === packageOption.id;
@@ -47,10 +50,10 @@ export function BasecampPackageStep({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 from-0% to-transparent to-[30%]" />
             <div className="absolute bottom-0 left-0 p-6 sm:p-8">
               <p className="text-xs uppercase tracking-widest text-red">
-                {basecamp.label}
+                {details.label}
               </p>
               <h3 className="mt-1 text-3xl text-white sm:text-4xl">
-                {basecamp.headline}
+                {details.headline}
               </h3>
             </div>
           </div>
@@ -58,7 +61,7 @@ export function BasecampPackageStep({
 
         <div className="p-6 sm:p-8">
           <p className="text-sm leading-relaxed text-white-muted">
-            {basecamp.description}
+            {details.description}
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -100,7 +103,7 @@ export function BasecampPackageStep({
         >
           <div>
             <p className="font-medium text-white">
-              Add the {basecamp.label}
+              Add the {details.label}
             </p>
             {priceLabel && (
               <p className="mt-1 text-xs uppercase tracking-widest text-red">

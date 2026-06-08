@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Configurator } from "@/components/configurator/Configurator";
+import { getConfiguratorData } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Configure Your Rifle",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     "Configure a BADWRX platform, caliber, finish, optics, and packages. Submit your build for a quote.",
 };
 
-export default function ConfigurePage() {
+export default async function ConfigurePage() {
+  const configuratorData = await getConfiguratorData();
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
       <p className="text-xs uppercase tracking-widest text-red">Build configurator</p>
@@ -28,7 +31,7 @@ export default function ConfigurePage() {
             <p className="text-sm text-white-muted">Loading configurator…</p>
           }
         >
-          <Configurator />
+          <Configurator data={configuratorData} />
         </Suspense>
       </div>
     </div>

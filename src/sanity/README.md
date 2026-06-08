@@ -2,72 +2,40 @@
 
 BADWRX uses [Sanity](https://www.sanity.io) so you can edit site content in a browser — no code required.
 
-## What you can edit in `/studio`
+## Studio URL
 
-| Content type | What it controls |
-|---|---|
-| **Rifle Build** | Title, specs, descriptions, photos, featured flag |
-| **University Course** | Class title, price, topics, description |
-| **Site Settings** | Brand copy, home page sections, testimonial, trust bar, about page |
+- **Local:** http://localhost:3000/studio
+- **Production:** https://badwrx.vercel.app/studio
+
+Log in with the Sanity account that has access to project **imo49u00**.
+
+## What your client can edit
+
+| Section | Controls |
+|--------|----------|
+| **Site Settings** | Brand info, home hero phrases, platforms copy, pillars, ballistic section, testimonials, about page, contact blurb |
+| **Rifle Builds** | Title, specs, photos, descriptions, featured flag |
+| **University Courses** | Full course page — tagline, price, curriculum, outcomes, hero image |
+| **Build Configurator** | Platforms (via Rifle Builds), calibers, finishes/colors, optics, rings, Basecamp & Ballistic packages, pricing |
+| **Build Requests** | Read-only inbox of configurator submissions |
+
+**Still in code (not CMS):** merch products, contact form layout, configurator placeholder images until uploaded in Studio.
 
 ## One-time setup
 
-### 1. Create a Sanity project
-
-1. Go to [sanity.io/manage](https://www.sanity.io/manage) and create a project (free tier is fine)
-2. Note your **Project ID** and create a **Dataset** named `production`
-
-### 2. Add environment variables
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in:
-
-```
-NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
-NEXT_PUBLIC_SANITY_DATASET=production
-SANITY_API_TOKEN=your_editor_token
-```
-
-Get an **Editor** API token at:  
-Sanity Manage → your project → **API** → **Tokens** → Add token
-
-### 3. Seed the database with current content
-
-```bash
-npm run seed:sanity
-```
-
-This uploads rifle photos and creates all builds, courses, and site settings from the existing site copy.
-
-### 4. Start the site and open the studio
-
-```bash
-npm run dev
-```
-
-- **Website:** [http://localhost:3000](http://localhost:3000)
-- **Content Studio:** [http://localhost:3000/studio](http://localhost:3000/studio)
-
-## How it works
-
-- Pages fetch content from Sanity when env vars are configured
-- If Sanity is not configured, the site falls back to `src/data/*.ts` files automatically
-- After editing in the studio, click **Publish** — changes appear on the site (may need a refresh; production uses Sanity CDN)
+1. Create a project at [sanity.io/manage](https://www.sanity.io/manage)
+2. Copy `.env.example` → `.env.local` and fill in project ID, dataset, and an **Editor** API token
+3. Run `npm run seed:sanity` to load current site content
+4. Invite your client at **Manage → Members** with the **Editor** role
 
 ## Deploying
 
-Add the same three env vars to your hosting provider (e.g. Vercel).  
-Deploy the studio at `/studio` or run a separate Sanity-hosted studio — both work with this setup.
+Add these env vars to Vercel (Production):
 
-## Still in code (not CMS yet)
+```
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=
+```
 
-- Configurator options (`src/data/configurator-options.ts`)
-- Page layout and styling
-- Logo and theme colors
-
-These can be moved into Sanity later if needed.
+After editing in the studio, click **Publish** — changes appear on the live site after the next page load (CDN cache may take a minute).

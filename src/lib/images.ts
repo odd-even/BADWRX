@@ -27,13 +27,16 @@ export const images = {
   },
 } as const;
 
-/** Default rifle image for build cards, heroes, and galleries */
-export const riflePlaceholder = images.rifle.studio;
-
 export const riflePlaceholderAlt =
   "Custom precision bolt-action rifle with NightForce scope on black background";
 
 const configuratorBase = "/images/configurator";
+
+/** Trimmed rifle product shot — default for cards, builds gallery, and configurator options */
+export const configuratorPlaceholder = `${configuratorBase}/platform/${encodeURIComponent("IMG_0058 copy.webp")}`;
+
+/** Alias used by rifle cards, builds pages, and Sanity fallbacks */
+export const riflePlaceholder = configuratorPlaceholder;
 
 export type PlaceholderCategory =
   | "actions"
@@ -61,7 +64,7 @@ export function configuratorImage(subfolder: string, filename: string): string {
 }
 
 /** Platform hero in `_assets/configurator/platform/` */
-export const platformImage = `${configuratorBase}/platform/IMG_0058 copy.webp`;
+export const platformImage = configuratorPlaceholder;
 
 /** Platform hero images in `_assets/configurator/platform/` */
 export const platformImages: Record<string, string> = {
@@ -73,43 +76,25 @@ export const platformImages: Record<string, string> = {
   goat: platformImage,
 };
 
-/** Finish swatches in `_assets/configurator/camo/` */
-export const stockPaintImages: Record<string, string> = {
-  "vias-multicam-black": placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
-  "alpine-ghost": placeholderImage(
-    "camo",
-    "bondcambrushcam5monochromecontrasty50x50swatch.jpg.webp",
-  ),
-  "ridgeline-bronze": placeholderImage(
-    "camo",
+/** Camo swatch filenames in `_assets/configurator/camo/` keyed by finish option id */
+export const stockPaintFilenames: Record<string, string> = {
+  "vias-multicam-black": "bondcambrushcam550x50swatch.jpg",
+  "alpine-ghost": "bondcambrushcam5monochromecontrasty50x50swatch.jpg.webp",
+  "ridgeline-bronze":
     "Camouflage-Seamless-Pattern-Background-Graphics-41997134-2-580x386.jpg",
-  ),
-  "midnight-operator": placeholderImage("camo", "camo-seamless-pattern-v0-7or2osuu8bxb1.jpg"),
-  "tungsten-mountain": placeholderImage(
-    "camo",
-    "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
-  ),
-  "od-backcountry": placeholderImage(
-    "camo",
-    "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
-  ),
-  custom: placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
+  "midnight-operator": "camo-seamless-pattern-v0-7or2osuu8bxb1.jpg",
+  "tungsten-mountain": "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
+  "od-backcountry": "seamless-camo-patterns-v0-hvfuqglgfxac1.jpg.webp",
+  custom: "bondcambrushcam550x50swatch.jpg",
 };
 
-const scopeImages = {
-  lp: placeholderImage(
-    "scopes",
-    "ATACR_1-8x24_F1_C672_1_Edited__56363.1730990457.1280.1280__93511.png.webp",
-  ),
-  precision: placeholderImage(
-    "scopes",
-    "ATACR_7-35x56_F1_C613_1__92890.1730990339.1280.1280__96549.png.webp",
-  ),
-  precisionAlt: placeholderImage(
-    "scopes",
-    "ATACR_7-35x56_F1_C689_1__59276.1730990338.1280.1280__81359.png.webp",
-  ),
-} as const;
+/** Finish swatch images for the configurator color step */
+export const stockPaintImages: Record<string, string> = Object.fromEntries(
+  Object.entries(stockPaintFilenames).map(([id, filename]) => [
+    id,
+    placeholderImage("camo", filename),
+  ]),
+);
 
 const merchBase = "/images/merch";
 
@@ -118,19 +103,44 @@ export function merchImage(folder: string, filename: string): string {
   return `${merchBase}/${folder}/${encodeURIComponent(filename)}`;
 }
 
-/** Nightforce product photos in `_assets/configurator/scopes/` */
+/** Hawkins precision rings — configurator rings step */
+export const ringsImage = placeholderImage("rings", "348525-300147_main.avif");
+
+/** Basecamp hard case mockup — configurator package step */
+export const basecampPackageImage = placeholderImage("cases", "Mockup.png");
+
+/** Nightforce scope product photos in `_assets/configurator/scopes/` */
+export const scopeFilenames = {
+  lp: "ATACR_1-8x24_F1_C672_1_Edited__56363.1730990457.1280.1280__93511.png.webp",
+  precision:
+    "ATACR_7-35x56_F1_C613_1__92890.1730990339.1280.1280__96549.png.webp",
+  precisionAlt:
+    "ATACR_7-35x56_F1_C689_1__59276.1730990338.1280.1280__81359.png.webp",
+} as const;
+
+export type ScopeImageKey = keyof typeof scopeFilenames;
+
+export function scopeImageKeyForOptic(
+  magnification: string,
+  opticId?: string,
+): ScopeImageKey {
+  if (magnification.startsWith("1-") || magnification.startsWith("2-12")) {
+    return "lp";
+  }
+  if (opticId?.includes("dark-earth")) {
+    return "precisionAlt";
+  }
+  if (magnification.startsWith("6-") || magnification.startsWith("5-")) {
+    return "precisionAlt";
+  }
+  return "precision";
+}
+
+/** Scope image for a configurator optics option */
 export function scopeImageForMagnification(
   magnification: string,
   opticId?: string,
 ): string {
-  if (magnification.startsWith("1-") || magnification.startsWith("2-12")) {
-    return scopeImages.lp;
-  }
-  if (opticId?.includes("dark-earth")) {
-    return scopeImages.precisionAlt;
-  }
-  if (magnification.startsWith("6-") || magnification.startsWith("5-")) {
-    return scopeImages.precisionAlt;
-  }
-  return scopeImages.precision;
+  const key = scopeImageKeyForOptic(magnification, opticId);
+  return placeholderImage("scopes", scopeFilenames[key]);
 }

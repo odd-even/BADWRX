@@ -3,18 +3,15 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  configuratorSteps,
-  getPlatformOption,
-  stepKeys,
-  type StepKey,
-} from "@/data/configurator-options";
+import { stepKeys, type StepKey } from "@/data/configurator-options";
+import type { ConfiguratorData } from "@/lib/configurator/types";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
 import { TruncatedText } from "@/components/ui/TruncatedText";
 import { BuildReview } from "@/components/configurator/BuildReview";
 import { BallisticPackageStep } from "@/components/configurator/BallisticPackageStep";
 import { BasecampPackageStep } from "@/components/configurator/BasecampPackageStep";
+import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 import {
   compileBuildSubmission,
   type BuildContactDetails,
@@ -51,13 +48,96 @@ const swatchSteps: StepKey[] = ["stockPaint", "rings"];
  * companionSelection), so the rings step is hidden from configurator navigation.
  */
 const hiddenStepKeys: StepKey[] = ["rings"];
-const navigableStepIndices = configuratorSteps
-  .map((_, index) => index)
-  .filter((index) => !hiddenStepKeys.includes(stepKeys[index] as StepKey));
+
+/** Platform fields shown in the live spec sheet (fixed order) */
+const PLATFORM_SPEC_KEYS = [
+  "action",
+  "barrel",
+  "platform",
+  "use",
+  "muzzleBrake",
+  "trigger",
+] as const;
+
+/** Optics fields shown in the live spec sheet (fixed order) */
+const SCOPE_SPEC_KEYS = ["scope", "magnification", "reticle"] as const;
+
+/** Internal catalog fields — hide from the live spec sheet */
+const HIDDEN_SPEC_SHEET_KEYS = new Set(["code"]);
+
+function formatSpecLabel(key: string): string {
+  const labels: Record<string, string> = {
+    use: "Primary use",
+    muzzleBrake: "Muzzle device",
+  };
+  return labels[key] ?? key.replace(/([A-Z])/g, " $1").trim();
+}
+
+function splitSpecSummary(summary: Record<string, string>) {
+  const platform: [string, string][] = [];
+  const scope: [string, string][] = [];
+  const seen = new Set<string>();
+
+  for (const key of PLATFORM_SPEC_KEYS) {
+    const value = summary[key];
+    if (value) {
+      platform.push([key, value]);
+      seen.add(key);
+    }
+  }
+
+  for (const key of SCOPE_SPEC_KEYS) {
+    const value = summary[key];
+    if (value) {
+      scope.push([key, value]);
+      seen.add(key);
+    }
+  }
+
+  const other = Object.entries(summary).filter(
+    ([key]) => !seen.has(key) && !HIDDEN_SPEC_SHEET_KEYS.has(key),
+  );
+  return { platform, scope, other };
+}
+
+function SpecSheetGrid({
+  specs,
+  className = "",
+}: {
+  specs: [string, string][];
+  className?: string;
+}) {
+  if (specs.length === 0) return null;
+  return (
+    <dl className={`grid grid-cols-2 gap-x-4 gap-y-3 ${className}`.trim()}>
+      {specs.map(([key, value]) => (
+        <SpecSheetRow key={key} label={formatSpecLabel(key)} value={value} />
+      ))}
+    </dl>
+  );
+}
+
+function SpecSheetRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border-b border-white/5 pb-3">
+      <dt className="text-[10px] uppercase tracking-widest text-white-muted">
+        {label}
+      </dt>
+      <dd className="mt-1 text-sm text-white">{value}</dd>
+    </div>
+  );
+}
 
 type ConfiguratorPhase = "configure" | "review" | "submitted";
 
-function configToSummary(config: BuildConfiguration): Record<string, string> {
+interface ConfiguratorProps {
+  data: ConfiguratorData;
+}
+
+function configToSummary(
+  config: BuildConfiguration,
+  data: ConfiguratorData,
+): Record<string, string> {
   const summary: Record<string, string> = {};
   for (const key of stepKeys) {
     const option = config[key];
@@ -68,8 +148,12 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
       summary[key] = option.label;
     }
   }
-  const platformDefaults = platformSpecDefaults(config.platform?.id);
-  for (const [key, value] of Object.entries(platformDefaults)) {
+  const defaults = platformSpecDefaults(
+    config.platform?.id,
+    data.platformDefaults,
+    config.platform?.specs?.action,
+  );
+  for (const [key, value] of Object.entries(defaults)) {
     if (value && !summary[key]) {
       summary[key] = value;
     }
@@ -81,9 +165,17 @@ function scrollConfiguratorToTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 }
 
-import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
+export function Configurator({ data }: ConfiguratorProps) {
+  const configuratorSteps = data.steps;
+  const pricing = data.pricing;
+  const navigableStepIndices = useMemo(
+    () =>
+      configuratorSteps
+        .map((_, index) => index)
+        .filter((index) => !hiddenStepKeys.includes(stepKeys[index] as StepKey)),
+    [configuratorSteps],
+  );
 
-export function Configurator() {
   const searchParams = useSearchParams();
   const appliedInitialPlatform = useRef(false);
   const [phase, setPhase] = useState<ConfiguratorPhase>("configure");
@@ -108,10 +200,21 @@ export function Configurator() {
 
   const currentStep = configuratorSteps[stepIndex];
   const currentKey = stepKeys[stepIndex] as StepKey;
-  const summary = useMemo(() => configToSummary(config), [config]);
-  const submission = useMemo(() => compileBuildSubmission(config), [config]);
-  const buildTotalCents = useMemo(() => computeBuildTotal(config), [config]);
-  const buildLineItems = useMemo(() => computeBuildLineItems(config), [config]);
+  const summary = useMemo(() => configToSummary(config, data), [config, data]);
+  const { platform: platformSpecs, scope: scopeSpecs, other: otherSpecs } =
+    useMemo(() => splitSpecSummary(summary), [summary]);
+  const submission = useMemo(
+    () => compileBuildSubmission(config, configuratorSteps, pricing),
+    [config, configuratorSteps, pricing],
+  );
+  const buildTotalCents = useMemo(
+    () => computeBuildTotal(config, pricing),
+    [config, pricing],
+  );
+  const buildLineItems = useMemo(
+    () => computeBuildLineItems(config, pricing),
+    [config, pricing],
+  );
   const selectedCount = stepKeys.filter((key) => config[key] !== null).length;
   const navPosition = navigableStepIndices.indexOf(stepIndex);
   const isLastStep = navPosition === navigableStepIndices.length - 1;
@@ -145,8 +248,12 @@ export function Configurator() {
   );
 
   const visibleOptions = useMemo(
-    () => filterStepOptions(currentKey, currentStep.options, config),
-    [currentKey, currentStep.options, config],
+    () =>
+      filterStepOptions(currentKey, currentStep.options, config, {
+        caliberAvailability: data.caliberAvailability,
+        rings: data.rings,
+      }),
+    [currentKey, currentStep.options, config, data.caliberAvailability, data.rings],
   );
 
   useEffect(() => {
@@ -155,13 +262,15 @@ export function Configurator() {
     const slug = searchParams.get("platform");
     if (!slug) return;
 
-    const platform = getPlatformOption(slug);
+    const platform = configuratorSteps[0]?.options.find(
+      (option) => option.id === slug,
+    );
     if (!platform) return;
 
     appliedInitialPlatform.current = true;
     setConfig((prev) => ({ ...prev, platform }));
     setStepIndex(1);
-  }, [searchParams]);
+  }, [searchParams, configuratorSteps]);
 
   useLayoutEffect(() => {
     scrollConfiguratorToTop();
@@ -172,10 +281,12 @@ export function Configurator() {
       const next: BuildConfiguration = {
         ...prev,
         [currentKey]: option,
-        ...companionSelection(currentKey, option),
+        ...companionSelection(currentKey, option, data.rings),
       };
       if (currentKey === "platform" && prev.caliber) {
-        const allowed = calibersForPlatform(option.id).map((c) => c.id);
+        const allowed = calibersForPlatform(option.id, data.caliberAvailability).map(
+          ([id]) => id,
+        );
         if (!allowed.includes(prev.caliber.id)) {
           next.caliber = null;
         }
@@ -257,6 +368,7 @@ export function Configurator() {
         onEdit={() => setPhase("configure")}
         submitting={submitting}
         submitError={submitError}
+        steps={configuratorSteps}
       />
     );
   }
@@ -291,6 +403,8 @@ export function Configurator() {
 
         {isBasecampStep && basecampPackageOption && basecampNoneOption ? (
           <BasecampPackageStep
+            details={data.basecampDetails}
+            pricing={pricing}
             packageOption={basecampPackageOption}
             noneOption={basecampNoneOption}
             selectedId={config.basecampPackage?.id}
@@ -298,6 +412,8 @@ export function Configurator() {
           />
         ) : isBallisticStep && ballisticPackageOption && ballisticNoneOption ? (
           <BallisticPackageStep
+            details={data.ballisticDetails}
+            pricing={pricing}
             packageOption={ballisticPackageOption}
             noneOption={ballisticNoneOption}
             selectedId={config.ballisticPackage?.id}
@@ -313,7 +429,7 @@ export function Configurator() {
         >
           {visibleOptions.map((option) => {
             const selected = config[currentKey]?.id === option.id;
-            const optionPrice = getOptionPrice(option.id);
+            const optionPrice = getOptionPrice(option.id, pricing);
             const priceLabel = formatPriceDelta(optionPrice, currentKey);
             return (
               <button
@@ -428,17 +544,33 @@ export function Configurator() {
             </p>
           ) : (
             <>
-              <SpecPreviewGrid config={config} className="mt-6" />
-              <dl className="mt-6 space-y-3">
-                {Object.entries(summary).map(([key, value]) => (
-                  <div key={key} className="border-b border-white/5 pb-3">
-                    <dt className="text-[10px] uppercase tracking-widest text-white-muted">
-                      {key.replace(/([A-Z])/g, " $1").trim()}
-                    </dt>
-                    <dd className="mt-1 text-sm text-white">{value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <SpecPreviewGrid config={config} steps={configuratorSteps} className="mt-6" />
+              <SpecSheetGrid specs={platformSpecs} className="mt-6" />
+              <SpecSheetGrid
+                specs={scopeSpecs}
+                className={
+                  platformSpecs.length > 0
+                    ? "mt-6 border-t border-white/10 pt-6"
+                    : "mt-6"
+                }
+              />
+              {otherSpecs.length > 0 && (
+                <dl
+                  className={
+                    platformSpecs.length > 0 || scopeSpecs.length > 0
+                      ? "mt-6 space-y-3 border-t border-white/10 pt-6"
+                      : "mt-6 space-y-3"
+                  }
+                >
+                  {otherSpecs.map(([key, value]) => (
+                    <SpecSheetRow
+                      key={key}
+                      label={formatSpecLabel(key)}
+                      value={value}
+                    />
+                  ))}
+                </dl>
+              )}
 
               {selectedCount > 0 && (
                 <div className="mt-6 border-t border-white/10 pt-6">
