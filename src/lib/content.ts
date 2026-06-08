@@ -158,9 +158,17 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
+  const testimonials = settings.testimonials?.filter(
+    (item) => item.quote?.trim() && item.author?.trim(),
+  );
+
   return {
     ...settings,
     aboutPage: mergeAboutPage(settings),
+    testimonials:
+      testimonials && testimonials.length >= 2
+        ? testimonials
+        : defaultSiteSettings.testimonials,
   };
 }
 

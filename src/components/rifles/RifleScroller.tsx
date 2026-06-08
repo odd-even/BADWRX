@@ -49,6 +49,7 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
   const [released, setReleased] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [scrollReady, setScrollReady] = useState(false);
 
   const cardStep = useRef(0);
   const scrollOrigin = useRef(0);
@@ -69,6 +70,8 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
     if (!el) return;
     cardStep.current = measureCardStep(el);
     targetScroll.current = el.scrollLeft;
+    const max = Math.max(0, el.scrollWidth - el.clientWidth);
+    setScrollReady(max > 1);
   }, []);
 
   const runSmoothScroll = useCallback(() => {
@@ -192,14 +195,31 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
     measure();
     const el = scrollerRef.current;
     if (!el) return;
+
     const observer = new ResizeObserver(measure);
     observer.observe(el);
-    return () => observer.disconnect();
+
+    const onLoad = () => measure();
+    window.addEventListener("load", onLoad);
+
+    const images = el.querySelectorAll("img");
+    images.forEach((image) => {
+      if (!image.complete) image.addEventListener("load", onLoad);
+    });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("load", onLoad);
+      images.forEach((image) => {
+        image.removeEventListener("load", onLoad);
+      });
+    };
   }, [measure, rifles.length]);
 
   useEffect(() => {
     const el = scrollerRef.current;
-    if (!el || !canHover || reducedMotion || hovered) return;
+    const pauseForHover = canHover && hovered;
+    if (!el || !scrollReady || reducedMotion || pauseForHover) return;
 
     let frame = 0;
     const tick = () => {
@@ -215,7 +235,7 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [canHover, reducedMotion, hovered, rifles.length]);
+  }, [canHover, reducedMotion, hovered, rifles.length, scrollReady]);
 
   useEffect(() => {
     const el = scrollerRef.current;
