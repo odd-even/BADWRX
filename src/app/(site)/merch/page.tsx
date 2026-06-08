@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MerchGallery } from "@/components/merch/MerchGallery";
-import { merchItems } from "@/data/merch";
+import { getAllMerch } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Merch",
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     "BADWRX caps, t-shirts, and sweaters. Rep the brand on the range and in the field.",
 };
 
-export default function MerchPage() {
+export default async function MerchPage() {
+  const merchItems = await getAllMerch();
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
       <p className="text-xs uppercase tracking-widest text-red">Shop</p>

@@ -16,10 +16,11 @@ Log in with the Sanity account that has access to project **imo49u00**.
 | **Site Settings** | Brand info, home hero phrases, platforms copy, pillars, ballistic section, testimonials, about page, contact blurb |
 | **Rifle Builds** | Title, specs, photos, descriptions, featured flag |
 | **University Courses** | Full course page — tagline, price, curriculum, outcomes, hero image |
+| **Merch** | Caps, tees, sweaters — title, price, sizes, colors, product photo |
 | **Build Configurator** | Platforms (via Rifle Builds), calibers, finishes/colors, optics, rings, Basecamp & Ballistic packages, pricing |
 | **Build Requests** | Read-only inbox of configurator submissions |
 
-**Still in code (not CMS):** merch products, contact form layout, configurator placeholder images until uploaded in Studio.
+**Still in code (not CMS):** contact form layout, merch page shipping blurb, configurator placeholder images until uploaded in Studio.
 
 ## One-time setup
 

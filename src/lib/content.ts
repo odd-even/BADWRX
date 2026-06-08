@@ -1,10 +1,12 @@
 import { rifles as localRifles, getRifleBySlug as localGetRifleBySlug, getFeaturedRifles as localGetFeaturedRifles } from "@/data/rifles";
 import { courses as localCourses, getCourseBySlug as localGetCourseBySlug } from "@/data/courses";
+import { merchItems as localMerchItems, getMerchBySlug as localGetMerchBySlug } from "@/data/merch";
 import { defaultSiteSettings } from "@/data/site-settings";
-import type { Course, Rifle, SiteSettings } from "@/lib/types";
+import type { Course, MerchItem, Rifle, SiteSettings } from "@/lib/types";
 import { isSanityConfigured } from "@/sanity/env";
 import { client } from "@/sanity/lib/client";
 import { mapCourse, mapRifle, mapSiteSettings, normalizeHeadlines } from "@/sanity/lib/map";
+import { mapMerchItem } from "@/sanity/lib/map-merch";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import { mapConfiguratorData } from "@/sanity/lib/map-configurator";
@@ -12,6 +14,8 @@ import {
   configuratorSettingsQuery,
   courseBySlugQuery,
   coursesQuery,
+  merchBySlugQuery,
+  merchQuery,
   rifleBySlugQuery,
   riflesQuery,
   siteSettingsQuery,
@@ -74,6 +78,26 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
     return doc ? mapCourse(doc) : localGetCourseBySlug(slug);
   } catch {
     return localGetCourseBySlug(slug);
+  }
+}
+
+export async function getAllMerch(): Promise<MerchItem[]> {
+  if (!isSanityConfigured()) return localMerchItems;
+  try {
+    const docs = await client.fetch(merchQuery);
+    return docs?.length ? docs.map(mapMerchItem) : localMerchItems;
+  } catch {
+    return localMerchItems;
+  }
+}
+
+export async function getMerchBySlug(slug: string): Promise<MerchItem | undefined> {
+  if (!isSanityConfigured()) return localGetMerchBySlug(slug);
+  try {
+    const doc = await client.fetch(merchBySlugQuery, { slug });
+    return doc ? mapMerchItem(doc) : localGetMerchBySlug(slug);
+  } catch {
+    return localGetMerchBySlug(slug);
   }
 }
 

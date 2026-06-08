@@ -27,6 +27,16 @@ export const structure: StructureResolver = (S) =>
             .title("University Courses")
             .defaultOrdering([{ field: "title", direction: "asc" }]),
         ),
+      S.documentTypeListItem("merchItem")
+        .title("Merch")
+        .child(
+          S.documentTypeList("merchItem")
+            .title("Merch")
+            .defaultOrdering([
+              { field: "category", direction: "asc" },
+              { field: "title", direction: "asc" },
+            ]),
+        ),
       S.listItem()
         .title("Build Configurator")
         .child(

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAllMerch } from "@/lib/content";
 import { saveMerchOrder } from "@/lib/merch-orders/store";
 import { validateMerchCheckoutBody } from "@/lib/merch-orders/validate";
 
@@ -11,7 +12,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const validated = validateMerchCheckoutBody(body);
+  const products = await getAllMerch();
+  const validated = validateMerchCheckoutBody(body, products);
   if (!validated.ok) {
     return NextResponse.json({ error: validated.error }, { status: 400 });
   }

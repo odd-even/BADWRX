@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { ContactPageContent } from "@/components/contact/ContactPageContent";
 import type { ContactInquiryMode } from "@/components/contact/ContactForm";
-import { getAllCourses, getBrandContent } from "@/lib/content";
-import { merchItems } from "@/data/merch";
+import { getAllCourses, getAllMerch, getBrandContent } from "@/lib/content";
 import { brand as siteBrand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
 import { sourceData } from "@/lib/source-data";
@@ -18,7 +17,11 @@ interface ContactPageProps {
 
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const { course: courseSlug, merch: merchSlug } = await searchParams;
-  const [courses, brand] = await Promise.all([getAllCourses(), getBrandContent()]);
+  const [courses, brand, merch] = await Promise.all([
+    getAllCourses(),
+    getBrandContent(),
+    getAllMerch(),
+  ]);
   const contactCopy = sourceData.docxCopy.contactPage;
 
   let initialMode: ContactInquiryMode = "platform";
@@ -36,7 +39,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       }}
       buildFields={sourceData.contactFormFields}
       courses={courses.map((course) => ({ slug: course.slug, title: course.title }))}
-      merchItems={merchItems.map((item) => ({ slug: item.slug, title: item.title }))}
+      merchItems={merch.map((item) => ({ slug: item.slug, title: item.title }))}
       initialMode={initialMode}
       initialCourseSlug={courseSlug}
       initialMerchSlug={merchSlug}

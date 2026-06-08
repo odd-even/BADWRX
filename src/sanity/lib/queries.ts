@@ -82,6 +82,32 @@ export const courseBySlugQuery = `*[_type == "course" && slug.current == $slug][
   featured
 }`;
 
+export const merchQuery = `*[_type == "merchItem" && active != false] | order(category asc, title asc) {
+  _id,
+  title,
+  "slug": slug.current,
+  category,
+  price,
+  priceCents,
+  description,
+  sizes,
+  colors,
+  image { asset->{ _id, url }, alt }
+}`;
+
+export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug && active != false][0] {
+  _id,
+  title,
+  "slug": slug.current,
+  category,
+  price,
+  priceCents,
+  description,
+  sizes,
+  colors,
+  image { asset->{ _id, url }, alt }
+}`;
+
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   name,
   short,

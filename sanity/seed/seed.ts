@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { courses } from "../../src/data/courses";
+import { merchImageSources, merchItems } from "../../src/data/merch";
 import { rifles } from "../../src/data/rifles";
 import { defaultSiteSettings } from "../../src/data/site-settings";
 import { sourceData } from "../../src/lib/source-data";
@@ -28,6 +29,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "../..");
 const photosDir = path.join(root, "_assets/photos");
 const configuratorAssetsDir = path.join(root, "_assets/configurator");
+const merchAssetsDir = path.join(root, "_assets/merch");
 const configuratorPlatformDir = path.join(configuratorAssetsDir, "platform");
 const camoDir = path.join(configuratorAssetsDir, "camo");
 const scopesDir = path.join(configuratorAssetsDir, "scopes");
@@ -193,6 +195,51 @@ async function seedCourses(universityHeroAssetId: string) {
       featured: course.featured ?? false,
     });
     console.log(`  ✓ ${course.title}`);
+  }
+}
+
+async function uploadMerchAsset(folder: string, filename: string) {
+  const filePath = path.join(merchAssetsDir, folder, filename);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Merch asset not found: ${filePath}`);
+  }
+  const buffer = fs.readFileSync(filePath);
+  console.log(`  Uploading merch ${folder}/${filename}...`);
+  return client.assets.upload("image", buffer, { filename });
+}
+
+async function seedMerch() {
+  console.log("\n→ Merch");
+  const assetCache = new Map<string, string>();
+
+  for (const item of merchItems) {
+    const source = merchImageSources[item.slug];
+    if (!source) {
+      throw new Error(`Missing merch image source for slug: ${item.slug}`);
+    }
+
+    const cacheKey = `${source.folder}/${source.filename}`;
+    let assetId = assetCache.get(cacheKey);
+    if (!assetId) {
+      const asset = await uploadMerchAsset(source.folder, source.filename);
+      assetId = asset._id;
+      assetCache.set(cacheKey, assetId);
+    }
+
+    await client.createOrReplace({
+      _id: `merch-${item.slug}`,
+      _type: "merchItem",
+      title: item.title,
+      slug: { _type: "slug", current: item.slug },
+      category: item.category,
+      price: centsToSanityPrice(item.priceCents),
+      description: item.description,
+      sizes: item.sizes,
+      ...(item.colors?.length ? { colors: item.colors } : {}),
+      active: true,
+      image: imageRef(assetId, item.image.alt),
+    });
+    console.log(`  ✓ ${item.title}`);
   }
 }
 
@@ -396,6 +443,7 @@ async function main() {
 
   await seedSiteSettings();
   await seedCourses(university._id);
+  await seedMerch();
   await seedRifles(studio._id, cropped._id, configuratorPlaceholder._id);
   await seedConfiguratorSettings(
     configuratorPlaceholder._id,

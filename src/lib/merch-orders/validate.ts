@@ -1,11 +1,5 @@
-import { getMerchBySlug } from "@/data/merch";
 import { orderTotalCents } from "@/lib/merch/shipping";
-import type {
-  MerchCartLine,
-  MerchOrderPayload,
-  MerchShippingAddress,
-  MerchShippingMethod,
-} from "@/lib/types";
+import type { MerchCartLine, MerchItem, MerchOrderPayload, MerchShippingAddress, MerchShippingMethod } from "@/lib/types";
 
 interface ContactInput {
   name: string;
@@ -25,10 +19,13 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function validateCartLine(raw: unknown): MerchCartLine | null {
+function validateCartLine(
+  raw: unknown,
+  productsBySlug: Map<string, MerchItem>,
+): MerchCartLine | null {
   if (!raw || typeof raw !== "object") return null;
   const line = raw as MerchCartLine;
-  const product = getMerchBySlug(line.slug);
+  const product = productsBySlug.get(line.slug);
   if (!product) return null;
   if (!isNonEmptyString(line.lineId) || !isNonEmptyString(line.size)) return null;
   if (!Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 10) {
@@ -51,6 +48,7 @@ function validateCartLine(raw: unknown): MerchCartLine | null {
 
 export function validateMerchCheckoutBody(
   body: unknown,
+  products: MerchItem[],
 ):
   | { ok: true; data: MerchOrderPayload & { notes?: string } }
   | { ok: false; error: string } {
@@ -64,8 +62,10 @@ export function validateMerchCheckoutBody(
     return { ok: false, error: "Cart is empty" };
   }
 
+  const productsBySlug = new Map(products.map((product) => [product.slug, product]));
+
   const items = input.items
-    .map(validateCartLine)
+    .map((line) => validateCartLine(line, productsBySlug))
     .filter((line): line is MerchCartLine => line !== null);
 
   if (items.length !== input.items.length) {

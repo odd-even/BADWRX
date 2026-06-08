@@ -17,8 +17,7 @@ export function MerchAddToCart({ item }: MerchAddToCartProps) {
   const [added, setAdded] = useState(false);
 
   function handleAdd() {
-    addItem({
-      slug: item.slug,
+    addItem(item, {
       size,
       color: color || undefined,
       quantity: 1,

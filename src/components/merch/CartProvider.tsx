@@ -9,14 +9,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getMerchBySlug } from "@/data/merch";
 import { cartItemCount, cartSubtotalCents } from "@/lib/merch/shipping";
 import type { MerchCartLine, MerchItem } from "@/lib/types";
 
 const STORAGE_KEY = "badwrx-merch-cart";
 
-interface AddToCartInput {
-  slug: string;
+interface AddToCartOptions {
   size: string;
   color?: string;
   quantity?: number;
@@ -26,7 +24,7 @@ interface MerchCartContextValue {
   items: MerchCartLine[];
   itemCount: number;
   subtotalCents: number;
-  addItem: (input: AddToCartInput) => void;
+  addItem: (product: MerchItem, options: AddToCartOptions) => void;
   updateQuantity: (lineId: string, quantity: number) => void;
   removeItem: (lineId: string) => void;
   clearCart: () => void;
@@ -46,14 +44,14 @@ function loadStoredCart(): MerchCartLine[] {
   }
 }
 
-function buildLine(product: MerchItem, input: AddToCartInput): MerchCartLine {
+function buildLine(product: MerchItem, options: AddToCartOptions): MerchCartLine {
   return {
     lineId: crypto.randomUUID(),
     slug: product.slug,
     title: product.title,
-    size: input.size,
-    color: input.color,
-    quantity: input.quantity ?? 1,
+    size: options.size,
+    color: options.color,
+    quantity: options.quantity ?? 1,
     priceCents: product.priceCents,
     imageUrl: product.image.url,
   };
@@ -90,10 +88,8 @@ export function MerchCartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items, hydrated]);
 
-  const addItem = useCallback((input: AddToCartInput) => {
-    const product = getMerchBySlug(input.slug);
-    if (!product) return;
-    const line = buildLine(product, input);
+  const addItem = useCallback((product: MerchItem, options: AddToCartOptions) => {
+    const line = buildLine(product, options);
     setItems((current) => mergeLine(current, line));
   }, []);
 

@@ -11,6 +11,22 @@ export const merchCategoryLabels: Record<MerchCategory, string> = {
   sweaters: "Sweaters",
 };
 
+/** Local asset paths used when seeding Sanity merch images */
+export const merchImageSources: Record<
+  string,
+  { folder: string; filename: string }
+> = {
+  "field-cap": { folder: "caps", filename: "A13mbtEaGjL._AC_UY1000_.jpg" },
+  "trucker-hat": { folder: "caps", filename: "21612114.webp" },
+  "logo-tee": { folder: "tshirt", filename: "21614210.webp" },
+  "engineered-tee": {
+    folder: "tshirt",
+    filename: "vortex-125-06-BLK-hero-002__92367.jpg",
+  },
+  hoodie: { folder: "hoodie", filename: "MHF-94600.jpg.webp" },
+  crewneck: { folder: "hoodie", filename: "81A9WL-EilL._AC_UY1000_.jpg" },
+};
+
 export const merchItems: MerchItem[] = [
   {
     id: "1",
