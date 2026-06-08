@@ -1,7 +1,5 @@
 import type { MerchCategory, MerchItem } from "@/lib/types";
-
-const unsplash = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&q=80`;
+import { merchImage } from "@/lib/images";
 
 export const apparelSizes = ["S", "M", "L", "XL", "2XL"] as const;
 export const capSizes = ["One Size"] as const;
@@ -25,8 +23,8 @@ export const merchItems: MerchItem[] = [
     sizes: [...capSizes],
     colors: ["Black", "OD Green"],
     image: {
-      url: unsplash("photo-1588850561407-ed78c282e952"),
-      alt: "Black baseball cap product photo",
+      url: merchImage("caps", "A13mbtEaGjL._AC_UY1000_.jpg"),
+      alt: "BADWRX field cap product photo",
     },
   },
   {
@@ -40,27 +38,12 @@ export const merchItems: MerchItem[] = [
     sizes: [...capSizes],
     colors: ["Black/Charcoal", "Khaki"],
     image: {
-      url: unsplash("photo-1575428652377-a96d6c318664"),
-      alt: "Trucker hat product photo",
+      url: merchImage("caps", "21612114.webp"),
+      alt: "BADWRX trucker hat product photo",
     },
   },
   {
     id: "3",
-    slug: "snapback",
-    title: "Precision Rifles Snapback",
-    category: "caps",
-    price: "$36",
-    priceCents: 3600,
-    description: "Flat-bill snapback with red-accent stack logo. One size fits most.",
-    sizes: [...capSizes],
-    colors: ["Black"],
-    image: {
-      url: unsplash("photo-1521369908759-475312072597"),
-      alt: "Snapback cap product photo",
-    },
-  },
-  {
-    id: "4",
     slug: "logo-tee",
     title: "BADWRX Logo Tee",
     category: "t-shirts",
@@ -70,12 +53,12 @@ export const merchItems: MerchItem[] = [
     sizes: [...apparelSizes],
     colors: [...defaultColors],
     image: {
-      url: unsplash("photo-1521572163474-6864f9cf17ab"),
-      alt: "White t-shirt product photo",
+      url: merchImage("tshirt", "21614210.webp"),
+      alt: "BADWRX logo tee product photo",
     },
   },
   {
-    id: "5",
+    id: "4",
     slug: "engineered-tee",
     title: "Engineered Without Compromise Tee",
     category: "t-shirts",
@@ -85,27 +68,12 @@ export const merchItems: MerchItem[] = [
     sizes: [...apparelSizes],
     colors: ["Black", "Charcoal"],
     image: {
-      url: unsplash("photo-1583743814966-6aae8123257e"),
-      alt: "Black t-shirt on hanger",
+      url: merchImage("tshirt", "vortex-125-06-BLK-hero-002__92367.jpg"),
+      alt: "Engineered Without Compromise tee product photo",
     },
   },
   {
-    id: "6",
-    slug: "patriot-tee",
-    title: "American Patriot Tee",
-    category: "t-shirts",
-    price: "$38",
-    priceCents: 3800,
-    description: "Precision rifles for the American patriot — back print with front badge.",
-    sizes: [...apparelSizes],
-    colors: [...defaultColors],
-    image: {
-      url: unsplash("photo-1622445275463-0982c0fb879a"),
-      alt: "Folded t-shirts product photo",
-    },
-  },
-  {
-    id: "7",
+    id: "5",
     slug: "hoodie",
     title: "BADWRX Hoodie",
     category: "sweaters",
@@ -115,12 +83,12 @@ export const merchItems: MerchItem[] = [
     sizes: [...apparelSizes],
     colors: ["Black", "Charcoal"],
     image: {
-      url: unsplash("photo-1556821840-3a63f95609a7"),
-      alt: "Gray hoodie product photo",
+      url: merchImage("hoodie", "MHF-94600.jpg.webp"),
+      alt: "BADWRX hoodie product photo",
     },
   },
   {
-    id: "8",
+    id: "6",
     slug: "crewneck",
     title: "Badger Crewneck",
     category: "sweaters",
@@ -130,23 +98,8 @@ export const merchItems: MerchItem[] = [
     sizes: [...apparelSizes],
     colors: ["Black", "Heather Gray"],
     image: {
-      url: unsplash("photo-1578587018452-892bacefd3af"),
-      alt: "Crewneck sweater product photo",
-    },
-  },
-  {
-    id: "9",
-    slug: "range-pullover",
-    title: "Range Day Pullover",
-    category: "sweaters",
-    price: "$72",
-    priceCents: 7200,
-    description: "Quarter-zip pullover in charcoal with red accent zipper and sleeve badge.",
-    sizes: [...apparelSizes],
-    colors: ["Charcoal", "Black"],
-    image: {
-      url: unsplash("photo-1620799140408-edc6dcb0886a"),
-      alt: "Pullover hoodie product photo",
+      url: merchImage("hoodie", "81A9WL-EilL._AC_UY1000_.jpg"),
+      alt: "Badger crewneck product photo",
     },
   },
 ];

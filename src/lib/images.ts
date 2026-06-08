@@ -8,7 +8,9 @@ export const images = {
     studio: `${assetBase}/IMG_0058.jpg`,
     studioCropped: `${assetBase}/IMG_0058-cropped.jpg`,
     field: `${assetBase}/IMG_5613.jpeg`,
+    homeCover: `${assetBase}/IMG_5613cover.webp`,
     hunt: `${assetBase}/IMG_1125bighorn.jpg`,
+    reticleOverlay: `${assetBase}/FC-DMx_MOA__16268%20copy.webp`,
   },
   landscape: {
     mountains: `${assetBase}/mountain-panorama-just-after-the-storm-2025-01-15-14-24-51-utc.jpg`,
@@ -19,6 +21,9 @@ export const images = {
     stack: `${logoBase}/BADWRX-stack_white-red.svg`,
     badge: `${logoBase}/CPR_Badge_Black_1.svg`,
   },
+  about: {
+    story: `${assetBase}/IMG_1192%20copy.webp`,
+  },
 } as const;
 
 /** Default rifle image for build cards, heroes, and galleries */
@@ -27,8 +32,7 @@ export const riflePlaceholder = images.rifle.studio;
 export const riflePlaceholderAlt =
   "Custom precision bolt-action rifle with NightForce scope on black background";
 
-const configuratorBase = "/images/placeholders";
-const configuratorAssetBase = "/images/configurator";
+const configuratorBase = "/images/configurator";
 
 export type PlaceholderCategory =
   | "actions"
@@ -42,7 +46,7 @@ export type PlaceholderCategory =
   | "suppressors"
   | "cases";
 
-/** Configurator option photos from `_assets/placeholder images/{category}/` */
+/** Configurator option photos from `_assets/configurator/{category}/` */
 export function placeholderImage(
   category: PlaceholderCategory,
   filename: string,
@@ -52,13 +56,13 @@ export function placeholderImage(
 
 /** Curated assets from `_assets/configurator/{subfolder}/` */
 export function configuratorImage(subfolder: string, filename: string): string {
-  return `${configuratorAssetBase}/${subfolder}/${filename}`;
+  return `${configuratorBase}/${subfolder}/${filename}`;
 }
 
-/** Platform hero in `_assets/placeholder images/platform/` */
+/** Platform hero in `_assets/configurator/platform/` */
 export const platformImage = `${configuratorBase}/platform/IMG_0058 copy.webp`;
 
-/** Platform hero images in `_assets/placeholder images/platform/` */
+/** Platform hero images in `_assets/configurator/platform/` */
 export const platformImages: Record<string, string> = {
   specter: platformImage,
   reaper: platformImage,
@@ -68,7 +72,7 @@ export const platformImages: Record<string, string> = {
   goat: platformImage,
 };
 
-/** Finish swatches in `_assets/placeholder images/camo/` */
+/** Finish swatches in `_assets/configurator/camo/` */
 export const stockPaintImages: Record<string, string> = {
   "vias-multicam-black": placeholderImage("camo", "bondcambrushcam550x50swatch.jpg"),
   "alpine-ghost": placeholderImage(
@@ -106,7 +110,14 @@ const scopeImages = {
   ),
 } as const;
 
-/** Nightforce product photos in `_assets/placeholder images/scopes/` */
+const merchBase = "/images/merch";
+
+/** Merch product photos from `_assets/merch/{folder}/` */
+export function merchImage(folder: string, filename: string): string {
+  return `${merchBase}/${folder}/${encodeURIComponent(filename)}`;
+}
+
+/** Nightforce product photos in `_assets/configurator/scopes/` */
 export function scopeImageForMagnification(
   magnification: string,
   opticId?: string,

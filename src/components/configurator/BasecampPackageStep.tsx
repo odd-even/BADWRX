@@ -44,7 +44,7 @@ export function BasecampPackageStep({
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 640px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 from-0% to-transparent to-[30%]" />
             <div className="absolute bottom-0 left-0 p-6 sm:p-8">
               <p className="text-xs uppercase tracking-widest text-red">
                 {basecamp.label}
@@ -83,7 +83,7 @@ export function BasecampPackageStep({
           </div>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-white-muted/70">
-            This is not a bundle. It is a system.
+            This is not a bundle. It&apos;s a system.
           </p>
         </div>
       </div>

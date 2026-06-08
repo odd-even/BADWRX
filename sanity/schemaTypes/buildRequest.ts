@@ -102,11 +102,6 @@ export const buildRequest = defineType({
       type: "number",
     }),
     defineField({
-      name: "depositCents",
-      title: "Deposit (cents)",
-      type: "number",
-    }),
-    defineField({
       name: "totalFormatted",
       title: "Estimated total",
       type: "string",

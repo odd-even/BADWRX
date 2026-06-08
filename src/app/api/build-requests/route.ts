@@ -57,9 +57,8 @@ export async function POST(request: Request) {
     requestId,
     status: "pending_review",
     squareConfigured: isSquareConfigured(),
-    depositCents: payload.depositCents,
     paymentMethod: payload.paymentMethod,
     message:
-      "Build request received. A builder will review your configuration before a Square deposit invoice is sent.",
+      "Build request received. A builder will review your configuration before a Square invoice for the full build price is sent.",
   });
 }

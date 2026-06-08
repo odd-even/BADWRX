@@ -13,6 +13,7 @@ import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
 import { TruncatedText } from "@/components/ui/TruncatedText";
 import { BuildReview } from "@/components/configurator/BuildReview";
+import { BallisticPackageStep } from "@/components/configurator/BallisticPackageStep";
 import { BasecampPackageStep } from "@/components/configurator/BasecampPackageStep";
 import {
   compileBuildSubmission,
@@ -27,7 +28,6 @@ import {
 import {
   computeBuildLineItems,
   computeBuildTotal,
-  computeDepositCents,
   formatLineItemPrice,
   formatPrice,
   formatPriceDelta,
@@ -77,6 +77,8 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
   return summary;
 }
 
+import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
+
 export function Configurator() {
   const searchParams = useSearchParams();
   const appliedInitialPlatform = useRef(false);
@@ -97,7 +99,7 @@ export function Configurator() {
     email: "",
     phone: "",
     notes: "",
-    paymentMethod: "square-card",
+    paymentMethod: "square-invoice",
   });
 
   const currentStep = configuratorSteps[stepIndex];
@@ -106,10 +108,6 @@ export function Configurator() {
   const submission = useMemo(() => compileBuildSubmission(config), [config]);
   const buildTotalCents = useMemo(() => computeBuildTotal(config), [config]);
   const buildLineItems = useMemo(() => computeBuildLineItems(config), [config]);
-  const depositCents = useMemo(
-    () => computeDepositCents(buildTotalCents),
-    [buildTotalCents],
-  );
   const selectedCount = stepKeys.filter((key) => config[key] !== null).length;
   const navPosition = navigableStepIndices.indexOf(stepIndex);
   const isLastStep = navPosition === navigableStepIndices.length - 1;
@@ -121,15 +119,23 @@ export function Configurator() {
   const isBuildComplete = submission.isComplete;
   const isSwatchStep = swatchSteps.includes(currentKey);
   const isBasecampStep = currentKey === "basecampPackage";
+  const isBallisticStep = currentKey === "ballisticPackage";
+  const isPackageStep = isBasecampStep || isBallisticStep;
   const isImageGridStep =
     currentStep.options.some((option) => option.image) &&
     !isSwatchStep &&
-    !isBasecampStep;
+    !isPackageStep;
   const basecampPackageOption = currentStep.options.find(
     (option) => option.id !== "case-none",
   );
   const basecampNoneOption = currentStep.options.find(
     (option) => option.id === "case-none",
+  );
+  const ballisticPackageOption = currentStep.options.find(
+    (option) => option.id !== "ballistic-none",
+  );
+  const ballisticNoneOption = currentStep.options.find(
+    (option) => option.id === "ballistic-none",
   );
 
   const visibleOptions = useMemo(
@@ -212,9 +218,7 @@ export function Configurator() {
           Your full spec sheet ({submission.totalFormatted} estimated) has been
           recorded. A builder will review your configuration and respond within
           2 business days.
-          {form.paymentMethod === "square-ach"
-            ? " We'll send a Square invoice for your deposit — choose bank transfer (ACH) when you pay on Square."
-            : " We'll send a Square invoice for your deposit when your build is approved."}
+          {" We'll send a Square invoice for the full build price when your build is approved."}
           {requestId && (
             <>
               {" "}
@@ -280,6 +284,13 @@ export function Configurator() {
             packageOption={basecampPackageOption}
             noneOption={basecampNoneOption}
             selectedId={config.basecampPackage?.id}
+            onSelect={selectOption}
+          />
+        ) : isBallisticStep && ballisticPackageOption && ballisticNoneOption ? (
+          <BallisticPackageStep
+            packageOption={ballisticPackageOption}
+            noneOption={ballisticNoneOption}
+            selectedId={config.ballisticPackage?.id}
             onSelect={selectOption}
           />
         ) : (
@@ -407,37 +418,7 @@ export function Configurator() {
             </p>
           ) : (
             <>
-              {stepKeys.some((key) => config[key]?.image) && (
-                <div className="mt-6 grid grid-cols-3 gap-x-2 gap-y-3">
-                  {stepKeys.map((key) => {
-                    const option = config[key];
-                    if (!option?.image) return null;
-                    const stepTitle = configuratorSteps.find(
-                      (step) => step.id === key,
-                    )?.title;
-                    return (
-                      <div key={key} className="min-w-0">
-                        <div className="overflow-hidden border border-white/10">
-                          <OptionImage
-                            url={option.image.url}
-                            alt={option.image.alt}
-                            label={option.label}
-                            variant="swatch-fill"
-                          />
-                        </div>
-                        {stepTitle && (
-                          <p className="mt-1 text-[9px] uppercase tracking-wider text-white-muted/60">
-                            {stepTitle}
-                          </p>
-                        )}
-                        <p className="mt-0.5 text-[10px] leading-snug text-white-muted">
-                          {option.label}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <SpecPreviewGrid config={config} className="mt-6" />
               <dl className="mt-6 space-y-3">
                 {Object.entries(summary).map(([key, value]) => (
                   <div key={key} className="border-b border-white/5 pb-3">
@@ -476,9 +457,8 @@ export function Configurator() {
                     </span>
                   </div>
                   <p className="mt-2 text-[10px] text-white-muted/70">
-                    Suggested deposit (50%): {formatPrice(depositCents)} — due
-                    after builder review. Full payment is due prior to build —
-                    we won&apos;t start building until full payment is received.
+                    Full payment is due upfront after builder review — we
+                    won&apos;t start building until payment is received.
                   </p>
                 </div>
               )}

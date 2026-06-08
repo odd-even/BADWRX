@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
@@ -16,7 +17,7 @@ export default async function HomePage() {
     <>
       <section className="relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden pt-[72px]">
         <Image
-          src={images.rifle.field}
+          src={images.rifle.homeCover}
           alt="Custom precision rifle on a mountain ridgeline"
           fill
           priority
@@ -81,10 +82,8 @@ export default async function HomePage() {
         </div>
 
         <RifleScroller rifles={rifles} />
-      </section>
 
-      <section className="border-y border-white/10 bg-black-muted">
-        <div className="mx-auto max-w-7xl px-6 py-24">
+        <div className="relative z-0 mx-auto max-w-7xl px-6 pt-12 md:pt-16">
           <p className="text-xs uppercase tracking-widest text-red">
             {site.homeIntro.eyebrow}
           </p>
@@ -92,7 +91,7 @@ export default async function HomePage() {
             {site.homeIntro.body}
           </p>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
             {site.homePillars.map((pillar) => (
               <div
                 key={pillar.title}
@@ -133,17 +132,31 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative flex min-h-[70vh] items-end overflow-hidden">
-        <Image
-          src={images.rifle.studioCropped}
-          alt={riflePlaceholderAlt}
-          fill
-          className="object-cover object-[center_26%]"
-          sizes="100vw"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-0% via-black/50 via-[32%] via-black/90 via-[52%] to-black to-100%" />
+      <section className="relative min-h-[70vh] overflow-hidden bg-black">
+        <div className="pointer-events-none absolute inset-0">
+          <Image
+            src={images.rifle.studioCropped}
+            alt={riflePlaceholderAlt}
+            fill
+            className="object-cover object-[center_26%]"
+            sizes="100vw"
+          />
+          <div
+            className="absolute top-[16%] left-[68%] aspect-square w-[70vw] min-w-[70vw] -translate-x-1/2 -translate-y-1/2 opacity-50 mix-blend-screen"
+            aria-hidden
+          >
+            <Image
+              src={images.rifle.reticleOverlay}
+              alt=""
+              fill
+              className="object-contain"
+              sizes="70vw"
+            />
+          </div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_32%,rgba(0,0,0,0.85)_52%,var(--color-black)_100%)]" />
+        </div>
 
-        <div className="relative mx-auto w-full max-w-7xl px-6 pb-20 pt-32">
+        <div className="relative z-[3] mx-auto flex min-h-[70vh] w-full max-w-7xl flex-col justify-end px-6 pb-20 pt-32">
           <div className="max-w-2xl">
             <p className="text-xs uppercase tracking-widest text-red">
               {site.unrelenting.eyebrow}
@@ -165,15 +178,13 @@ export default async function HomePage() {
       </section>
 
       <section className="border-y border-white/10 bg-black-light">
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center">
-          <p className="text-xs uppercase tracking-widest text-red">From the field</p>
-          <blockquote className="mt-8 text-xl text-white md:text-2xl leading-relaxed">
-            &ldquo;{site.testimonial.quote}&rdquo;
-          </blockquote>
-          <p className="mt-8 text-sm uppercase tracking-widest text-white-muted">
-            — {site.testimonial.author}
-          </p>
-        </div>
+        <TestimonialCarousel
+          items={
+            site.testimonials?.length
+              ? site.testimonials
+              : [site.testimonial]
+          }
+        />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">

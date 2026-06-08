@@ -18,11 +18,11 @@ export async function Footer() {
 
   return (
     <footer className="border-t border-white/10 bg-black-light">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-6">
+      <div className="mx-auto max-w-7xl px-6 pt-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-x-10">
           <Link
             href="/"
-            className="order-1 inline-block transition opacity-90 hover:opacity-100 md:col-start-1 md:row-start-1"
+            className="inline-block opacity-90 transition hover:opacity-100"
           >
             <Image
               src={images.logos.badge}
@@ -33,7 +33,7 @@ export async function Footer() {
             />
           </Link>
 
-          <div className="order-2 md:col-start-2 md:row-start-1">
+          <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-red">
               Navigate
             </p>
@@ -51,7 +51,7 @@ export async function Footer() {
             </ul>
           </div>
 
-          <div className="order-4 md:col-start-3 md:row-span-2 md:row-start-1">
+          <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-red">
               Contact
             </p>
@@ -80,21 +80,20 @@ export async function Footer() {
             <p className="mt-6 text-xs text-white-muted/60">
               Not a retail dealer. All builds by consultation and quote only.
             </p>
+            <p className="mt-4 text-xs text-white-muted/50">
+              © {new Date().getFullYear()} {content.name} ({content.short}). All
+              rights reserved.
+            </p>
           </div>
-
-          <p className="order-3 self-end text-2xl font-bold uppercase leading-[0.95] tracking-tight sm:text-3xl md:col-span-2 md:col-start-1 md:row-start-2 md:text-4xl lg:text-5xl xl:text-6xl">
-            <span className="text-red">Precision rifles</span>
-            <span className="text-white/30"> for</span>
-            <br />
-            <span className="text-white/30">the American patriot</span>
-          </p>
         </div>
       </div>
 
-      <div className="border-t border-white/5 px-6 py-6 text-center text-xs text-white-muted/50">
-        © {new Date().getFullYear()} {content.name} ({content.short}). All
-        rights reserved.
-      </div>
+      <p className="mx-auto max-w-7xl px-6 text-2xl font-bold uppercase leading-[0.95] tracking-tight sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+        <span className="text-red">Precision rifles</span>
+        <span className="text-white/30"> for</span>
+        <br />
+        <span className="text-white/30">the American patriot</span>
+      </p>
     </footer>
   );
 }

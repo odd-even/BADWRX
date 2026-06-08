@@ -3,7 +3,6 @@ import type { BuildConfiguration } from "@/lib/types";
 import {
   computeBuildLineItems,
   computeBuildTotal,
-  computeDepositCents,
   formatPrice,
   getOptionPrice,
 } from "@/lib/pricing";
@@ -20,9 +19,7 @@ export interface BuildSubmission {
   selections: BuildSubmissionLine[];
   lineItems: ReturnType<typeof computeBuildLineItems>;
   totalCents: number;
-  depositCents: number;
   totalFormatted: string;
-  depositFormatted: string;
   isComplete: boolean;
 }
 
@@ -47,29 +44,17 @@ export function compileBuildSubmission(
 
   const lineItems = computeBuildLineItems(config);
   const totalCents = computeBuildTotal(config);
-  const depositCents = computeDepositCents(totalCents);
 
   return {
     selections,
     lineItems,
     totalCents,
-    depositCents,
     totalFormatted: formatPrice(totalCents),
-    depositFormatted: formatPrice(depositCents),
     isComplete: selections.length === stepKeys.length,
   };
 }
 
-export type PaymentMethod = "square-card" | "square-ach";
-
-/** Both deposit options are fulfilled via a Square invoice */
-export type SquareInvoiceMethod = "card" | "ach";
-
-export function getSquareInvoiceMethod(
-  paymentMethod: PaymentMethod,
-): SquareInvoiceMethod {
-  return paymentMethod === "square-ach" ? "ach" : "card";
-}
+export type PaymentMethod = "square-invoice";
 
 export interface BuildContactDetails {
   firstName: string;
@@ -106,10 +91,8 @@ export function getContactAddress(contact: BuildContactDetails): string {
 export interface BuildRequestPayload extends BuildSubmission {
   contact: BuildContactDetails;
   paymentMethod: PaymentMethod;
-  /** Square Invoices API — preferred payment method on the invoice link */
   squareInvoice: {
     provider: "square";
-    method: SquareInvoiceMethod;
   };
   submittedAt: string;
 }
@@ -124,7 +107,6 @@ export function createBuildRequestPayload(
     paymentMethod: contact.paymentMethod,
     squareInvoice: {
       provider: "square",
-      method: getSquareInvoiceMethod(contact.paymentMethod),
     },
     submittedAt: new Date().toISOString(),
   };

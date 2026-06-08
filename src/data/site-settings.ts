@@ -81,6 +81,28 @@ export const defaultSiteSettings: SiteSettings = {
       "Most 'custom' rifles still need work. This one didn't. Zeroed quick, tracked true, and the first round in the field ended the hunt. When your rifle does exactly what it's supposed to, everything gets simpler.",
     author: "Tj",
   },
+  testimonials: [
+    {
+      quote:
+        "Most 'custom' rifles still need work. This one didn't. Zeroed quick, tracked true, and the first round in the field ended the hunt. When your rifle does exactly what it's supposed to, everything gets simpler.",
+      author: "Tj",
+    },
+    {
+      quote:
+        "The ballistic package wasn't marketing. I dialed first round at 780 yards opening morning — no calculator, no second-guessing. The rifle showed up ready for where I actually hunt.",
+      author: "Marcus K., Idaho elk hunter",
+    },
+    {
+      quote:
+        "I've owned three custom builds. This is the first that showed up ready to shoot steel at 1,000. The shop time went into the rifle, not into fixing someone else's shortcuts.",
+      author: "Ryan V., PRS competitor",
+    },
+    {
+      quote:
+        "Small-shop attention, professional results. The engraved turrets matched my load and the conditions we talked about before the build. Wind calls got simpler because the data was right.",
+      author: "Dana L., backcountry mule deer",
+    },
+  ],
   contactSection: {
     title: "Request a build quote",
     body: cleanDocxCopy(docxCopy.customQuoteCta),

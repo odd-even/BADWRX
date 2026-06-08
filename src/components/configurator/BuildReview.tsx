@@ -1,7 +1,6 @@
 import type { BuildConfiguration } from "@/lib/types";
 import type { BuildContactDetails, BuildSubmission } from "@/lib/build-submission";
-import { stepKeys } from "@/data/configurator-options";
-import { OptionImage } from "@/components/configurator/OptionImage";
+import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 import { formatPrice, formatLineItemPrice } from "@/lib/pricing";
 
 interface BuildReviewProps {
@@ -38,37 +37,11 @@ export function BuildReview({
         </p>
         <p className="mt-4 text-2xl text-white">{submission.totalFormatted}</p>
         <p className="mt-1 text-xs text-white-muted">
-          Estimated total · {submission.depositFormatted} suggested deposit after
-          approval
+          Estimated total · full payment due upfront before build begins
         </p>
       </div>
 
-      {stepKeys.some((key) => config[key]?.image) && (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3">
-          {submission.selections.map((line) => {
-            const option = config[line.stepKey];
-            if (!option?.image) return null;
-            return (
-              <div key={line.stepKey} className="min-w-0">
-                <div className="overflow-hidden border border-white/10">
-                  <OptionImage
-                    url={option.image.url}
-                    alt={option.image.alt}
-                    label={option.label}
-                    variant="swatch-fill"
-                  />
-                </div>
-                <p className="mt-1 text-[9px] uppercase tracking-wider text-white-muted/60">
-                  {line.stepTitle}
-                </p>
-                <p className="mt-0.5 text-[10px] leading-snug text-white-muted">
-                  {line.optionLabel}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <SpecPreviewGrid config={config} variant="review" />
 
       <div className="border border-white/10 bg-black-muted">
         <div className="border-b border-white/10 px-6 py-4">
@@ -120,8 +93,8 @@ export function BuildReview({
       <form onSubmit={onSubmit} className="border border-white/10 bg-black-muted p-6 sm:p-8">
         <h3 className="text-xl text-white">Submit for builder review</h3>
         <p className="mt-2 text-sm text-white-muted">
-          No payment required now. We&apos;ll confirm your spec, timeline, and
-          deposit before anything is charged.
+          No payment required now. We&apos;ll confirm your spec and timeline
+          before sending a Square invoice for the full build price.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block">
@@ -291,75 +264,21 @@ export function BuildReview({
 
         <div className="mt-8 border-t border-white/10 pt-8">
           <h4 className="text-sm uppercase tracking-widest text-white">
-            Deposit payment
+            Payment
           </h4>
           <p className="mt-2 text-sm text-white-muted">
-            After approval, we&apos;ll email a Square invoice for the{" "}
-            {submission.depositFormatted} deposit. Choose how you&apos;d like to
-            pay on Square. Full payment is due prior to build — we won&apos;t
-            start building until full payment is received.
+            After approval, we&apos;ll email a Square invoice for the full build
+            price ({submission.totalFormatted}). Pay by card or bank transfer on
+            the secure Square invoice link. We won&apos;t start building until
+            payment is received in full.
           </p>
-          <div className="mt-4 space-y-3">
-            <label
-              className={`flex cursor-pointer items-start gap-4 border p-4 transition ${
-                form.paymentMethod === "square-card"
-                  ? "border-red bg-red/5"
-                  : "border-white/10 hover:border-white/30"
-              }`}
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="square-card"
-                checked={form.paymentMethod === "square-card"}
-                onChange={() =>
-                  onFormChange({ ...form, paymentMethod: "square-card" })
-                }
-                className="mt-1"
-              />
-              <span>
-                <span className="block font-medium text-white">
-                  Square invoice — card
-                </span>
-                <span className="mt-1 block text-sm text-white-muted">
-                  Pay by credit or debit card on the secure Square invoice link.
-                </span>
-              </span>
-            </label>
-            <label
-              className={`flex cursor-pointer items-start gap-4 border p-4 transition ${
-                form.paymentMethod === "square-ach"
-                  ? "border-red bg-red/5"
-                  : "border-white/10 hover:border-white/30"
-              }`}
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="square-ach"
-                checked={form.paymentMethod === "square-ach"}
-                onChange={() =>
-                  onFormChange({ ...form, paymentMethod: "square-ach" })
-                }
-                className="mt-1"
-              />
-              <span>
-                <span className="block font-medium text-white">
-                  Square invoice — ACH
-                </span>
-                <span className="mt-1 block text-sm text-white-muted">
-                  Same Square invoice — select bank transfer (ACH) when you pay.
-                  Typically clears in 1–3 business days.
-                </span>
-              </span>
-            </label>
-          </div>
-          {form.paymentMethod === "square-ach" && (
-            <p className="mt-4 border border-white/10 bg-black-light px-4 py-3 text-xs text-white-muted">
-              ACH is handled through Square on the invoice payment page. No bank
-              details are required to submit this build request.
+          <div className="mt-4 border border-white/10 bg-black-light p-4">
+            <p className="font-medium text-white">Square invoice</p>
+            <p className="mt-1 text-sm text-white-muted">
+              Card and bank transfer (ACH) are available when you pay on Square.
+              No payment details are required to submit this build request.
             </p>
-          )}
+          </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">

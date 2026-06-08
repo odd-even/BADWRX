@@ -67,10 +67,7 @@ export function validateBuildSubmissionBody(body: unknown):
     return { ok: false, error: "Phone number is required" };
   }
 
-  if (
-    details.paymentMethod !== "square-card" &&
-    details.paymentMethod !== "square-ach"
-  ) {
+  if (details.paymentMethod !== "square-invoice") {
     return { ok: false, error: "Invalid payment method" };
   }
 

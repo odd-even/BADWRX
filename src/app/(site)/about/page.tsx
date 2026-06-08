@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { brand } from "@/lib/brand";
 import { getSiteSettings } from "@/lib/content";
-import { riflePlaceholder, riflePlaceholderAlt } from "@/lib/images";
+import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "About",
@@ -30,30 +30,43 @@ export default async function AboutPage() {
             ))}
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {[
-              { value: site.partnerBarrels, label: "Barrels" },
-              { value: site.partnerOptics, label: "Optics" },
-              { value: '½"', label: "MOA standard" },
-            ].map((stat) => (
-              <div key={stat.label} className="border border-white/10 p-6 text-center">
-                <p className="text-2xl text-red md:text-3xl">{stat.value}</p>
-                <p className="mt-2 text-xs uppercase tracking-widest text-white-muted">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+          <div className="mt-12 border border-white/10 bg-black-muted">
+            <div className="border-b border-white/10 px-6 py-4">
+              <p className="text-xs uppercase tracking-widest text-red">
+                Partners &amp; standards
+              </p>
+            </div>
+            <dl className="divide-y divide-white/10">
+              {[
+                { label: "Barrels", value: site.partnerBarrels },
+                { label: "Optics", value: site.partnerOptics },
+                { label: "Accuracy standard", value: "½ MOA" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="grid gap-2 px-6 py-5 sm:grid-cols-[140px_1fr] sm:items-baseline sm:gap-8"
+                >
+                  <dt className="text-xs uppercase tracking-widest text-white-muted">
+                    {item.label}
+                  </dt>
+                  <dd className="text-base font-medium leading-snug text-white sm:text-lg">
+                    {item.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="relative aspect-[4/5] overflow-hidden border border-white/10">
+          <div className="relative aspect-[4/5] overflow-hidden border border-white/10 bg-black-light">
             <Image
-              src={riflePlaceholder}
-              alt={riflePlaceholderAlt}
+              src={images.about.story}
+              alt="BADWRX craftsmanship in the build shop"
               fill
-              className="object-contain bg-black-light p-6"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+              className="object-cover object-center"
+              sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 50vw, 640px"
             />
           </div>
           <div className="border border-white/10 bg-black-muted p-8">

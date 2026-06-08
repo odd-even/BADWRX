@@ -60,7 +60,3 @@ export function computeBuildLineItems(
   return items;
 }
 
-/** Suggested deposit for custom builds (50%) — used when Square Invoices is wired up */
-export function computeDepositCents(totalCents: number, rate = 0.5): number {
-  return Math.round(totalCents * rate);
-}

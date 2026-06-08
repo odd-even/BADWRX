@@ -56,7 +56,7 @@ function buildHtml(requestId: string, payload: BuildRequestPayload): string {
 
     <p style="margin:16px 0 0;font-size:16px;">
       <strong>Estimated total: ${escapeHtml(payload.totalFormatted)}</strong><br/>
-      <span style="color:#666;font-size:13px;">Suggested deposit: ${escapeHtml(payload.depositFormatted)}</span>
+      <span style="color:#666;font-size:13px;">Full payment due upfront before build begins</span>
     </p>
   </div>`;
 }
@@ -86,7 +86,7 @@ function buildText(requestId: string, payload: BuildRequestPayload): string {
     lines,
     ``,
     `Estimated total: ${payload.totalFormatted}`,
-    `Suggested deposit: ${payload.depositFormatted}`,
+    `Full payment due upfront before build begins`,
   ]
     .filter((value): value is string => value !== null)
     .join("\n");

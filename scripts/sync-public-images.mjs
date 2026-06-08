@@ -9,7 +9,7 @@ const mappings = [
   { name: "assets", src: join(root, "_assets", "photos") },
   { name: "logos", src: join(root, "_assets", "logos", "SVG") },
   { name: "configurator", src: join(root, "_assets", "configurator") },
-  { name: "placeholders", src: join(root, "_assets", "placeholder images") },
+  { name: "merch", src: join(root, "_assets", "merch") },
 ];
 
 mkdirSync(imagesDir, { recursive: true });

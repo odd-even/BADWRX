@@ -8,136 +8,293 @@ interface RifleScrollerProps {
   rifles: Rifle[];
 }
 
-/** Matches fixed header offset used on the home hero (`pt-[72px]`). */
-const HEADER_OFFSET_PX = 72;
+const AUTO_SCROLL_PX_PER_FRAME = 0.35;
+const RIFLES_PER_INTERACTION = 3;
+const SMOOTH_EASE = 0.14;
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
+function measureCardStep(el: HTMLDivElement): number {
+  const first = el.children[0] as HTMLElement | undefined;
+  if (!first) return 0;
+  const gap = parseFloat(getComputedStyle(el).columnGap || "20") || 20;
+  return first.offsetWidth + gap;
+}
+
+function clampScroll(el: HTMLDivElement, value: number) {
+  const max = Math.max(0, el.scrollWidth - el.clientWidth);
+  return Math.min(max, Math.max(0, value));
+}
+
+function getManualScrollBounds(
+  el: HTMLDivElement,
+  scrollOrigin: number,
+  interactionLimit: number,
+) {
+  const physicalMax = Math.max(0, el.scrollWidth - el.clientWidth);
+  return {
+    min: Math.max(0, scrollOrigin - interactionLimit),
+    max: Math.min(physicalMax, scrollOrigin + interactionLimit),
+    physicalMin: 0,
+    physicalMax,
+  };
 }
 
 /**
- * Home-page rifle showcase.
- * On desktop the section pins and the cards translate horizontally as the page
- * scrolls down; horizontal trackpad swipes and click-drag are mapped to page
- * scroll so the same motion can be driven manually. On small screens it falls
- * back to a native, touch-friendly horizontal carousel.
+ * Apple-style horizontal rifle gallery: auto-scrolls slowly, pauses on hover,
+ * and accepts smooth wheel / drag for up to 3 rifles before releasing to the page.
+ * Vertical scroll-up always passes through so the page can move back up freely.
  */
 export function RifleScroller({ rifles }: RifleScrollerProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const [released, setReleased] = useState(false);
+  const [canHover, setCanHover] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  const [enabled, setEnabled] = useState(false);
-  const [maxTranslate, setMaxTranslate] = useState(0);
-  const [pinHeight, setPinHeight] = useState(0);
-  const [offset, setOffset] = useState(0);
-
+  const cardStep = useRef(0);
+  const scrollOrigin = useRef(0);
+  const targetScroll = useRef(0);
+  const smoothFrame = useRef(0);
   const dragging = useRef(false);
   const dragMoved = useRef(false);
+  const dragStartX = useRef(0);
+  const dragStartScroll = useRef(0);
+
+  const maxManualDelta = useCallback(
+    () => cardStep.current * RIFLES_PER_INTERACTION,
+    [],
+  );
 
   const measure = useCallback(() => {
-    const track = trackRef.current;
-    const pin = pinRef.current;
-    if (!track || !pin) return;
-    setMaxTranslate(Math.max(0, track.scrollWidth - pin.clientWidth));
-    setPinHeight(pin.offsetHeight);
+    const el = scrollerRef.current;
+    if (!el) return;
+    cardStep.current = measureCardStep(el);
+    targetScroll.current = el.scrollLeft;
+  }, []);
+
+  const runSmoothScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    cancelAnimationFrame(smoothFrame.current);
+    const tick = () => {
+      const diff = targetScroll.current - el.scrollLeft;
+      if (Math.abs(diff) < 0.4) {
+        el.scrollLeft = targetScroll.current;
+        return;
+      }
+      el.scrollLeft += diff * SMOOTH_EASE;
+      smoothFrame.current = requestAnimationFrame(tick);
+    };
+    smoothFrame.current = requestAnimationFrame(tick);
+  }, []);
+
+  const setTargetScroll = useCallback(
+    (next: number) => {
+      const el = scrollerRef.current;
+      if (!el) return;
+      const bounds = getManualScrollBounds(
+        el,
+        scrollOrigin.current,
+        maxManualDelta(),
+      );
+      const clamped = clampScroll(
+        el,
+        Math.min(bounds.max, Math.max(bounds.min, next)),
+      );
+      targetScroll.current = clamped;
+      runSmoothScroll();
+    },
+    [maxManualDelta, runSmoothScroll],
+  );
+
+  const beginHover = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    scrollOrigin.current = el.scrollLeft;
+    targetScroll.current = el.scrollLeft;
+    setReleased(false);
+    setHovered(true);
+  }, []);
+
+  const endHover = useCallback(() => {
+    setHovered(false);
+    setReleased(false);
+    dragging.current = false;
+    cancelAnimationFrame(smoothFrame.current);
+  }, []);
+
+  const tryConsumeDelta = useCallback(
+    (delta: number): boolean => {
+      const el = scrollerRef.current;
+      if (!el || released || cardStep.current <= 0) return false;
+
+      const bounds = getManualScrollBounds(
+        el,
+        scrollOrigin.current,
+        maxManualDelta(),
+      );
+      const atPhysicalEnd =
+        delta > 0 && targetScroll.current >= bounds.physicalMax - 0.5;
+      const atPhysicalStart =
+        delta < 0 && targetScroll.current <= bounds.physicalMin + 0.5;
+
+      if (atPhysicalEnd || atPhysicalStart) {
+        setReleased(true);
+        return false;
+      }
+
+      const next = targetScroll.current + delta;
+
+      if (next > bounds.max && delta > 0) {
+        setTargetScroll(bounds.max);
+        setReleased(true);
+        return false;
+      }
+      if (next < bounds.min && delta < 0) {
+        setTargetScroll(bounds.min);
+        setReleased(true);
+        return false;
+      }
+
+      setTargetScroll(next);
+
+      if (
+        (delta > 0 && targetScroll.current >= bounds.physicalMax - 0.5) ||
+        (delta < 0 && targetScroll.current <= bounds.physicalMin + 0.5)
+      ) {
+        setReleased(true);
+      }
+
+      return true;
+    },
+    [released, maxManualDelta, setTargetScroll],
+  );
+
+  useEffect(() => {
+    const hoverQuery = window.matchMedia("(hover: hover)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const sync = () => {
+      setCanHover(hoverQuery.matches);
+      setReducedMotion(motionQuery.matches);
+    };
+
+    sync();
+    hoverQuery.addEventListener("change", sync);
+    motionQuery.addEventListener("change", sync);
+    return () => {
+      hoverQuery.removeEventListener("change", sync);
+      motionQuery.removeEventListener("change", sync);
+    };
   }, []);
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px)");
-    const apply = () => setEnabled(query.matches);
-    apply();
-    query.addEventListener("change", apply);
-    return () => query.removeEventListener("change", apply);
-  }, []);
-
-  useEffect(() => {
-    if (!enabled) {
-      setOffset(0);
-      setMaxTranslate(0);
-      setPinHeight(0);
-      return;
-    }
-
     measure();
-    window.addEventListener("resize", measure);
-
-    const track = trackRef.current;
-    const pin = pinRef.current;
-    const observer =
-      track && pin
-        ? new ResizeObserver(() => measure())
-        : null;
-    observer?.observe(track!);
-    observer?.observe(pin!);
-
-    return () => {
-      window.removeEventListener("resize", measure);
-      observer?.disconnect();
-    };
-  }, [enabled, measure, rifles.length]);
+    const el = scrollerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [measure, rifles.length]);
 
   useEffect(() => {
-    if (!enabled) return;
+    const el = scrollerRef.current;
+    if (!el || !canHover || reducedMotion || hovered) return;
+
     let frame = 0;
-    const update = () => {
-      const section = sectionRef.current;
-      if (!section || maxTranslate <= 0) return;
-      const start = section.offsetTop - HEADER_OFFSET_PX;
-      const progress = clamp((window.scrollY - start) / maxTranslate, 0, 1);
-      setOffset(progress * maxTranslate);
+    const tick = () => {
+      const max = Math.max(0, el.scrollWidth - el.clientWidth);
+      if (max > 0) {
+        el.scrollLeft += AUTO_SCROLL_PX_PER_FRAME;
+        if (el.scrollLeft >= max) {
+          el.scrollLeft = 0;
+        }
+      }
+      frame = requestAnimationFrame(tick);
     };
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [enabled, maxTranslate]);
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [canHover, reducedMotion, hovered, rifles.length]);
 
   useEffect(() => {
-    if (!enabled) return;
-    const pin = pinRef.current;
-    if (!pin) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+
     const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
-      const section = sectionRef.current;
-      if (!section || maxTranslate <= 0) return;
-      const start = section.offsetTop - HEADER_OFFSET_PX;
-      const progress = clamp((window.scrollY - start) / maxTranslate, 0, 1);
-      const atStart = progress <= 0 && event.deltaX < 0;
-      const atEnd = progress >= 1 && event.deltaX > 0;
-      if (atStart || atEnd) return;
-      event.preventDefault();
-      window.scrollBy({ top: event.deltaX });
+      if (!hovered || released) return;
+
+      const verticalDominant =
+        Math.abs(event.deltaY) >= Math.abs(event.deltaX);
+
+      // Scrolling back up — never hijack; let the page move immediately.
+      if (verticalDominant && event.deltaY < 0) return;
+
+      const delta = verticalDominant ? event.deltaY : event.deltaX;
+      if (delta === 0) return;
+
+      const consumed = tryConsumeDelta(delta * 0.85);
+      if (consumed) event.preventDefault();
     };
-    pin.addEventListener("wheel", onWheel, { passive: false });
-    return () => pin.removeEventListener("wheel", onWheel);
-  }, [enabled, maxTranslate]);
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [hovered, released, tryConsumeDelta]);
 
   const onPointerDown = (event: React.PointerEvent) => {
-    if (!enabled) return;
+    if (!hovered || released) return;
     dragging.current = true;
     dragMoved.current = false;
+    dragStartX.current = event.clientX;
+    dragStartScroll.current = targetScroll.current;
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: React.PointerEvent) => {
-    if (!enabled || !dragging.current) return;
-    if (Math.abs(event.movementX) > 2) dragMoved.current = true;
-    window.scrollBy({ top: -event.movementX });
+    if (!dragging.current || released) return;
+    const delta = dragStartX.current - event.clientX;
+    if (Math.abs(delta) > 3) dragMoved.current = true;
+
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const bounds = getManualScrollBounds(
+      el,
+      scrollOrigin.current,
+      maxManualDelta(),
+    );
+    const next = clampScroll(
+      el,
+      Math.min(
+        bounds.max,
+        Math.max(bounds.min, dragStartScroll.current + delta),
+      ),
+    );
+
+    const hitLimit =
+      next >= bounds.physicalMax ||
+      next <= bounds.physicalMin ||
+      next >= bounds.max ||
+      next <= bounds.min;
+    targetScroll.current = next;
+    el.scrollLeft = next;
+
+    if (hitLimit) {
+      setReleased(true);
+      dragging.current = false;
+      const target = event.currentTarget as HTMLElement;
+      if (target.hasPointerCapture(event.pointerId)) {
+        target.releasePointerCapture(event.pointerId);
+      }
+    }
   };
 
   const endDrag = (event: React.PointerEvent) => {
     if (!dragging.current) return;
     dragging.current = false;
-    const el = event.currentTarget as HTMLElement;
-    if (el.hasPointerCapture(event.pointerId)) {
-      el.releasePointerCapture(event.pointerId);
+    const target = event.currentTarget as HTMLElement;
+    if (target.hasPointerCapture(event.pointerId)) {
+      target.releasePointerCapture(event.pointerId);
     }
   };
 
@@ -149,52 +306,47 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
     }
   };
 
-  const cards = rifles.map((rifle, index) => (
-    <div
-      key={rifle.id}
-      className="w-[min(88vw,340px)] shrink-0 snap-start md:w-[360px] lg:w-[380px]"
-    >
-      <RifleCard rifle={rifle} priority={index === 0} compact />
-    </div>
-  ));
-
-  if (!enabled) {
-    return (
-      <div className="mt-10 md:mt-12">
-        <div className="mx-auto flex max-w-7xl snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 [&::-webkit-scrollbar]:hidden">
-          {cards}
-        </div>
-      </div>
-    );
-  }
-
-  const scrollRunway =
-    pinHeight > 0 && maxTranslate > 0 ? pinHeight + maxTranslate : undefined;
-
   return (
     <div
-      ref={sectionRef}
-      className="relative mt-10 md:mt-12"
-      style={scrollRunway ? { height: scrollRunway } : { minHeight: 420 }}
+      className="relative mt-8 md:mt-10"
+      onMouseEnter={beginHover}
+      onMouseLeave={endHover}
     >
       <div
-        ref={pinRef}
-        className="sticky overflow-hidden py-6 md:py-8"
-        style={{ top: HEADER_OFFSET_PX }}
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[var(--color-black)] to-transparent md:w-20"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[var(--color-black)] to-transparent md:w-20"
+        aria-hidden
+      />
+
+      <div
+        ref={scrollerRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+        onDragStart={(event) => event.preventDefault()}
+        className={`flex gap-5 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
+          hovered && !released
+            ? "cursor-grab active:cursor-grabbing"
+            : ""
+        }`}
       >
-        <div
-          ref={trackRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onClickCapture={onClickCapture}
-          onDragStart={(event) => event.preventDefault()}
-          className="flex cursor-grab select-none gap-5 px-6 will-change-transform active:cursor-grabbing md:gap-6"
-          style={{ transform: `translate3d(${-offset}px, 0, 0)` }}
-        >
-          {cards}
-        </div>
+        {rifles.map((rifle, index) => (
+          <div
+            key={rifle.id}
+            className="w-[min(82vw,320px)] shrink-0 md:w-[340px] lg:w-[360px]"
+          >
+            <RifleCard
+              rifle={rifle}
+              priority={index < 4}
+              compact
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

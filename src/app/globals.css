@@ -36,6 +36,8 @@ h4,
 h5,
 h6 {
   line-height: 1.12;
+  text-wrap: balance;
+  hyphens: none;
 }
 
 h1 {
@@ -60,10 +62,10 @@ h3 {
 
 @keyframes trust-marquee {
   from {
-    transform: translateX(0);
+    transform: translateX(-50%);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(0);
   }
 }
 
@@ -120,5 +122,39 @@ h3 {
   .hero-tag-in {
     opacity: 1;
     animation: none;
+  }
+}
+
+a,
+a.transition,
+a.transition-colors,
+a[class*="transition"] {
+  transition-property: color, letter-spacing, border-color, background-color,
+    opacity, transform, box-shadow, filter;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+a:hover {
+  letter-spacing: 0.05em;
+}
+
+a.tracking-wider:hover,
+.tracking-wider:is(a):hover {
+  letter-spacing: 0.08em;
+}
+
+a.tracking-widest:hover,
+.tracking-widest:is(a):hover {
+  letter-spacing: 0.14em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:hover,
+  a.tracking-wider:hover,
+  .tracking-wider:is(a):hover,
+  a.tracking-widest:hover,
+  .tracking-widest:is(a):hover {
+    letter-spacing: inherit;
   }
 }

@@ -22,7 +22,7 @@ function isAuthorized(request: Request): boolean {
 }
 
 /**
- * Creates and sends a Square deposit invoice after builder approval.
+ * Creates and sends a Square invoice for the full build price after approval.
  * Protected by BUILD_ADMIN_API_KEY in production.
  *
  * Body: { requestId: string } or { payload: BuildRequestPayload }
@@ -92,7 +92,6 @@ export async function POST(request: Request) {
       ok: true,
       requestId: resolvedRequestId,
       invoice,
-      preferredMethod: buildPayload.squareInvoice.method,
     });
   } catch (error) {
     if (error instanceof SquareNotConfiguredError) {
@@ -104,7 +103,7 @@ export async function POST(request: Request) {
 
     console.error("[square/deposit-invoice]", error);
     return NextResponse.json(
-      { error: "Failed to create Square deposit invoice" },
+      { error: "Failed to create Square invoice" },
       { status: 502 },
     );
   }

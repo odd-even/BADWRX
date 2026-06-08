@@ -43,6 +43,11 @@ export interface Rifle {
   highlights: string[];
 }
 
+export interface CourseCurriculumItem {
+  title: string;
+  detail: string;
+}
+
 export interface Course {
   id: string;
   slug: string;
@@ -52,6 +57,14 @@ export interface Course {
   description: string;
   topics: string[];
   featured?: boolean;
+  tagline?: string;
+  duration?: string;
+  format?: string;
+  outcomes?: string[];
+  curriculum?: CourseCurriculumItem[];
+  audience?: string[];
+  includes?: string[];
+  heroImage?: RifleImage;
 }
 
 export type MerchCategory = "caps" | "t-shirts" | "sweaters";
@@ -151,6 +164,10 @@ export interface SiteSettings {
     quote: string;
     author: string;
   };
+  testimonials?: {
+    quote: string;
+    author: string;
+  }[];
   contactSection: {
     title: string;
     body: string;

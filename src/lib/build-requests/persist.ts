@@ -40,7 +40,6 @@ export async function persistBuildRequestToSanity(
       notes: payload.contact.notes || undefined,
       paymentMethod: payload.paymentMethod,
       totalCents: payload.totalCents,
-      depositCents: payload.depositCents,
       totalFormatted: payload.totalFormatted,
       selections: payload.selections.map((line) => ({
         _key: line.stepKey,

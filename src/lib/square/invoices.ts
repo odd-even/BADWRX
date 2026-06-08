@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import {
   getContactFullName,
   type BuildRequestPayload,
-  type SquareInvoiceMethod,
 } from "@/lib/build-submission";
 import { getSquareClient } from "@/lib/square/client";
 import {
@@ -23,9 +22,8 @@ export interface CreateDepositInvoiceInput {
     state?: string;
     postalCode?: string;
   };
-  depositCents: number;
+  totalCents: number;
   buildSummary: string;
-  preferredMethod: SquareInvoiceMethod;
 }
 
 export interface CreateDepositInvoiceResult {
@@ -54,8 +52,8 @@ function dueDateDaysFromNow(days: number): string {
 }
 
 /**
- * Creates and publishes a Square deposit invoice. Customer pays on Square's
- * hosted page — card and bank transfer (ACH) when enabled on the invoice.
+ * Creates and publishes a Square invoice for the full build price. Customer
+ * pays on Square's hosted page — card and bank transfer (ACH) when enabled.
  */
 export async function createDepositInvoice(
   input: CreateDepositInvoiceInput,
@@ -102,10 +100,10 @@ export async function createDepositInvoice(
       customerId,
       lineItems: [
         {
-          name: "Custom rifle build — deposit",
+          name: "Custom rifle build",
           quantity: "1",
           basePriceMoney: {
-            amount: BigInt(input.depositCents),
+            amount: BigInt(input.totalCents),
             currency: "USD",
           },
         },
@@ -132,7 +130,7 @@ export async function createDepositInvoice(
         },
       ],
       deliveryMethod: "EMAIL",
-      title: "BADWRX Custom Rifle — Deposit",
+      title: "BADWRX Custom Rifle",
       description: input.buildSummary,
       acceptedPaymentMethods: {
         card: true,
@@ -141,16 +139,6 @@ export async function createDepositInvoice(
         buyNowPayLater: false,
         cashAppPay: false,
       },
-      customFields:
-        input.preferredMethod === "ach"
-          ? [
-              {
-                label: "Preferred payment",
-                value: "Bank transfer (ACH)",
-                placement: "ABOVE_LINE_ITEMS",
-              },
-            ]
-          : undefined,
     },
   });
 
@@ -194,8 +182,7 @@ export function createDepositInvoiceFromBuildRequest(
       state: payload.contact.state,
       postalCode: payload.contact.postalCode,
     },
-    depositCents: payload.depositCents,
+    totalCents: payload.totalCents,
     buildSummary,
-    preferredMethod: payload.squareInvoice.method,
   });
 }
