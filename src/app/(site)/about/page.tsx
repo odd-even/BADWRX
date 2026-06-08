@@ -12,6 +12,12 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const site = await getSiteSettings();
+  const closingLine = "We build that rifle.";
+  const body = site.aboutPage.body;
+  const closingIndex = body.lastIndexOf(closingLine);
+  const storyBody =
+    closingIndex === -1 ? body : body.slice(0, closingIndex).trimEnd();
+  const hasClosingLine = closingIndex !== -1;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -20,13 +26,41 @@ export default async function AboutPage() {
           <p className="text-xs uppercase tracking-widest text-red">Our story</p>
           <h1 className="mt-2 text-5xl text-white">{site.aboutPage.title}</h1>
           <div className="mt-8 space-y-6">
-            {site.aboutPage.body.map((paragraph) => (
-              <p
-                key={paragraph.slice(0, 32)}
-                className="text-white-muted leading-relaxed"
+            <p className="text-white-muted leading-relaxed">
+              {storyBody}
+              {hasClosingLine && (
+                <>
+                  {storyBody && " "}
+                  <span className="text-white">{closingLine}</span>
+                </>
+              )}
+            </p>
+            {site.aboutPage.signature && (
+              <div className="text-xs leading-relaxed text-white/70">
+                <p>— {site.aboutPage.signature.name}</p>
+                <p className="mt-1 pl-3">{site.aboutPage.signature.location}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-12 grid gap-4">
+            {site.aboutPage.pillars.map((pillar, index) => (
+              <div
+                key={pillar.title}
+                className="flex h-full flex-col border border-white/10 bg-black-muted p-5"
               >
-                {paragraph}
-              </p>
+                <span className="text-xs font-semibold text-red">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-3 font-medium leading-snug text-white">
+                  {pillar.title}
+                </p>
+                {pillar.body && (
+                  <p className="mt-2 text-sm leading-relaxed text-white-muted">
+                    {pillar.body}
+                  </p>
+                )}
+              </div>
             ))}
           </div>
 
@@ -83,7 +117,9 @@ export default async function AboutPage() {
         <div className="grid gap-12 lg:grid-cols-2">
           <div className="border border-white/10 bg-black-muted p-8 md:p-10">
             <p className="text-xs uppercase tracking-widest text-red">Our standard</p>
-            <h2 className="mt-2 text-3xl text-white">Built to order. Tested before it ships.</h2>
+            <h2 className="mt-2 text-3xl text-white">
+              Built to order, tested before it ships
+            </h2>
             <p className="mt-6 text-white-muted leading-relaxed">{brand.buildPromise}</p>
           </div>
           <div className="border border-white/10 bg-black-light p-8 md:p-10">

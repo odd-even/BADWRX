@@ -77,6 +77,10 @@ function configToSummary(config: BuildConfiguration): Record<string, string> {
   return summary;
 }
 
+function scrollConfiguratorToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 
 export function Configurator() {
@@ -113,7 +117,10 @@ export function Configurator() {
   const isLastStep = navPosition === navigableStepIndices.length - 1;
   const goToStep = (position: number) => {
     const target = navigableStepIndices[position];
-    if (target !== undefined) setStepIndex(target);
+    if (target !== undefined) {
+      setStepIndex(target);
+      scrollConfiguratorToTop();
+    }
   };
   const canAdvance = config[currentKey] !== null;
   const isBuildComplete = submission.isComplete;
@@ -244,7 +251,10 @@ export function Configurator() {
         form={form}
         onFormChange={setForm}
         onSubmit={handleSubmit}
-        onEdit={() => setPhase("configure")}
+        onEdit={() => {
+          setPhase("configure");
+          scrollConfiguratorToTop();
+        }}
         submitting={submitting}
         submitError={submitError}
       />
@@ -376,7 +386,10 @@ export function Configurator() {
             </p>
             <button
               type="button"
-              onClick={() => setPhase("review")}
+              onClick={() => {
+                setPhase("review");
+                scrollConfiguratorToTop();
+              }}
               className="mt-6 w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
             >
               Review & Submit Build →
@@ -468,7 +481,10 @@ export function Configurator() {
           {isBuildComplete && (
             <button
               type="button"
-              onClick={() => setPhase("review")}
+              onClick={() => {
+                setPhase("review");
+                scrollConfiguratorToTop();
+              }}
               className="mt-6 w-full border border-red bg-red py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
             >
               Review & Submit Build

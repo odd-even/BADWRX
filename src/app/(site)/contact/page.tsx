@@ -83,7 +83,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             merchTitle={merch?.title}
             buildFields={isBuildRequest ? sourceData.contactFormFields : undefined}
             submitLabel={
-              isRegistration ? "Register Now" : isMerchInquiry ? "Send Inquiry" : "Send Message"
+              isRegistration ? "Register Now" : isMerchInquiry ? "Send Inquiry" : "Send"
             }
           />
         </div>

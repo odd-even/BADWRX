@@ -133,7 +133,7 @@ export interface SiteSettings {
   homeHero: {
     eyebrow: string;
     headlinePrefix: string;
-    headlines: string[];
+    headlines: (string | string[])[];
     subheadline: string;
   };
   homePlatforms: {
@@ -174,7 +174,15 @@ export interface SiteSettings {
   };
   aboutPage: {
     title: string;
-    body: string[];
+    body: string;
+    signature?: {
+      name: string;
+      location: string;
+    };
+    pillars: {
+      title: string;
+      body: string;
+    }[];
     philosophyQuote: string;
   };
 }

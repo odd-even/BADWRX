@@ -16,6 +16,37 @@ function pillarParts(key: "weight" | "accuracy" | "durability") {
   };
 }
 
+function parseAboutSignature(text: string) {
+  const match = text.match(/^BADWRX\.?\s+(.+?)\.?$/);
+  if (!match) return undefined;
+  return {
+    name: "BADWRX",
+    location: match[1].replace(/\.$/, "").trim(),
+  };
+}
+
+function aboutPageCopy() {
+  const full = getCopy("ABOUT — Body", brand.buildPromise);
+  const match = full.match(
+    /^(.*?We build that rifle\.)\s+(BADWRX\.\s+Diamondhead,\s+Mississippi\.?)\s*$/s,
+  );
+  if (!match) return { body: full, signature: undefined };
+  return {
+    body: match[1].trim(),
+    signature: parseAboutSignature(match[2].trim()),
+  };
+}
+
+function aboutPillarFromCopy(key: string, fallback: string) {
+  const text = getCopy(key, fallback);
+  const split = text.indexOf(". ");
+  if (split === -1) return { title: text.replace(/\.$/, "").trim(), body: "" };
+  return {
+    title: text.slice(0, split).trim(),
+    body: text.slice(split + 2),
+  };
+}
+
 export const defaultSiteSettings: SiteSettings = {
   name: brand.name,
   short: brand.short,
@@ -38,11 +69,11 @@ export const defaultSiteSettings: SiteSettings = {
   ],
   homeHero: {
     eyebrow: "Unrelenting performance",
-    headlinePrefix: "Engineered ",
+    headlinePrefix: "",
     headlines: [
-      "Without Compromise.",
-      "for Unrelenting Performance.",
-      "for the Hard Country.",
+      ["Crafted", "Without", "Compromise"],
+      ["Engineered", "for Unrelenting", "Performance"],
+      ["Built for", "the hard", "country"],
     ],
     subheadline: docxCopy.homeHero.subheadline,
   },
@@ -107,17 +138,33 @@ export const defaultSiteSettings: SiteSettings = {
     title: "Request a build quote",
     body: cleanDocxCopy(docxCopy.customQuoteCta),
   },
-  aboutPage: {
-    title: getCopy("ABOUT — Headline", "Built Different. On Purpose."),
-    body: [
-      getCopy("ABOUT — Body", brand.buildPromise),
-      getCopy("ABOUT — Pillar 1: PRECISION", ""),
-      getCopy("ABOUT — Pillar 2: WEIGHT", ""),
-      getCopy("ABOUT — Pillar 3: RELIABILITY", ""),
-    ].filter(Boolean),
+  aboutPage: (() => {
+    const copy = aboutPageCopy();
+    return {
+    title: getCopy("ABOUT — Headline", "Built Different. On Purpose.")
+      .replace(/\.\s*/g, " ")
+      .replace(/\s+/g, " ")
+      .trim(),
+    body: copy.body,
+    signature: copy.signature,
+    pillars: [
+      aboutPillarFromCopy(
+        "ABOUT — Pillar 1: PRECISION",
+        "We build to tolerances that matter. Every action, barrel, and component in a BADWRX rifle is selected and fitted to perform as a system, not as a collection of parts.",
+      ),
+      aboutPillarFromCopy(
+        "ABOUT — Pillar 2: WEIGHT",
+        "Ultralight is not a marketing term. It is an engineering discipline. We build the lightest rifle that can do the job — and we do not build rifles that cannot.",
+      ),
+      aboutPillarFromCopy(
+        "ABOUT — Pillar 3: RELIABILITY",
+        "A precision rifle that fails in the field is worse than useless. Every BADWRX build is tested, verified, and guaranteed before it ships.",
+      ),
+    ],
     philosophyQuote: getCopy(
       "ABOUT — Headline",
       "Built Different. On Purpose.",
     ),
-  },
+    };
+  })(),
 };

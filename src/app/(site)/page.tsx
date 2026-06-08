@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
+import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
@@ -15,7 +16,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden pt-[72px]">
+      <section className="relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <Image
           src={images.rifle.homeCover}
           alt="Custom precision rifle on a mountain ridgeline"
@@ -24,16 +25,18 @@ export default async function HomePage() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="pointer-events-none absolute inset-0">
+        <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
+        <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-x-0 top-0 h-[min(40vh,280px)] bg-gradient-to-b from-black via-black/75 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
 
-        <div className="relative mx-auto w-full max-w-7xl px-6 pb-20 pt-32">
+        <div className="relative z-[2] mx-auto w-full max-w-7xl px-6 pb-20 pt-32">
           <TypewriterText
             as="h1"
-            prefix={site.homeHero.headlinePrefix}
+            prefix={site.homeHero.headlinePrefix || undefined}
             phrases={site.homeHero.headlines}
+            highlights={["Without", "Unrelenting", "Hard"]}
             className="max-w-3xl text-5xl leading-[0.92] text-white md:text-7xl"
           />
           <p className="mt-6 max-w-xl text-lg text-white-muted">
@@ -116,7 +119,7 @@ export default async function HomePage() {
               src={images.rifle.hunt}
               alt="Hunter in Alaska mountain country"
               fill
-              className="object-cover"
+              className="object-cover object-left"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>
@@ -141,19 +144,11 @@ export default async function HomePage() {
             className="object-cover object-[center_26%]"
             sizes="100vw"
           />
-          <div
-            className="absolute top-[16%] left-[68%] aspect-square w-[70vw] min-w-[70vw] -translate-x-1/2 -translate-y-1/2 opacity-50 mix-blend-screen"
-            aria-hidden
-          >
-            <Image
-              src={images.rifle.reticleOverlay}
-              alt=""
-              fill
-              className="object-contain"
-              sizes="70vw"
-            />
-          </div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_32%,rgba(0,0,0,0.85)_52%,var(--color-black)_100%)]" />
+          <ReticleMouseFollow
+            className="top-[16%] left-[68%] aspect-square w-[70vw] min-w-[70vw] opacity-50 mix-blend-screen"
+            sizes="70vw"
+          />
+          <div className="absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_32%,rgba(0,0,0,0.85)_52%,var(--color-black)_100%)]" />
         </div>
 
         <div className="relative z-[3] mx-auto flex min-h-[70vh] w-full max-w-7xl flex-col justify-end px-6 pb-20 pt-32">

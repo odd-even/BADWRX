@@ -9,6 +9,7 @@ export const images = {
     studioCropped: `${assetBase}/IMG_0058-cropped.jpg`,
     field: `${assetBase}/IMG_5613.jpeg`,
     homeCover: `${assetBase}/IMG_5613cover.webp`,
+    universityHero: `${assetBase}/Kyle_Lamb_MDT_CRBN_Tripod.jpg.webp`,
     hunt: `${assetBase}/IMG_1125bighorn.jpg`,
     reticleOverlay: `${assetBase}/FC-DMx_MOA__16268%20copy.webp`,
   },

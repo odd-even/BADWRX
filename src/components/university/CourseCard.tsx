@@ -17,7 +17,7 @@ export function CourseCard({ course }: CourseCardProps) {
             </span>
             <h2 className="mt-2 text-2xl text-white md:text-3xl">
               <Link
-                href={`/university/${course.slug}`}
+                href="/university"
                 className="transition hover:text-red"
               >
                 {course.title}
@@ -55,7 +55,7 @@ export function CourseCard({ course }: CourseCardProps) {
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Link
-            href={`/university/${course.slug}`}
+            href="/university"
             className="flex-1 border border-white/20 py-4 text-center text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"
           >
             View course

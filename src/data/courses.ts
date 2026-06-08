@@ -1,5 +1,5 @@
 import type { Course } from "@/lib/types";
-import { images, riflePlaceholderAlt } from "@/lib/images";
+import { images } from "@/lib/images";
 
 export const courses: Course[] = [
   {
@@ -69,8 +69,8 @@ export const courses: Course[] = [
       "Class size capped at six for real attention",
     ],
     heroImage: {
-      url: images.rifle.field,
-      alt: riflePlaceholderAlt,
+      url: images.rifle.universityHero,
+      alt: "Long range shooter behind a precision rifle on a carbon fiber tripod",
     },
     featured: true,
   },

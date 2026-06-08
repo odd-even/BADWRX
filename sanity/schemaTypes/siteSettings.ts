@@ -39,7 +39,7 @@ export const siteSettings = defineType({
           name: "headlinePrefix",
           title: "Hero headline prefix",
           type: "string",
-          description: 'Fixed opening word(s), e.g. "Engineered "',
+          description: 'Fixed opening word(s), e.g. "Crafted "',
         }),
         defineField({
           name: "headlines",
@@ -98,9 +98,32 @@ export const siteSettings = defineType({
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({
           name: "body",
-          title: "Body paragraphs",
+          title: "Body",
+          type: "text",
+          rows: 6,
+        }),
+        defineField({
+          name: "signature",
+          title: "Signature",
+          type: "object",
+          fields: [
+            defineField({ name: "name", title: "Name", type: "string" }),
+            defineField({ name: "location", title: "Location", type: "string" }),
+          ],
+        }),
+        defineField({
+          name: "pillars",
+          title: "Pillars",
           type: "array",
-          of: [{ type: "text", rows: 4 }],
+          of: [
+            {
+              type: "object",
+              fields: [
+                defineField({ name: "title", title: "Title", type: "string" }),
+                defineField({ name: "body", title: "Body", type: "text", rows: 3 }),
+              ],
+            },
+          ],
         }),
         defineField({
           name: "philosophyQuote",

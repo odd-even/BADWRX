@@ -46,7 +46,7 @@ export function SpecTable({ specs, compact = false }: SpecTableProps) {
           key={key}
           className={`grid ${compact ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2"} gap-1 px-4 py-3 sm:gap-4`}
         >
-          <dt className="text-xs uppercase tracking-widest text-red">
+          <dt className="text-xs uppercase tracking-widest text-white-muted">
             {specLabels[key]}
           </dt>
           <dd className="text-sm text-white">{value}</dd>

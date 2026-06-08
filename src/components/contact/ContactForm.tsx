@@ -33,7 +33,7 @@ function isTextAreaField(field: ContactField) {
 export function ContactForm({
   courseTitle,
   merchTitle,
-  submitLabel = "Send Message",
+  submitLabel = "Send",
   buildFields,
 }: ContactFormProps) {
   const inquiryTitle = courseTitle ?? merchTitle;
@@ -172,7 +172,7 @@ export function ContactForm({
           type="submit"
           className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
         >
-          Send My Build Request
+          {submitLabel}
         </button>
       </form>
     );

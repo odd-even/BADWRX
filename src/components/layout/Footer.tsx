@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FooterTagline } from "@/components/layout/FooterTagline";
 import { getBrandContent } from "@/lib/content";
 import { brand } from "@/lib/brand";
 import { images } from "@/lib/images";
@@ -29,7 +30,7 @@ export async function Footer() {
               alt={`${content.short} — ${content.name}`}
               width={220}
               height={208}
-              className="h-32 w-auto sm:h-40 md:h-44"
+              className="h-40 w-auto sm:h-48 md:h-52 lg:h-56"
             />
           </Link>
 
@@ -81,19 +82,14 @@ export async function Footer() {
               Not a retail dealer. All builds by consultation and quote only.
             </p>
             <p className="mt-4 text-xs text-white-muted/50">
-              © {new Date().getFullYear()} {content.name} ({content.short}). All
-              rights reserved.
+              © {new Date().getFullYear()} {content.name} LLC ({content.short}).
+              All rights reserved.
             </p>
           </div>
         </div>
       </div>
 
-      <p className="mx-auto max-w-7xl px-6 text-2xl font-bold uppercase leading-[0.95] tracking-tight sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-        <span className="text-red">Precision rifles</span>
-        <span className="text-white/30"> for</span>
-        <br />
-        <span className="text-white/30">the American patriot</span>
-      </p>
+      <FooterTagline />
     </footer>
   );
 }
