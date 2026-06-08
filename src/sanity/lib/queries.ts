@@ -11,6 +11,7 @@ export const riflesQuery = `*[_type == "rifle"] | order(title asc) {
   chassis,
   actionName,
   barrelSummary,
+  configuratorPrice,
   configuratorPriceCents,
   showInConfigurator,
   heroImage { asset->{ _id, url }, alt },
@@ -33,6 +34,7 @@ export const rifleBySlugQuery = `*[_type == "rifle" && slug.current == $slug][0]
   chassis,
   actionName,
   barrelSummary,
+  configuratorPrice,
   configuratorPriceCents,
   showInConfigurator,
   heroImage { asset->{ _id, url }, alt },
@@ -104,6 +106,7 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
 }`;
 
 export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] {
+  baseBuildPrice,
   baseBuildCents,
   platformDefaults[]{ platformSlug, trigger, muzzleBrake },
   stepCopy,
@@ -111,6 +114,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     optionId,
     label,
     notes,
+    price,
     priceCents,
     platformSlugs
   },
@@ -120,6 +124,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     code,
     description,
     bestFor,
+    price,
     priceCents,
     image { asset->{ _id, url }, alt }
   },
@@ -133,6 +138,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     tube,
     msrp,
     notes,
+    price,
     priceCents,
     image { asset->{ _id, url }, alt }
   },
@@ -142,6 +148,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     optionId,
     label,
     description,
+    price,
     priceCents,
     image { asset->{ _id, url }, alt }
   },
@@ -151,6 +158,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     headline,
     description,
     items,
+    price,
     priceCents,
     image { asset->{ _id, url }, alt },
     noneLabel,
@@ -163,6 +171,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     description,
     howItWorks,
     deliverables,
+    price,
     priceCents,
     noneLabel,
     noneDescription

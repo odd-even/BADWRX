@@ -10,6 +10,7 @@ import type { ConfigOption, ConfigStep } from "@/lib/types";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
 import { imageUrl } from "./image";
+import { sanityPriceToCents } from "./price";
 
 interface SanityImageField {
   asset?: { url?: string };
@@ -25,6 +26,7 @@ interface SanityRifleForConfigurator {
   chassis?: string;
   actionName?: string;
   barrelSummary?: string;
+  configuratorPrice?: number;
   configuratorPriceCents?: number;
   specs?: {
     action?: string;
@@ -38,6 +40,7 @@ interface SanityRifleForConfigurator {
 }
 
 interface SanityConfiguratorSettings {
+  baseBuildPrice?: number;
   baseBuildCents?: number;
   platformDefaults?: {
     platformSlug: string;
@@ -57,6 +60,7 @@ interface SanityConfiguratorSettings {
     optionId?: { current?: string };
     label: string;
     notes?: string;
+    price?: number;
     priceCents?: number;
     platformSlugs?: string[];
   }[];
@@ -66,6 +70,7 @@ interface SanityConfiguratorSettings {
     code?: string;
     description?: string;
     bestFor?: string;
+    price?: number;
     priceCents?: number;
     image?: SanityImageField;
   }[];
@@ -79,6 +84,7 @@ interface SanityConfiguratorSettings {
     tube?: string;
     msrp?: string;
     notes?: string;
+    price?: number;
     priceCents?: number;
     image?: SanityImageField;
   }[];
@@ -88,6 +94,7 @@ interface SanityConfiguratorSettings {
     optionId?: string;
     label?: string;
     description?: string;
+    price?: number;
     priceCents?: number;
     image?: SanityImageField;
   };
@@ -97,6 +104,7 @@ interface SanityConfiguratorSettings {
     headline?: string;
     description?: string;
     items?: string[];
+    price?: number;
     priceCents?: number;
     image?: SanityImageField;
     noneLabel?: string;
@@ -109,6 +117,7 @@ interface SanityConfiguratorSettings {
     description?: string;
     howItWorks?: string;
     deliverables?: string[];
+    price?: number;
     priceCents?: number;
     noneLabel?: string;
     noneDescription?: string;
@@ -167,7 +176,10 @@ export function mapConfiguratorData(
     .filter((rifle) => rifle.showInConfigurator !== false)
     .map((rifle) => {
       const defaults = platformDefaults[rifle.slug];
-      const priceCents = rifle.configuratorPriceCents ?? 0;
+      const priceCents = sanityPriceToCents(
+        rifle.configuratorPrice,
+        rifle.configuratorPriceCents,
+      );
       optionPriceCents[rifle.slug] = priceCents;
 
       const action = rifle.actionName ?? rifle.specs?.action ?? "";
@@ -197,7 +209,7 @@ export function mapConfiguratorData(
 
   const caliberOptions: ConfigOption[] = (settings.calibers ?? []).map((caliber) => {
     const id = slugValue(caliber.optionId);
-    optionPriceCents[id] = caliber.priceCents ?? 0;
+    optionPriceCents[id] = sanityPriceToCents(caliber.price, caliber.priceCents);
     return {
       id,
       label: caliber.label,
@@ -210,7 +222,7 @@ export function mapConfiguratorData(
 
   const finishOptions: ConfigOption[] = (settings.finishes ?? []).map((finish) => {
     const id = slugValue(finish.optionId);
-    optionPriceCents[id] = finish.priceCents ?? 0;
+    optionPriceCents[id] = sanityPriceToCents(finish.price, finish.priceCents);
     return {
       id,
       label: finish.label,
@@ -228,7 +240,7 @@ export function mapConfiguratorData(
     ...(settings.optics ?? []).map((optic) => {
       const id = slugValue(optic.optionId);
       const label = opticLabel(optic);
-      optionPriceCents[id] = optic.priceCents ?? 0;
+      optionPriceCents[id] = sanityPriceToCents(optic.price, optic.priceCents);
       return {
         id,
         label,
@@ -267,7 +279,7 @@ export function mapConfiguratorData(
 
   const rings = settings.rings ?? {};
   const ringsId = rings.optionId ?? fallback.rings.id;
-  optionPriceCents[ringsId] = rings.priceCents ?? 0;
+  optionPriceCents[ringsId] = sanityPriceToCents(rings.price, rings.priceCents);
   const ringsOptions: ConfigOption[] = [
     {
       id: ringsId,
@@ -289,7 +301,10 @@ export function mapConfiguratorData(
 
   const basecamp = settings.basecamp ?? {};
   const basecampId = basecamp.optionId ?? fallback.basecampDetails.optionId;
-  optionPriceCents[basecampId] = basecamp.priceCents ?? 0;
+  optionPriceCents[basecampId] = sanityPriceToCents(
+    basecamp.price,
+    basecamp.priceCents,
+  );
   const basecampOptions: ConfigOption[] = [
     {
       id: basecampId,
@@ -315,7 +330,10 @@ export function mapConfiguratorData(
 
   const ballistic = settings.ballistic ?? {};
   const ballisticId = ballistic.optionId ?? fallback.ballisticDetails.optionId;
-  optionPriceCents[ballisticId] = ballistic.priceCents ?? 0;
+  optionPriceCents[ballisticId] = sanityPriceToCents(
+    ballistic.price,
+    ballistic.priceCents,
+  );
   const ballisticOptions: ConfigOption[] = [
     {
       id: ballisticId,
@@ -401,7 +419,10 @@ export function mapConfiguratorData(
   return {
     steps,
     pricing: {
-      baseBuildCents: settings.baseBuildCents ?? fallback.pricing.baseBuildCents,
+      baseBuildCents:
+        settings.baseBuildPrice != null || settings.baseBuildCents != null
+          ? sanityPriceToCents(settings.baseBuildPrice, settings.baseBuildCents)
+          : fallback.pricing.baseBuildCents,
       optionPriceCents,
     },
     platformDefaults:
