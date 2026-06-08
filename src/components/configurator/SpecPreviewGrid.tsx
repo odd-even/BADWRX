@@ -30,7 +30,7 @@ export function SpecPreviewGrid({
     >
       {stepKeys.map((key) => {
         const option = config[key];
-        if (!showsInSpecPreview(key, option)) return null;
+        if (!option || !showsInSpecPreview(key, option)) return null;
         const stepTitle = configuratorSteps.find((step) => step.id === key)?.title;
         return (
           <div key={key} className="min-w-0">

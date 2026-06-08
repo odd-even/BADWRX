@@ -28,7 +28,7 @@ function parseAboutSignature(text: string) {
 function aboutPageCopy() {
   const full = getCopy("ABOUT — Body", brand.buildPromise);
   const match = full.match(
-    /^(.*?We build that rifle\.)\s+(BADWRX\.\s+Diamondhead,\s+Mississippi\.?)\s*$/s,
+    /^(.*?We build that rifle\.)\s+(BADWRX\.\s+Diamondhead,\s+Mississippi\.?)\s*$/,
   );
   if (!match) return { body: full, signature: undefined };
   return {

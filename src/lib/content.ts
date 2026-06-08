@@ -140,7 +140,7 @@ function parseAboutSignature(text: string) {
 
 function extractAboutSignature(body: string) {
   const match = body.match(
-    /^(.*?We build that rifle\.)\s+(BADWRX\.\s+Diamondhead,\s+Mississippi\.?)\s*$/s,
+    /^(.*?We build that rifle\.)\s+(BADWRX\.\s+Diamondhead,\s+Mississippi\.?)\s*$/,
   );
   if (!match) return { body, signature: undefined };
   return {
