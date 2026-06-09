@@ -7,6 +7,7 @@ export const siteSettings = defineType({
   type: "document",
   groups: [
     { name: "brand", title: "Brand", default: true },
+    { name: "pages", title: "Pages" },
     { name: "home", title: "Home page" },
     { name: "about", title: "About page" },
   ],
@@ -58,6 +59,60 @@ export const siteSettings = defineType({
       group: "brand",
       of: [{ type: "string" }],
       description: "Scrolling partner badges on the home page",
+    }),
+
+    defineField({
+      name: "pageVisibility",
+      title: "Page visibility",
+      type: "object",
+      group: "pages",
+      description:
+        "Turn entire site sections on or off. Disabled pages return 404 and are removed from navigation.",
+      fields: [
+        defineField({
+          name: "builds",
+          title: "Builds",
+          type: "boolean",
+          description: "/builds and individual rifle pages",
+          initialValue: true,
+        }),
+        defineField({
+          name: "configure",
+          title: "Configure",
+          type: "boolean",
+          description: "/configure build configurator",
+          initialValue: true,
+        }),
+        defineField({
+          name: "merch",
+          title: "Merch",
+          type: "boolean",
+          description: "/merch, cart, and checkout",
+          initialValue: true,
+        }),
+        defineField({
+          name: "university",
+          title: "University",
+          type: "boolean",
+          description: "/university and course pages",
+          initialValue: true,
+        }),
+        defineField({
+          name: "about",
+          title: "About",
+          type: "boolean",
+          description: "/about",
+          initialValue: true,
+        }),
+        defineField({
+          name: "contact",
+          title: "Contact",
+          type: "boolean",
+          description: "/contact build quote form",
+          initialValue: true,
+        }),
+      ],
+      options: { columns: 2 },
     }),
 
     defineField({

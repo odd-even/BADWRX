@@ -6,6 +6,7 @@ import type { Rifle } from "@/lib/types";
 
 interface RifleScrollerProps {
   rifles: Rifle[];
+  showConfigure?: boolean;
 }
 
 const AUTO_SCROLL_PX_PER_FRAME = 0.35;
@@ -43,7 +44,10 @@ function getManualScrollBounds(
  * and accepts smooth wheel / drag for up to 3 rifles before releasing to the page.
  * Vertical scroll-up always passes through so the page can move back up freely.
  */
-export function RifleScroller({ rifles }: RifleScrollerProps) {
+export function RifleScroller({
+  rifles,
+  showConfigure = true,
+}: RifleScrollerProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
   const [released, setReleased] = useState(false);
@@ -364,6 +368,7 @@ export function RifleScroller({ rifles }: RifleScrollerProps) {
               rifle={rifle}
               priority={index < 4}
               compact
+              showConfigure={showConfigure}
             />
           </div>
         ))}

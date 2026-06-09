@@ -28,6 +28,23 @@ export interface RifleSpecs {
 
 export type RifleCategory = "hunting" | "long-range" | "safari" | "precision";
 
+export type PageKey =
+  | "builds"
+  | "configure"
+  | "merch"
+  | "university"
+  | "about"
+  | "contact";
+
+export interface PageVisibility {
+  builds: boolean;
+  configure: boolean;
+  merch: boolean;
+  university: boolean;
+  about: boolean;
+  contact: boolean;
+}
+
 export interface Rifle {
   id: string;
   slug: string;
@@ -172,6 +189,7 @@ export interface SiteSettings {
     title: string;
     body: string;
   };
+  pageVisibility?: PageVisibility;
   aboutPage: {
     title: string;
     body: string;

@@ -8,12 +8,14 @@ interface RifleCardProps {
   rifle: Rifle;
   priority?: boolean;
   compact?: boolean;
+  showConfigure?: boolean;
 }
 
 export function RifleCard({
   rifle,
   priority = false,
   compact = false,
+  showConfigure = true,
 }: RifleCardProps) {
   const isTightHero =
     rifle.heroImage.url.includes("cropped") ||
@@ -59,19 +61,25 @@ export function RifleCard({
         </div>
       </Link>
 
-      <div className="grid grid-cols-2 gap-px border-t border-white/10 bg-white/10">
+      <div
+        className={`grid gap-px border-t border-white/10 bg-white/10 ${
+          showConfigure ? "grid-cols-2" : "grid-cols-1"
+        }`}
+      >
         <Link
           href={`/builds/${rifle.slug}`}
           className="bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
         >
           View build
         </Link>
-        <Link
-          href={configureHref(rifle.slug)}
-          className="bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
-        >
-          Configure
-        </Link>
+        {showConfigure ? (
+          <Link
+            href={configureHref(rifle.slug)}
+            className="bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
+          >
+            Configure
+          </Link>
+        ) : null}
       </div>
     </article>
   );

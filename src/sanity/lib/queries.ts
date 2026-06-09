@@ -128,6 +128,7 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   testimonial,
   testimonials,
   contactSection,
+  pageVisibility,
   aboutPage
 }`;
 

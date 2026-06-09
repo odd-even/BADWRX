@@ -1,17 +1,33 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SiteProviders } from "@/components/layout/SiteProviders";
+import { getSiteSettings } from "@/lib/content";
+import {
+  footerNavLinks,
+  headerNavLinks,
+  isPageEnabled,
+} from "@/lib/pages";
 
-export default function SiteLayout({
+export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+  const visibility = settings.pageVisibility;
+
   return (
     <SiteProviders>
-      <Header />
+      <Header
+        navLinks={headerNavLinks(visibility)}
+        showConfigureCta={isPageEnabled("configure", visibility)}
+        showMerchCart={isPageEnabled("merch", visibility)}
+      />
       <main className="pt-[72px]">{children}</main>
-      <Footer />
+      <Footer
+        navLinks={footerNavLinks(visibility)}
+        showConfigureCta={isPageEnabled("configure", visibility)}
+      />
     </SiteProviders>
   );
 }

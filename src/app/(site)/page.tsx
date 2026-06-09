@@ -7,12 +7,17 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
 import { images, riflePlaceholderAlt } from "@/lib/images";
+import { isPageEnabled } from "@/lib/pages";
 
 export default async function HomePage() {
   const [rifles, site] = await Promise.all([
     getAllRifles(),
     getSiteSettings(),
   ]);
+  const pages = site.pageVisibility;
+  const showBuilds = isPageEnabled("builds", pages);
+  const showConfigure = isPageEnabled("configure", pages);
+  const showContact = isPageEnabled("contact", pages);
 
   return (
     <>
@@ -43,50 +48,81 @@ export default async function HomePage() {
             {site.homeHero.subheadline}
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/configure"
-              className="border border-red bg-red px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-            >
-              Configure Your Rifle
-            </Link>
-            <Link
-              href="/builds"
-              className="border border-white/30 px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-white"
-            >
-              View Our Rifles
-            </Link>
+            {showConfigure ? (
+              <Link
+                href="/configure"
+                className="border border-red bg-red px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+              >
+                Configure Your Rifle
+              </Link>
+            ) : null}
+            {showBuilds ? (
+              <Link
+                href="/builds"
+                className="border border-white/30 px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-white"
+              >
+                View Our Rifles
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
 
       <TrustMarquee items={site.trustMarqueeItems} />
 
-      <section className="pt-24 pb-12 md:pb-16">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-widest text-red">
-                {site.homePlatforms.eyebrow}
-              </p>
-              <h2 className="mt-2 text-4xl text-white">
-                {site.homePlatforms.title}
-              </h2>
-              <p className="mt-4 text-white-muted leading-relaxed">
-                {site.homePlatforms.body}
-              </p>
+      {showBuilds ? (
+        <section className="pt-24 pb-12 md:pb-16">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <div className="max-w-2xl">
+                <p className="text-xs uppercase tracking-widest text-red">
+                  {site.homePlatforms.eyebrow}
+                </p>
+                <h2 className="mt-2 text-4xl text-white">
+                  {site.homePlatforms.title}
+                </h2>
+                <p className="mt-4 text-white-muted leading-relaxed">
+                  {site.homePlatforms.body}
+                </p>
+              </div>
+              <Link
+                href="/builds"
+                className="shrink-0 text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
+              >
+                View all platforms →
+              </Link>
             </div>
-            <Link
-              href="/builds"
-              className="shrink-0 text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
-            >
-              View all platforms →
-            </Link>
           </div>
-        </div>
 
-        <RifleScroller rifles={rifles} />
+          <RifleScroller rifles={rifles} showConfigure={showConfigure} />
 
-        <div className="relative z-0 mx-auto max-w-7xl px-6 pt-12 md:pt-16">
+          <div className="relative z-0 mx-auto max-w-7xl px-6 pt-12 md:pt-16">
+            <p className="text-xs uppercase tracking-widest text-red">
+              {site.homeIntro.eyebrow}
+            </p>
+            <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
+              {site.homeIntro.body}
+            </p>
+
+            <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
+              {site.homePillars.map((pillar) => (
+                <div
+                  key={pillar.title}
+                  className="border border-white/10 bg-black-light p-8"
+                >
+                  <h3 className="text-sm font-semibold uppercase tracking-widest text-red">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-4 text-sm text-white-muted leading-relaxed">
+                    {pillar.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="mx-auto max-w-7xl px-6 pt-24 pb-12 md:pb-16">
           <p className="text-xs uppercase tracking-widest text-red">
             {site.homeIntro.eyebrow}
           </p>
@@ -109,8 +145,8 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="border-b border-white/10">
         <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2">
@@ -162,12 +198,14 @@ export default async function HomePage() {
             <p className="mt-6 text-white-muted leading-relaxed">
               {site.unrelenting.body}
             </p>
-            <Link
-              href="/contact"
-              className="mt-8 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
-            >
-              Ask about the Ballistic Package →
-            </Link>
+            {showContact ? (
+              <Link
+                href="/contact"
+                className="mt-8 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
+              >
+                Ask about the Ballistic Package →
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>
@@ -198,18 +236,22 @@ export default async function HomePage() {
             </a>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row md:flex-col lg:flex-row">
-            <Link
-              href="/contact"
-              className="flex-1 border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-            >
-              Contact Us
-            </Link>
-            <Link
-              href="/configure"
-              className="flex-1 border border-white/20 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:border-red hover:text-red"
-            >
-              Configure a Rifle
-            </Link>
+            {showContact ? (
+              <Link
+                href="/contact"
+                className="flex-1 border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+              >
+                Contact Us
+              </Link>
+            ) : null}
+            {showConfigure ? (
+              <Link
+                href="/configure"
+                className="flex-1 border border-white/20 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:border-red hover:text-red"
+              >
+                Configure a Rifle
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>

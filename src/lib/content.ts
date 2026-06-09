@@ -2,6 +2,7 @@ import { rifles as localRifles, getRifleBySlug as localGetRifleBySlug, getFeatur
 import { courses as localCourses, getCourseBySlug as localGetCourseBySlug } from "@/data/courses";
 import { merchItems as localMerchItems, getMerchBySlug as localGetMerchBySlug } from "@/data/merch";
 import { defaultSiteSettings } from "@/data/site-settings";
+import { normalizePageVisibility } from "@/lib/pages";
 import type { Course, MerchItem, Rifle, SiteSettings } from "@/lib/types";
 import { isSanityConfigured } from "@/sanity/env";
 import { client } from "@/sanity/lib/client";
@@ -165,6 +166,9 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
   return {
     ...settings,
     aboutPage: mergeAboutPage(settings),
+    pageVisibility: normalizePageVisibility(
+      settings.pageVisibility ?? defaultSiteSettings.pageVisibility,
+    ),
     testimonials:
       testimonials && testimonials.length >= 2
         ? testimonials

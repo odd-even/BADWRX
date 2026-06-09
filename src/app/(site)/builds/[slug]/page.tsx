@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
 import { configureHref } from "@/data/configurator-options";
 import { categoryLabels } from "@/data/rifles";
-import { getAllRifles, getRifleBySlug } from "@/lib/content";
+import { getAllRifles, getRifleBySlug, getSiteSettings } from "@/lib/content";
+import { isPageEnabled } from "@/lib/pages";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -28,9 +29,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BuildDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const rifle = await getRifleBySlug(slug);
+  const [rifle, site] = await Promise.all([
+    getRifleBySlug(slug),
+    getSiteSettings(),
+  ]);
 
   if (!rifle) notFound();
+
+  const showConfigure = isPageEnabled("configure", site.pageVisibility);
+  const showContact = isPageEnabled("contact", site.pageVisibility);
 
   return (
     <article>
@@ -143,18 +150,22 @@ export default async function BuildDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <Link
-                href={configureHref(rifle.slug)}
-                className="block w-full border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-              >
-                Configure {rifle.title}
-              </Link>
-              <Link
-                href="/contact"
-                className="block w-full border border-white/20 py-4 text-center text-xs uppercase tracking-widest text-white-muted transition hover:border-red hover:text-red"
-              >
-                Ask About This Build
-              </Link>
+              {showConfigure ? (
+                <Link
+                  href={configureHref(rifle.slug)}
+                  className="block w-full border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+                >
+                  Configure {rifle.title}
+                </Link>
+              ) : null}
+              {showContact ? (
+                <Link
+                  href="/contact"
+                  className="block w-full border border-white/20 py-4 text-center text-xs uppercase tracking-widest text-white-muted transition hover:border-red hover:text-red"
+                >
+                  Ask About This Build
+                </Link>
+              ) : null}
             </div>
           </aside>
         </div>

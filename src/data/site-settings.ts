@@ -138,6 +138,14 @@ export const defaultSiteSettings: SiteSettings = {
     title: "Request a build quote",
     body: cleanDocxCopy(docxCopy.customQuoteCta),
   },
+  pageVisibility: {
+    builds: true,
+    configure: true,
+    merch: true,
+    university: true,
+    about: true,
+    contact: true,
+  },
   aboutPage: (() => {
     const copy = aboutPageCopy();
     return {

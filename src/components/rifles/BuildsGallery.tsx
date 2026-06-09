@@ -9,6 +9,7 @@ type FilterKey = RifleCategory | "all";
 
 interface BuildsGalleryProps {
   rifles: Rifle[];
+  showConfigure?: boolean;
 }
 
 const filters: { id: FilterKey; label: string }[] = [
@@ -18,7 +19,10 @@ const filters: { id: FilterKey; label: string }[] = [
   ).map(([id, label]) => ({ id, label })),
 ];
 
-export function BuildsGallery({ rifles }: BuildsGalleryProps) {
+export function BuildsGallery({
+  rifles,
+  showConfigure = true,
+}: BuildsGalleryProps) {
   const [active, setActive] = useState<FilterKey>("all");
 
   const visible = useMemo(
@@ -53,7 +57,7 @@ export function BuildsGallery({ rifles }: BuildsGalleryProps) {
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((rifle) => (
-          <RifleCard key={rifle.id} rifle={rifle} />
+          <RifleCard key={rifle.id} rifle={rifle} showConfigure={showConfigure} />
         ))}
       </div>
 

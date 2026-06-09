@@ -8,15 +8,10 @@ import { images } from "@/lib/images";
 import { brand } from "@/lib/brand";
 import { MerchCartLink } from "@/components/merch/MerchCartLink";
 import { useMerchCart } from "@/components/merch/CartProvider";
+import type { NavLink } from "@/lib/pages";
+import { headerNavLinks } from "@/lib/pages";
 
-const navLinks = [
-  { href: "/builds", label: "Builds" },
-  { href: "/configure", label: "Configure" },
-  { href: "/merch", label: "Merch" },
-  { href: "/university", label: "University" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+const defaultNavLinks = headerNavLinks();
 
 /** Scroll distance (px) over which the header fully transitions */
 const SCROLL_RANGE = 120;
@@ -95,7 +90,17 @@ function ctaRevealStyle(progress: number, maxWidth: number): CSSProperties {
 const ctaClassName =
   "block whitespace-nowrap border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white transition-[background-color,border-color] duration-200 active:scale-[0.98] lg:px-5 lg:py-2 lg:text-xs lg:tracking-widest";
 
-export function Header() {
+interface HeaderProps {
+  navLinks?: NavLink[];
+  showConfigureCta?: boolean;
+  showMerchCart?: boolean;
+}
+
+export function Header({
+  navLinks = defaultNavLinks,
+  showConfigureCta = true,
+  showMerchCart = true,
+}: HeaderProps) {
   const progress = useScrollProgress();
   const compact = useCompactHeader();
   const scrolled = progress > 0.02;
@@ -246,24 +251,26 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <span
-            className="inline-flex shrink-0"
-            style={ctaRevealStyle(progress, ctaMaxWidth)}
-            aria-hidden={progress <= 0.05}
-          >
-            <Link
-              href="/configure"
-              className={ctaClassName}
-              style={ctaButtonStyle()}
-              tabIndex={progress > 0.05 ? 0 : -1}
+          {showConfigureCta ? (
+            <span
+              className="inline-flex shrink-0"
+              style={ctaRevealStyle(progress, ctaMaxWidth)}
+              aria-hidden={progress <= 0.05}
             >
-              Build Rifle
-            </Link>
-          </span>
+              <Link
+                href="/configure"
+                className={ctaClassName}
+                style={ctaButtonStyle()}
+                tabIndex={progress > 0.05 ? 0 : -1}
+              >
+                Build Rifle
+              </Link>
+            </span>
+          ) : null}
         </nav>
 
         <div className="flex items-center gap-1 md:ml-2 lg:ml-6 lg:gap-2">
-          <MerchCartLink />
+          {showMerchCart ? <MerchCartLink /> : null}
           <button
             type="button"
             className={`relative z-[61] flex h-10 w-10 shrink-0 flex-col items-center justify-center gap-1.5 md:hidden ${
@@ -297,10 +304,11 @@ export function Header() {
         id="mobile-nav"
         className={`fixed inset-0 z-[55] md:hidden ${
           menuOpen
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
-        } transition-opacity duration-300`}
+            ? "visible opacity-100"
+            : "invisible opacity-0"
+        } transition-[opacity,visibility] duration-300`}
         aria-hidden={!menuOpen}
+        {...(!menuOpen ? { inert: true } : {})}
       >
         <button
           type="button"
@@ -309,13 +317,15 @@ export function Header() {
           aria-label="Close menu"
           tabIndex={menuOpen ? 0 : -1}
         />
-        <nav className="pointer-events-none relative flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
+        <nav className="relative flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
+              tabIndex={menuOpen ? 0 : -1}
+              aria-hidden={!menuOpen}
+              className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
                 pathname === link.href
                   ? "text-red"
                   : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
@@ -324,11 +334,13 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          {itemCount > 0 && !onConfigure ? (
+          {itemCount > 0 && !onConfigure && showMerchCart ? (
             <Link
               href="/merch/cart"
               onClick={() => setMenuOpen(false)}
-              className={`pointer-events-auto border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
+              tabIndex={menuOpen ? 0 : -1}
+              aria-hidden={!menuOpen}
+              className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
                 pathname === "/merch/cart"
                   ? "text-red"
                   : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
@@ -337,14 +349,18 @@ export function Header() {
               Merch cart ({itemCount})
             </Link>
           ) : null}
-          <Link
-            href="/configure"
-            onClick={() => setMenuOpen(false)}
-            className={`${ctaClassName} pointer-events-auto mt-6 w-full py-4 text-center`}
-            style={ctaButtonStyle()}
-          >
-            Build Yours
-          </Link>
+          {showConfigureCta ? (
+            <Link
+              href="/configure"
+              onClick={() => setMenuOpen(false)}
+              tabIndex={menuOpen ? 0 : -1}
+              aria-hidden={!menuOpen}
+              className={`${ctaClassName} mt-6 w-full py-4 text-center`}
+              style={ctaButtonStyle()}
+            >
+              Build Yours
+            </Link>
+          ) : null}
         </nav>
       </div>
     </header>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BuildsGallery } from "@/components/rifles/BuildsGallery";
-import { getAllRifles } from "@/lib/content";
+import { getAllRifles, getSiteSettings } from "@/lib/content";
+import { isPageEnabled } from "@/lib/pages";
 import { sourceData } from "@/lib/source-data";
 
 export const metadata: Metadata = {
@@ -9,7 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default async function BuildsPage() {
-  const rifles = await getAllRifles();
+  const [rifles, site] = await Promise.all([
+    getAllRifles(),
+    getSiteSettings(),
+  ]);
+  const showConfigure = isPageEnabled("configure", site.pageVisibility);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -21,7 +26,7 @@ export default async function BuildsPage() {
         {sourceData.docxCopy.buildsPage.subcopy}
       </p>
 
-      <BuildsGallery rifles={rifles} />
+      <BuildsGallery rifles={rifles} showConfigure={showConfigure} />
     </div>
   );
 }

@@ -4,17 +4,18 @@ import { FooterTagline } from "@/components/layout/FooterTagline";
 import { getBrandContent } from "@/lib/content";
 import { brand } from "@/lib/brand";
 import { images } from "@/lib/images";
+import type { NavLink } from "@/lib/pages";
+import { footerNavLinks } from "@/lib/pages";
 
-const navLinks = [
-  { href: "/builds", label: "Our Rifles" },
-  { href: "/configure", label: "Configure a Rifle" },
-  { href: "/merch", label: "Merch" },
-  { href: "/university", label: "Long Range University" },
-  { href: "/about", label: "About BADWRX" },
-  { href: "/contact", label: "Request a Consultation" },
-];
+interface FooterProps {
+  navLinks?: NavLink[];
+  showConfigureCta?: boolean;
+}
 
-export async function Footer() {
+export async function Footer({
+  navLinks = footerNavLinks(),
+  showConfigureCta = true,
+}: FooterProps) {
   const content = await getBrandContent();
 
   return (
@@ -72,12 +73,14 @@ export async function Footer() {
               Every rifle is built to order — no inventory, no walk-ins. Configure
               a platform online or email us to start a build quote.
             </p>
-            <Link
-              href="/configure"
-              className="mt-4 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
-            >
-              Configure a rifle →
-            </Link>
+            {showConfigureCta ? (
+              <Link
+                href="/configure"
+                className="mt-4 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
+              >
+                Configure a rifle →
+              </Link>
+            ) : null}
             <p className="mt-6 text-xs text-white-muted/60">
               Not a retail dealer. All builds by consultation and quote only.
             </p>
