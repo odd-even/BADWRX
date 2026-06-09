@@ -22,8 +22,8 @@ export function RifleCard({
     rifle.heroImage.url.includes("copy.webp");
 
   return (
-    <article className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
-      <Link href={`/builds/${rifle.slug}`} className="block flex-1">
+    <article className="rifle-card group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
+      <Link href={`/builds/${rifle.slug}`} className="rifle-card-main block flex-1">
         <div
           className={`relative overflow-hidden ${
             compact ? "aspect-[3/2]" : "aspect-[4/3]"
@@ -68,14 +68,14 @@ export function RifleCard({
       >
         <Link
           href={`/builds/${rifle.slug}`}
-          className="bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
+          className="rifle-card-action bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
         >
           View build
         </Link>
         {showConfigure ? (
           <Link
             href={configureHref(rifle.slug)}
-            className="bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
+            className="rifle-card-action bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
           >
             Configure
           </Link>

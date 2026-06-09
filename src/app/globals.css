@@ -169,3 +169,8 @@ a.tracking-widest:hover,
     letter-spacing: inherit;
   }
 }
+
+/* Rifle cards: no tracking expansion on the main card link (title/image area) */
+.rifle-card .rifle-card-main:hover {
+  letter-spacing: normal;
+}
