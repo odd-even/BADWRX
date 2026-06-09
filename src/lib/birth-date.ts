@@ -23,6 +23,25 @@ export function parseIsoDate(value: string): {
   return { year, month, day };
 }
 
+export function daysInMonth(year: number, month: number): number {
+  if (!year || !month) return 31;
+  return new Date(year, month, 0).getDate();
+}
+
+export function birthYearOptions(today = new Date()): number[] {
+  const newest = today.getFullYear() - YOUNGEST_YEARS_BACK;
+  const oldest = today.getFullYear() - OLDEST_YEARS_BACK;
+  const years: number[] = [];
+  for (let year = newest; year >= oldest; year -= 1) {
+    years.push(year);
+  }
+  return years;
+}
+
+export function toIsoDate(year: number, month: number, day: number): string {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 export function formatBirthDateDisplay(value: string): string {
   const parts = parseIsoDate(value);
   if (!parts) return "";

@@ -76,16 +76,6 @@ h3 {
   }
 }
 
-.birth-date-input::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  filter: invert(0.85);
-  opacity: 0.9;
-}
-
-.birth-date-input::-webkit-date-and-time-value {
-  text-align: left;
-}
-
 /* Flat custom selects — removes Safari/iOS bubble/menulist styling */
 .form-select {
   appearance: none;
