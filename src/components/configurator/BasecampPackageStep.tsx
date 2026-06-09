@@ -44,9 +44,9 @@ export function BasecampPackageStep({
 
   return (
     <div className="mt-8 space-y-6">
-      <div className="overflow-hidden border border-white/10 bg-black-muted">
+      <div className="group overflow-hidden border border-white/10 bg-black-muted">
         {packageOption.image && (
-          <div className="relative aspect-[16/9] w-full bg-black-light">
+          <div className="relative aspect-[16/9] w-full bg-black-light hover-zoom">
             <Image
               src={packageOption.image.url}
               alt={packageOption.image.alt}

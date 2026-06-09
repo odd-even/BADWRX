@@ -93,7 +93,7 @@ export default async function AboutPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="relative aspect-[4/5] overflow-hidden border border-white/10 bg-black-light">
+          <div className="relative aspect-[4/5] overflow-hidden border border-white/10 bg-black-light hover-zoom">
             <Image
               src={images.about.story}
               alt="BADWRX craftsmanship in the build shop"

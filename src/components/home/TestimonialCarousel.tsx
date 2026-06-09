@@ -51,11 +51,8 @@ export function TestimonialCarousel({
     setIndex((current) => (current + 1) % items.length);
   };
 
-  const arrowClass = `absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/80 text-white transition hover:border-red hover:text-red md:h-11 md:w-11 ${
-    hovered
-      ? "pointer-events-auto opacity-100"
-      : "pointer-events-none opacity-0"
-  }`;
+  const arrowClass =
+    "absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/80 text-white opacity-100 pointer-events-auto transition hover:border-red hover:text-red md:opacity-0 md:pointer-events-none md:group-hover:opacity-100 md:group-hover:pointer-events-auto";
 
   return (
     <div
@@ -76,7 +73,7 @@ export function TestimonialCarousel({
               aria-label="Previous testimonial"
               className={`${arrowClass} left-0`}
             >
-              <span aria-hidden className="text-lg leading-none">
+              <span aria-hidden className="text-sm leading-none">
                 ←
               </span>
             </button>
@@ -86,7 +83,7 @@ export function TestimonialCarousel({
               aria-label="Next testimonial"
               className={`${arrowClass} right-0`}
             >
-              <span aria-hidden className="text-lg leading-none">
+              <span aria-hidden className="text-sm leading-none">
                 →
               </span>
             </button>

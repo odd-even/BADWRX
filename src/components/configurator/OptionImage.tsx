@@ -45,7 +45,7 @@ export function OptionImage({
 
   return (
     <div
-      className={`relative overflow-hidden bg-black-light ${
+      className={`relative overflow-hidden bg-black-light hover-zoom ${
         isSwatchFill
           ? "aspect-square w-full"
           : isSwatch

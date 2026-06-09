@@ -481,16 +481,17 @@ export function Configurator({ data }: ConfiguratorProps) {
 
   return (
     <>
-    {navPosition === 0 && (
-      <p className="mb-8 max-w-2xl text-white-muted">
-        Walk through platform, caliber, finish, optics, rings, Basecamp Package,
-        and Ballistic Package — matching the six BADWRX builds in our source
-        spec. Muzzle device and trigger are set per platform. Submit your spec
-        for a consultation — no payment required.
-      </p>
-    )}
     <div className={`grid gap-8 lg:grid-cols-5 ${showStepNav ? "pb-24" : ""}`}>
       <div className="lg:col-span-3">
+        {navPosition === 0 && (
+          <p className="mb-8 max-w-2xl text-white-muted">
+            Walk through platform, caliber, finish, optics, rings, Basecamp Package,
+            and Ballistic Package — matching the six BADWRX builds in our source
+            spec. Muzzle device and trigger are set per platform. Submit your spec
+            for a consultation — no payment required.
+          </p>
+        )}
+
         <div className="mb-8 flex gap-2">
           {navigableStepIndices.map((stepIdx, position) => {
             const step = configuratorSteps[stepIdx];
@@ -554,7 +555,7 @@ export function Configurator({ data }: ConfiguratorProps) {
                 key={option.id}
                 type="button"
                 onClick={() => selectOption(option)}
-                className={`w-full border text-left transition ${
+                className={`w-full border text-left transition group ${
                   isImageGridStep ? "overflow-hidden p-0" : "p-5"
                 } ${isSwatchStep ? "flex items-start gap-4" : ""} ${
                   selected

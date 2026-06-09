@@ -36,7 +36,7 @@ export function SpecPreviewGrid({
         const stepTitle = steps.find((step) => step.id === key)?.title;
         return (
           <div key={key} className="min-w-0">
-            <div className="overflow-hidden border border-white/10">
+            <div className="overflow-hidden border border-white/10 hover-zoom">
               {option.image ? (
                 <OptionImage
                   url={option.image.url}

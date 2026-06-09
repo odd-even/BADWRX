@@ -18,15 +18,17 @@ export function CoursePageContent({
 
   return (
     <article>
-      <section className="relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
-        <Image
-          src={heroUrl}
-          alt={heroAlt}
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
+      <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
+        <div className="hover-zoom absolute inset-0">
+          <Image
+            src={heroUrl}
+            alt={heroAlt}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
         <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />

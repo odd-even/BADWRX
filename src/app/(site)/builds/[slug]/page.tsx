@@ -41,15 +41,17 @@ export default async function BuildDetailPage({ params }: PageProps) {
 
   return (
     <article>
-      <section className="relative -mt-[72px] flex min-h-[calc(50vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
-        <Image
-          src={rifle.heroImage.url}
-          alt={rifle.heroImage.alt}
-          fill
-          priority
-          className="object-contain bg-black-light"
-          sizes="100vw"
-        />
+      <section className="group relative -mt-[72px] flex min-h-[calc(50vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
+        <div className="hover-zoom absolute inset-0">
+          <Image
+            src={rifle.heroImage.url}
+            alt={rifle.heroImage.alt}
+            fill
+            priority
+            className="object-contain bg-black-light"
+            sizes="100vw"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         <div className="relative z-[1] mx-auto w-full max-w-7xl px-6 pb-12 pt-24">
           <Link
@@ -103,9 +105,9 @@ export default async function BuildDetailPage({ params }: PageProps) {
                   {rifle.gallery.map((image, index) => (
                     <figure
                       key={`${image.url}-${index}`}
-                      className="overflow-hidden border border-white/10"
+                      className="group overflow-hidden border border-white/10"
                     >
-                      <div className="relative aspect-[16/9]">
+                      <div className="relative aspect-[16/9] hover-zoom">
                         <Image
                           src={image.url}
                           alt={image.alt}

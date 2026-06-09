@@ -79,12 +79,12 @@ interface MerchCardProps {
 export function MerchCard({ item }: MerchCardProps) {
   return (
     <article className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
-      <div className="relative aspect-square overflow-hidden bg-black-light">
+      <div className="relative aspect-square overflow-hidden bg-black-light hover-zoom">
         <Image
           src={item.image.url}
           alt={item.image.alt}
           fill
-          className="object-cover transition duration-500 group-hover:scale-[1.03]"
+          className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
@@ -112,7 +112,7 @@ export function MerchCartLineRow({
 }) {
   return (
     <div className="flex gap-4 border-b border-white/10 py-6">
-      <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-black-light">
+      <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-black-light hover-zoom">
         <Image
           src={line.imageUrl}
           alt={line.title}

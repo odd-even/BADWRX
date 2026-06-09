@@ -28,7 +28,7 @@ export function RifleCard({
         className="rifle-card-main flex min-h-0 flex-1 flex-col"
       >
         <div
-          className={`relative shrink-0 overflow-hidden ${
+          className={`relative shrink-0 overflow-hidden hover-zoom ${
             compact ? "aspect-[3/2]" : "aspect-[4/3]"
           }`}
         >
@@ -39,8 +39,8 @@ export function RifleCard({
             priority={priority}
             className={
               isTightHero
-                ? "object-contain bg-black-light p-2 transition duration-500 group-hover:scale-[1.02]"
-                : "object-contain bg-black-light p-4 transition duration-500 group-hover:scale-[1.02]"
+                ? "object-contain bg-black-light p-2"
+                : "object-contain bg-black-light p-4"
             }
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

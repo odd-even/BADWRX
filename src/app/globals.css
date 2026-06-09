@@ -98,18 +98,45 @@ h3 {
   color: #fafafa;
 }
 
+/* Subtle zoom on hover — image scales inside overflow-hidden container */
+.hover-zoom {
+  overflow: hidden;
+}
+
+.hover-zoom img {
+  transition: transform 500ms ease-out;
+}
+
+@media (hover: hover) {
+  .hover-zoom:hover img,
+  .group:hover .hover-zoom img {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-zoom img {
+    transition: none;
+  }
+
+  .hover-zoom:hover img,
+  .group:hover .hover-zoom img {
+    transform: none;
+  }
+}
+
 .trust-marquee-track {
   animation: trust-marquee 28s linear infinite;
 }
 
 .rifle-scroller-track {
   --rifle-scroll-distance: 1200px;
-  --rifle-scroll-duration: 50s;
+  --rifle-scroll-duration: 38s;
   will-change: transform;
 }
 
 .rifle-scroller-track.is-animating {
-  animation: rifle-scroll var(--rifle-scroll-duration, 50s) linear infinite;
+  animation: rifle-scroll var(--rifle-scroll-duration, 38s) linear infinite;
 }
 
 .rifle-scroller-track.is-paused {

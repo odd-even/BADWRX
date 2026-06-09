@@ -38,15 +38,17 @@ export function BallisticPackageStep({
 
   return (
     <div className="mt-8 space-y-6">
-      <div className="overflow-hidden border border-white/10 bg-black-muted">
+      <div className="group overflow-hidden border border-white/10 bg-black-muted">
         <div className="relative aspect-[16/9] w-full bg-black-light">
-          <Image
-            src={images.rifle.studioCropped}
-            alt={packageOption.image?.alt ?? details.label}
-            fill
-            className="object-cover object-[center_26%]"
-            sizes="(max-width: 1024px) 100vw, 640px"
-          />
+          <div className="hover-zoom absolute inset-0">
+            <Image
+              src={images.rifle.studioCropped}
+              alt={packageOption.image?.alt ?? details.label}
+              fill
+              className="object-cover object-[center_26%]"
+              sizes="(max-width: 1024px) 100vw, 640px"
+            />
+          </div>
           <div
             className="absolute top-[16%] left-[68%] aspect-square w-[50%] min-w-[50%] -translate-x-1/2 -translate-y-1/2 opacity-50 mix-blend-screen"
             aria-hidden

@@ -30,9 +30,12 @@ type DateParts = {
 const triggerClassName = `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 text-left`;
 
 const cellClassName =
-  "border border-white/10 bg-black-light px-1 py-2 text-center text-xs text-white transition hover:border-red hover:text-red sm:text-sm";
+  "bg-black-light px-0.5 py-2 text-center text-xs text-white transition hover:bg-red/10 hover:text-red sm:px-1 sm:text-sm";
 
-const cellSelectedClassName = "border-red bg-red/10 text-white";
+const cellSelectedClassName = "bg-red/10 text-white ring-1 ring-inset ring-red";
+
+const gridPanelClassName =
+  "grid gap-px bg-white/10";
 
 function partsFromValue(value: string): DateParts {
   const parsed = parseIsoDate(value);
@@ -158,7 +161,7 @@ export function BirthDatePicker({
       </legend>
 
       <div ref={containerRef} className="relative mt-2">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-1">
           <button
             type="button"
             id={`${fieldId}-month`}
@@ -210,9 +213,9 @@ export function BirthDatePicker({
             id={`${fieldId}-month-panel`}
             role="dialog"
             aria-label="Choose month"
-            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
           >
-            <div className="grid grid-cols-4 gap-2">
+            <div className={`${gridPanelClassName} grid-cols-4`}>
               {MONTH_SHORT.map((name, index) => {
                 const month = index + 1;
                 const selected = parts.month === month;
@@ -237,9 +240,9 @@ export function BirthDatePicker({
             id={`${fieldId}-day-panel`}
             role="dialog"
             aria-label="Choose day"
-            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
           >
-            <div className="grid grid-cols-7 gap-2">
+            <div className={`${gridPanelClassName} grid-cols-7`}>
               {dayOptions.map((day) => {
                 const selected = parts.day === day;
                 return (
@@ -263,9 +266,9 @@ export function BirthDatePicker({
             id={`${fieldId}-year-panel`}
             role="dialog"
             aria-label="Choose year"
-            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
           >
-            <div className="grid max-h-48 grid-cols-4 gap-2 overflow-y-auto pr-1 [scrollbar-width:thin]">
+            <div className={`${gridPanelClassName} max-h-48 grid-cols-4 overflow-y-auto pr-1 [scrollbar-width:thin]`}>
               {years.map((year) => {
                 const selected = parts.year === year;
                 return (

@@ -21,15 +21,17 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
-        <Image
-          src={images.rifle.homeCover}
-          alt="Custom precision rifle on a mountain ridgeline"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
+      <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
+        <div className="hover-zoom absolute inset-0">
+          <Image
+            src={images.rifle.homeCover}
+            alt="Custom precision rifle on a mountain ridgeline"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
         <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
@@ -149,7 +151,7 @@ export default async function HomePage() {
 
       <section className="border-b border-white/10">
         <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden border border-white/10">
+          <div className="relative aspect-[4/3] overflow-hidden border border-white/10 hover-zoom">
             <Image
               src={images.rifle.hunt}
               alt="Hunter in Alaska mountain country"
@@ -170,15 +172,17 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative min-h-[70vh] overflow-hidden bg-black">
+      <section className="group relative min-h-[70vh] overflow-hidden bg-black">
         <div className="pointer-events-none absolute inset-0">
-          <Image
-            src={images.rifle.studioCropped}
-            alt={riflePlaceholderAlt}
-            fill
-            className="object-cover object-[center_26%]"
-            sizes="100vw"
-          />
+          <div className="hover-zoom absolute inset-0">
+            <Image
+              src={images.rifle.studioCropped}
+              alt={riflePlaceholderAlt}
+              fill
+              className="object-cover object-[center_26%]"
+              sizes="100vw"
+            />
+          </div>
           <ReticleMouseFollow
             className="top-[16%] left-[68%] aspect-square w-[70vw] min-w-[70vw] opacity-50 mix-blend-screen"
             sizes="70vw"
