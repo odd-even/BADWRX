@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RifleCard } from "@/components/rifles/RifleCard";
 import type { Rifle } from "@/lib/types";
 
@@ -60,7 +60,7 @@ export function RifleScroller({
   const [released, setReleased] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [scrollReady, setScrollReady] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   const cardStep = useRef(0);
   const scrollOrigin = useRef(0);
@@ -81,8 +81,6 @@ export function RifleScroller({
     if (!el) return;
     cardStep.current = measureCardStep(el);
     targetScroll.current = el.scrollLeft;
-    const max = Math.max(0, el.scrollWidth - el.clientWidth);
-    setScrollReady(max > 1);
   }, []);
 
   const runSmoothScroll = useCallback(() => {
@@ -202,40 +200,60 @@ export function RifleScroller({
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     measure();
     const el = scrollerRef.current;
     if (!el) return;
 
     const observer = new ResizeObserver(measure);
     observer.observe(el);
+    Array.from(el.children).forEach((child) => observer.observe(child));
 
-    const onLoad = () => measure();
-    window.addEventListener("load", onLoad);
+    const remeasure = () => measure();
+    window.addEventListener("load", remeasure);
+    document.fonts?.ready.then(remeasure).catch(() => undefined);
 
     const images = el.querySelectorAll("img");
     images.forEach((image) => {
-      if (!image.complete) image.addEventListener("load", onLoad);
+      if (!image.complete) image.addEventListener("load", remeasure);
     });
+
+    // Production layouts can settle after hydration — recheck briefly on mount.
+    const timers = [0, 100, 500, 1500].map((delay) =>
+      window.setTimeout(remeasure, delay),
+    );
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("load", onLoad);
+      window.removeEventListener("load", remeasure);
       images.forEach((image) => {
-        image.removeEventListener("load", onLoad);
+        image.removeEventListener("load", remeasure);
       });
+      timers.forEach((timer) => window.clearTimeout(timer));
     };
   }, [measure, rifles.length]);
 
   useEffect(() => {
     const el = scrollerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry?.isIntersecting ?? true),
+      { rootMargin: "120px 0px", threshold: 0.01 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [rifles.length]);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
     const pauseForHover = canHover && hovered;
-    if (!el || !scrollReady || reducedMotion || pauseForHover) return;
+    if (!el || !isVisible || reducedMotion || pauseForHover) return;
 
     let frame = 0;
     const tick = () => {
       const max = Math.max(0, el.scrollWidth - el.clientWidth);
-      if (max > 0) {
+      if (max > 1) {
         el.scrollLeft += AUTO_SCROLL_PX_PER_FRAME;
         if (el.scrollLeft >= max) {
           el.scrollLeft = 0;
@@ -246,7 +264,7 @@ export function RifleScroller({
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [canHover, reducedMotion, hovered, rifles.length, scrollReady]);
+  }, [canHover, reducedMotion, hovered, rifles.length, isVisible]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -361,7 +379,7 @@ export function RifleScroller({
         onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
         onDragStart={(event) => event.preventDefault()}
-        className={`flex items-stretch gap-5 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
+        className={`flex items-stretch gap-5 overflow-x-scroll px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
           hovered && !released
             ? "cursor-grab active:cursor-grabbing"
             : ""
