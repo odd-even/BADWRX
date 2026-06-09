@@ -311,11 +311,11 @@ export function Header({
         id="mobile-nav"
         className={`fixed inset-0 z-[55] md:hidden ${
           menuOpen
-            ? "visible opacity-100"
-            : "invisible opacity-0"
+            ? "visible opacity-100 pointer-events-auto"
+            : "invisible opacity-0 pointer-events-none"
         } transition-[opacity,visibility] duration-300`}
         aria-hidden={!menuOpen}
-        {...(!menuOpen ? { inert: true } : {})}
+        inert={!menuOpen ? true : undefined}
       >
         <button
           type="button"
