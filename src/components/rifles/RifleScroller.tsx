@@ -39,6 +39,13 @@ function getManualScrollBounds(
   };
 }
 
+function isInteractiveTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest("a, button, input, textarea, select, [role='button']"),
+  );
+}
+
 /**
  * Apple-style horizontal rifle gallery: auto-scrolls slowly, pauses on hover,
  * and accepts smooth wheel / drag for up to 3 rifles before releasing to the page.
@@ -267,6 +274,7 @@ export function RifleScroller({
 
   const onPointerDown = (event: React.PointerEvent) => {
     if (!hovered || released) return;
+    if (isInteractiveTarget(event.target)) return;
     dragging.current = true;
     dragMoved.current = false;
     dragStartX.current = event.clientX;
@@ -353,7 +361,7 @@ export function RifleScroller({
         onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
         onDragStart={(event) => event.preventDefault()}
-        className={`flex gap-5 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
+        className={`flex items-stretch gap-5 overflow-x-auto px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
           hovered && !released
             ? "cursor-grab active:cursor-grabbing"
             : ""
@@ -362,7 +370,7 @@ export function RifleScroller({
         {rifles.map((rifle, index) => (
           <div
             key={rifle.id}
-            className="w-[min(82vw,320px)] shrink-0 md:w-[340px] lg:w-[360px]"
+            className="flex w-[min(82vw,320px)] shrink-0 md:w-[340px] lg:w-[360px]"
           >
             <RifleCard
               rifle={rifle}

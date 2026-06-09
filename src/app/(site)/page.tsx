@@ -32,7 +32,6 @@ export default async function HomePage() {
         />
         <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
         <div className="pointer-events-none absolute inset-0 z-[1]">
-          <div className="absolute inset-x-0 top-0 h-[min(40vh,280px)] bg-gradient-to-b from-black via-black/75 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
 
@@ -47,11 +46,11 @@ export default async function HomePage() {
           <p className="mt-6 max-w-xl text-lg text-white-muted">
             {site.homeHero.subheadline}
           </p>
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
             {showConfigure ? (
               <Link
                 href="/configure"
-                className="border border-red bg-red px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+                className="w-full border border-red bg-red px-8 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto"
               >
                 Configure Your Rifle
               </Link>
@@ -59,7 +58,7 @@ export default async function HomePage() {
             {showBuilds ? (
               <Link
                 href="/builds"
-                className="border border-white/30 px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:border-white"
+                className="w-full border border-white/30 px-8 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:border-white sm:w-auto"
               >
                 View Our Rifles
               </Link>

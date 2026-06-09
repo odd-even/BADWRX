@@ -22,8 +22,8 @@ export function RifleCard({
     rifle.heroImage.url.includes("copy.webp");
 
   return (
-    <article className="rifle-card group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
-      <Link href={`/builds/${rifle.slug}`} className="rifle-card-main block flex-1">
+    <article className={`rifle-card group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50 ${compact ? "h-full w-full" : ""}`}>
+      <Link href={`/builds/${rifle.slug}`} className={`rifle-card-main block ${compact ? "flex flex-1 flex-col" : ""}`}>
         <div
           className={`relative overflow-hidden ${
             compact ? "aspect-[3/2]" : "aspect-[4/3]"
@@ -47,17 +47,41 @@ export function RifleCard({
           </span>
         </div>
 
-        <div className={compact ? "p-5 pb-3" : "p-6 pb-4"}>
-          <h3 className="text-xl text-white transition group-hover:text-red">
+        <div
+          className={
+            compact
+              ? "flex flex-1 flex-col p-5 pb-3"
+              : "p-6 pb-4"
+          }
+        >
+          <h3
+            className={`text-xl text-white transition group-hover:text-red ${
+              compact ? "line-clamp-1" : ""
+            }`}
+          >
             {rifle.title}
           </h3>
-          <p className="mt-2 text-sm text-white-muted">{rifle.tagline}</p>
-          {rifle.startingAt && (
-            <p className="mt-4 text-xs uppercase tracking-widest text-white-muted">
-              From{" "}
-              <span className="font-semibold text-white">{rifle.startingAt}</span>
-            </p>
-          )}
+          <p
+            className={`mt-2 text-sm text-white-muted ${
+              compact ? "line-clamp-2 min-h-[2.5rem] flex-1" : ""
+            }`}
+          >
+            {rifle.tagline}
+          </p>
+          <p
+            className={`text-xs uppercase tracking-widest text-white-muted ${
+              compact ? "mt-4 min-h-[1.25rem] shrink-0" : rifle.startingAt ? "mt-4" : "hidden"
+            }`}
+          >
+            {rifle.startingAt ? (
+              <>
+                From{" "}
+                <span className="font-semibold text-white">{rifle.startingAt}</span>
+              </>
+            ) : compact ? (
+              <span aria-hidden="true">&nbsp;</span>
+            ) : null}
+          </p>
         </div>
       </Link>
 

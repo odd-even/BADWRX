@@ -176,6 +176,13 @@ export function Header({
             : "none",
       }}
     >
+      {/* Top fade — keeps nav readable over hero imagery on every page */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(40vh,280px)] bg-gradient-to-b from-black via-black/75 to-transparent"
+        style={{ opacity: menuOpen ? 0 : 1 - progress }}
+        aria-hidden
+      />
+
       {/* Accent line — draws in on scroll */}
       <div
         className="pointer-events-none absolute bottom-0 left-0 h-px bg-black will-change-[width,opacity]"
