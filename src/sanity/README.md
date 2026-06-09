@@ -39,4 +39,4 @@ NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_TOKEN=
 ```
 
-After editing in the studio, click **Publish** — changes appear on the live site after the next page load (CDN cache may take a minute).
+After editing in the studio, click **Publish** — changes appear on the live site within about a minute (pages re-fetch from Sanity every 60 seconds).

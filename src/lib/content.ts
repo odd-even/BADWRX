@@ -4,6 +4,7 @@ import { merchItems as localMerchItems, getMerchBySlug as localGetMerchBySlug } 
 import { defaultSiteSettings } from "@/data/site-settings";
 import { normalizePageVisibility } from "@/lib/pages";
 import type { Course, MerchItem, Rifle, SiteSettings } from "@/lib/types";
+import { sanityFetchOptions } from "@/lib/cms-cache";
 import { isSanityConfigured } from "@/sanity/env";
 import { client } from "@/sanity/lib/client";
 import { mapCourse, mapRifle, mapSiteSettings, normalizeHeadlines } from "@/sanity/lib/map";
@@ -25,7 +26,7 @@ import {
 export async function getAllRifles(): Promise<Rifle[]> {
   if (!isSanityConfigured()) return localRifles;
   try {
-    const docs = await client.fetch(riflesQuery);
+    const docs = await client.fetch(riflesQuery, {}, sanityFetchOptions);
     return docs?.length ? docs.map(mapRifle) : localRifles;
   } catch {
     return localRifles;
@@ -42,8 +43,8 @@ export async function getConfiguratorData(): Promise<ConfiguratorData> {
   if (!isSanityConfigured()) return fallback;
   try {
     const [settings, rifleDocs] = await Promise.all([
-      client.fetch(configuratorSettingsQuery),
-      client.fetch(riflesQuery),
+      client.fetch(configuratorSettingsQuery, {}, sanityFetchOptions),
+      client.fetch(riflesQuery, {}, sanityFetchOptions),
     ]);
     if (!settings) return fallback;
     return mapConfiguratorData(settings, rifleDocs ?? []);
@@ -55,7 +56,7 @@ export async function getConfiguratorData(): Promise<ConfiguratorData> {
 export async function getRifleBySlug(slug: string): Promise<Rifle | undefined> {
   if (!isSanityConfigured()) return localGetRifleBySlug(slug);
   try {
-    const doc = await client.fetch(rifleBySlugQuery, { slug });
+    const doc = await client.fetch(rifleBySlugQuery, { slug }, sanityFetchOptions);
     return doc ? mapRifle(doc) : localGetRifleBySlug(slug);
   } catch {
     return localGetRifleBySlug(slug);
@@ -65,7 +66,7 @@ export async function getRifleBySlug(slug: string): Promise<Rifle | undefined> {
 export async function getAllCourses(): Promise<Course[]> {
   if (!isSanityConfigured()) return localCourses;
   try {
-    const docs = await client.fetch(coursesQuery);
+    const docs = await client.fetch(coursesQuery, {}, sanityFetchOptions);
     return docs?.length ? docs.map(mapCourse) : localCourses;
   } catch {
     return localCourses;
@@ -75,7 +76,7 @@ export async function getAllCourses(): Promise<Course[]> {
 export async function getCourseBySlug(slug: string): Promise<Course | undefined> {
   if (!isSanityConfigured()) return localGetCourseBySlug(slug);
   try {
-    const doc = await client.fetch(courseBySlugQuery, { slug });
+    const doc = await client.fetch(courseBySlugQuery, { slug }, sanityFetchOptions);
     return doc ? mapCourse(doc) : localGetCourseBySlug(slug);
   } catch {
     return localGetCourseBySlug(slug);
@@ -85,7 +86,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
 export async function getAllMerch(): Promise<MerchItem[]> {
   if (!isSanityConfigured()) return localMerchItems;
   try {
-    const docs = await client.fetch(merchQuery);
+    const docs = await client.fetch(merchQuery, {}, sanityFetchOptions);
     return docs?.length ? docs.map(mapMerchItem) : localMerchItems;
   } catch {
     return localMerchItems;
@@ -95,7 +96,7 @@ export async function getAllMerch(): Promise<MerchItem[]> {
 export async function getMerchBySlug(slug: string): Promise<MerchItem | undefined> {
   if (!isSanityConfigured()) return localGetMerchBySlug(slug);
   try {
-    const doc = await client.fetch(merchBySlugQuery, { slug });
+    const doc = await client.fetch(merchBySlugQuery, { slug }, sanityFetchOptions);
     return doc ? mapMerchItem(doc) : localGetMerchBySlug(slug);
   } catch {
     return localGetMerchBySlug(slug);
@@ -130,7 +131,7 @@ function normalizeHomeHero(
 export async function getSiteSettings(): Promise<SiteSettings> {
   if (!isSanityConfigured()) return defaultSiteSettings;
   try {
-    const doc = await client.fetch(siteSettingsQuery);
+    const doc = await client.fetch(siteSettingsQuery, {}, sanityFetchOptions);
     const settings = normalizeSiteSettings(mapSiteSettings(doc) ?? defaultSiteSettings);
     const hero = settings.homeHero as SiteSettings["homeHero"] & { headline?: string };
     if (!hero.headlines?.length) {

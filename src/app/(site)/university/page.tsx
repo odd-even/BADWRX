@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CoursePageContent } from "@/components/university/CoursePageContent";
 import { getAllCourses } from "@/lib/content";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Long Range University",
   description:
