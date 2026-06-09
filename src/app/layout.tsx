@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PreviewGate } from "@/components/layout/PreviewGate";
 import { brand, siteTitle } from "@/lib/brand";
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${neulisBold.variable}`}>
       <body className="min-h-screen antialiased">
         <PreviewGate>{children}</PreviewGate>
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>
