@@ -36,9 +36,17 @@ function measureCardStep(scrollEl: HTMLDivElement) {
   return card.offsetWidth + gap;
 }
 
+function isInteractivePointerTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) return false;
+  return !!target.closest("a, button, input, textarea, select, label, [role='button']");
+}
+
 /**
  * Idle auto-scroll when the pointer is away; vertical page scroll over the
  * carousel moves ~3 cards horizontally, then releases back to the page.
+ *
+ * Expects to live inside `mx-auto max-w-7xl px-6`. The `-mx-6 pl-6` breakout
+ * keeps the first card aligned with sibling page content on every breakpoint.
  */
 export function RifleScroller({
   rifles,
@@ -283,6 +291,7 @@ export function RifleScroller({
 
   function handlePointerDownCapture(event: React.PointerEvent<HTMLDivElement>) {
     if (event.button !== 0) return;
+    if (isInteractivePointerTarget(event.target)) return;
 
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
@@ -343,19 +352,10 @@ export function RifleScroller({
     "flex w-[min(82vw,320px)] shrink-0 max-md:snap-start md:w-[340px] lg:w-[360px]";
 
   return (
-    <div className="relative mt-8 md:mt-10">
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[var(--color-black)] to-transparent md:w-20"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[var(--color-black)] to-transparent md:w-20"
-        aria-hidden
-      />
-
+    <div className="relative -ml-6 mt-8 mr-[calc(50%-50vw)] w-[calc(100%+1.5rem+(50vw-50%))] max-w-[100vw] md:mt-10">
       <div
         ref={scrollRef}
-        className={`cursor-grab overscroll-x-contain px-6 active:cursor-grabbing md:px-8 ${
+        className={`cursor-grab overscroll-x-contain pl-6 pr-6 scroll-ps-6 active:cursor-grabbing ${
           dragging ? "cursor-grabbing select-none" : ""
         } overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] max-md:snap-x max-md:snap-mandatory md:snap-none [&::-webkit-scrollbar]:hidden`}
         onMouseEnter={handleScrollerEnter}

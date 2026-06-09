@@ -93,9 +93,9 @@ export default async function HomePage() {
                 View all platforms →
               </Link>
             </div>
-          </div>
 
-          <RifleScroller rifles={rifles} showConfigure={showConfigure} />
+            <RifleScroller rifles={rifles} showConfigure={showConfigure} />
+          </div>
 
           <div className="relative z-0 mx-auto max-w-7xl px-6 pt-12 md:pt-16">
             <p className="text-xs uppercase tracking-widest text-red">
