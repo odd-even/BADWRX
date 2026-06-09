@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
-import { formSelectClassName } from "@/lib/form-styles";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { formInputClassName } from "@/lib/form-styles";
 import {
   MONTH_LABELS,
+  MONTH_SHORT,
   birthYearOptions,
   daysInMonth,
   formatBirthDateDisplay,
@@ -18,7 +19,7 @@ interface BirthDatePickerProps {
   label?: string;
 }
 
-const selectClassName = `${formSelectClassName} mt-0`;
+type Panel = "month" | "day" | "year" | null;
 
 type DateParts = {
   month: number | "";
@@ -26,12 +27,36 @@ type DateParts = {
   year: number | "";
 };
 
+const triggerClassName = `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 text-left`;
+
+const cellClassName =
+  "border border-white/10 bg-black-light px-1 py-2 text-center text-xs text-white transition hover:border-red hover:text-red sm:text-sm";
+
+const cellSelectedClassName = "border-red bg-red/10 text-white";
+
 function partsFromValue(value: string): DateParts {
   const parsed = parseIsoDate(value);
   if (!parsed) {
     return { month: "", day: "", year: "" };
   }
   return parsed;
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 16 16"
+      className={`h-4 w-4 shrink-0 text-white-muted transition ${open ? "rotate-180" : ""}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m4 6 4 4 4-4" />
+    </svg>
+  );
 }
 
 export function BirthDatePicker({
@@ -42,11 +67,42 @@ export function BirthDatePicker({
 }: BirthDatePickerProps) {
   const fallbackId = useId();
   const fieldId = id ?? fallbackId;
+  const containerRef = useRef<HTMLDivElement>(null);
   const [parts, setParts] = useState<DateParts>(() => partsFromValue(value));
+  const [openPanel, setOpenPanel] = useState<Panel>(null);
 
   useEffect(() => {
     setParts(partsFromValue(value));
   }, [value]);
+
+  useEffect(() => {
+    if (!openPanel) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpenPanel(null);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenPanel(null);
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [openPanel]);
+
+  useEffect(() => {
+    if (openPanel !== "year" || !parts.year) return;
+    const selected = containerRef.current?.querySelector(
+      `[data-year="${parts.year}"]`,
+    );
+    selected?.scrollIntoView({ block: "center" });
+  }, [openPanel, parts.year]);
 
   const years = useMemo(() => birthYearOptions(), []);
   const maxDay = useMemo(
@@ -70,9 +126,8 @@ export function BirthDatePicker({
     onChange("");
   }
 
-  function updatePart(part: keyof DateParts, raw: string) {
-    const parsed = raw === "" ? "" : Number(raw);
-    const next: DateParts = { ...parts, [part]: parsed };
+  function updatePart(part: keyof DateParts, nextValue: number) {
+    const next: DateParts = { ...parts, [part]: nextValue };
 
     if (
       next.day &&
@@ -85,11 +140,16 @@ export function BirthDatePicker({
 
     setParts(next);
     emit(next);
+    setOpenPanel(null);
   }
 
-  const monthId = `${fieldId}-month`;
-  const dayId = `${fieldId}-day`;
-  const yearId = `${fieldId}-year`;
+  function togglePanel(panel: Panel) {
+    setOpenPanel((current) => (current === panel ? null : panel));
+  }
+
+  const monthLabel = parts.month ? MONTH_LABELS[parts.month - 1] : "Month";
+  const dayLabel = parts.day ? String(parts.day) : "Day";
+  const yearLabel = parts.year ? String(parts.year) : "Year";
 
   return (
     <fieldset className="block">
@@ -97,60 +157,133 @@ export function BirthDatePicker({
         {label}
       </legend>
 
-      <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-12">
-        <label className="col-span-2 block sm:col-span-6">
-          <span className="sr-only">Month</span>
-          <select
-            id={monthId}
-            value={parts.month}
-            onChange={(event) => updatePart("month", event.target.value)}
-            className={selectClassName}
-            aria-label="Birth month"
+      <div ref={containerRef} className="relative mt-2">
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            type="button"
+            id={`${fieldId}-month`}
+            aria-expanded={openPanel === "month"}
+            aria-haspopup="dialog"
+            aria-controls={`${fieldId}-month-panel`}
+            onClick={() => togglePanel("month")}
+            className={triggerClassName}
           >
-            <option value="">Month</option>
-            {MONTH_LABELS.map((name, index) => (
-              <option key={name} value={index + 1}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
+            <span className={parts.month ? "text-white" : "text-white-muted"}>
+              {monthLabel}
+            </span>
+            <Chevron open={openPanel === "month"} />
+          </button>
 
-        <label className="col-span-1 block sm:col-span-3">
-          <span className="sr-only">Day</span>
-          <select
-            id={dayId}
-            value={parts.day}
-            onChange={(event) => updatePart("day", event.target.value)}
-            className={selectClassName}
-            aria-label="Birth day"
+          <button
+            type="button"
+            id={`${fieldId}-day`}
+            aria-expanded={openPanel === "day"}
+            aria-haspopup="dialog"
+            aria-controls={`${fieldId}-day-panel`}
+            onClick={() => togglePanel("day")}
+            className={triggerClassName}
           >
-            <option value="">Day</option>
-            {dayOptions.map((day) => (
-              <option key={day} value={day}>
-                {day}
-              </option>
-            ))}
-          </select>
-        </label>
+            <span className={parts.day ? "text-white" : "text-white-muted"}>
+              {dayLabel}
+            </span>
+            <Chevron open={openPanel === "day"} />
+          </button>
 
-        <label className="col-span-1 block sm:col-span-3">
-          <span className="sr-only">Year</span>
-          <select
-            id={yearId}
-            value={parts.year}
-            onChange={(event) => updatePart("year", event.target.value)}
-            className={selectClassName}
-            aria-label="Birth year"
+          <button
+            type="button"
+            id={`${fieldId}-year`}
+            aria-expanded={openPanel === "year"}
+            aria-haspopup="dialog"
+            aria-controls={`${fieldId}-year-panel`}
+            onClick={() => togglePanel("year")}
+            className={triggerClassName}
           >
-            <option value="">Year</option>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </label>
+            <span className={parts.year ? "text-white" : "text-white-muted"}>
+              {yearLabel}
+            </span>
+            <Chevron open={openPanel === "year"} />
+          </button>
+        </div>
+
+        {openPanel === "month" ? (
+          <div
+            id={`${fieldId}-month-panel`}
+            role="dialog"
+            aria-label="Choose month"
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+          >
+            <div className="grid grid-cols-4 gap-2">
+              {MONTH_SHORT.map((name, index) => {
+                const month = index + 1;
+                const selected = parts.month === month;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => updatePart("month", month)}
+                    className={`${cellClassName} ${selected ? cellSelectedClassName : ""}`}
+                    aria-pressed={selected}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {openPanel === "day" ? (
+          <div
+            id={`${fieldId}-day-panel`}
+            role="dialog"
+            aria-label="Choose day"
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+          >
+            <div className="grid grid-cols-7 gap-2">
+              {dayOptions.map((day) => {
+                const selected = parts.day === day;
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => updatePart("day", day)}
+                    className={`${cellClassName} ${selected ? cellSelectedClassName : ""}`}
+                    aria-pressed={selected}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        {openPanel === "year" ? (
+          <div
+            id={`${fieldId}-year-panel`}
+            role="dialog"
+            aria-label="Choose year"
+            className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 border border-white/10 bg-black-light p-3 shadow-2xl"
+          >
+            <div className="grid max-h-48 grid-cols-4 gap-2 overflow-y-auto pr-1 [scrollbar-width:thin]">
+              {years.map((year) => {
+                const selected = parts.year === year;
+                return (
+                  <button
+                    key={year}
+                    type="button"
+                    data-year={year}
+                    onClick={() => updatePart("year", year)}
+                    className={`${cellClassName} ${selected ? cellSelectedClassName : ""}`}
+                    aria-pressed={selected}
+                  >
+                    {year}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {value ? (
@@ -159,7 +292,7 @@ export function BirthDatePicker({
         </p>
       ) : (
         <p className="mt-3 text-xs text-white-muted">
-          Select month, day, and year.
+          Tap month, day, and year to choose from the grid.
         </p>
       )}
     </fieldset>

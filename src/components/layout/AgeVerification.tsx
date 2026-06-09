@@ -5,6 +5,7 @@ import Image from "next/image";
 import { brand } from "@/lib/brand";
 import {
   AGE_VERIFICATION_STORAGE_KEY,
+  isAgeGateForced,
   isAtLeast18,
   parseBirthDate,
 } from "@/lib/age-verification";
@@ -18,6 +19,11 @@ export function AgeVerification() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isAgeGateForced()) {
+      setVerified(false);
+      setChecked(true);
+      return;
+    }
     setVerified(localStorage.getItem(AGE_VERIFICATION_STORAGE_KEY) === "true");
     setChecked(true);
   }, []);
