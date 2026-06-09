@@ -59,7 +59,10 @@ export function BallisticPackageStep({
               sizes="320px"
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 from-0% to-transparent to-[30%]" />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/75 to-transparent h-[min(42vh,300px)] sm:h-[min(48vh,340px)]"
+            aria-hidden
+          />
           <div className="absolute bottom-0 left-0 p-6 sm:p-8">
             <p className="text-xs uppercase tracking-widest text-red">
               {details.label}

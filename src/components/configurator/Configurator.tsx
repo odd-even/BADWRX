@@ -128,7 +128,7 @@ function SpecSheetRow({ label, value }: { label: string; value: string }) {
       <dt className="text-xs uppercase tracking-widest text-white-muted">
         {label}
       </dt>
-      <dd className="mt-1 text-sm text-white">{value}</dd>
+      <dd className="mt-1.5 text-base leading-snug text-white sm:text-lg">{value}</dd>
     </div>
   );
 }

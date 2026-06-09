@@ -112,7 +112,7 @@ export function Header({
   const [mounted, setMounted] = useState(false);
   const onConfigure = pathname === "/configure";
   const isFullNavFade =
-    pathname === "/" || pathname.startsWith("/university");
+    pathname === "/" || (pathname?.startsWith("/university") ?? false);
 
   useEffect(() => {
     setMounted(true);

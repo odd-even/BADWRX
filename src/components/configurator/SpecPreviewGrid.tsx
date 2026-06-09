@@ -45,9 +45,9 @@ export function SpecPreviewGrid({
                   variant="swatch-fill"
                 />
               ) : (
-                <div className="flex aspect-square w-full items-center justify-center bg-black-light p-2">
+                <div className="flex aspect-square w-full items-center justify-center bg-black-light p-2 sm:p-3">
                   <p
-                    className={`text-center font-medium leading-snug text-white ${compact ? "text-xs sm:text-sm" : "text-xs"}`}
+                    className={`text-center font-medium leading-snug text-white ${compact ? "text-xs sm:text-sm" : "text-base leading-tight sm:text-lg"}`}
                   >
                     {option.label}
                   </p>
@@ -56,14 +56,14 @@ export function SpecPreviewGrid({
             </div>
             {stepTitle && (
               <p
-                className={`mt-1 uppercase tracking-wider text-white-muted/60 ${compact ? "text-xs sm:text-sm" : "text-[10px]"}`}
+                className={`mt-1.5 uppercase tracking-wider text-white-muted/60 ${compact ? "text-xs sm:text-sm" : "text-xs sm:text-sm"}`}
               >
                 {stepTitle}
               </p>
             )}
             {option.image && (
               <p
-                className={`leading-snug text-white-muted ${compact ? "mt-0.5 text-xs sm:text-sm" : "mt-0.5 text-xs"}`}
+                className={`leading-snug text-white-muted ${compact ? "mt-0.5 text-xs sm:text-sm" : "mt-1 text-sm sm:text-base"}`}
               >
                 {option.label}
               </p>

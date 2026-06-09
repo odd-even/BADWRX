@@ -1,0 +1,46 @@
+export const MONTH_LABELS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+export function parseIsoDate(value: string): {
+  year: number;
+  month: number;
+  day: number;
+} | null {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return { year, month, day };
+}
+
+export function formatBirthDateDisplay(value: string): string {
+  const parts = parseIsoDate(value);
+  if (!parts) return "";
+  const { year, month, day } = parts;
+  return `${MONTH_LABELS[month - 1]} ${day}, ${year}`;
+}
+
+const OLDEST_YEARS_BACK = 95;
+const YOUNGEST_YEARS_BACK = 10;
+
+/** Oldest selectable birth date (95 years ago). */
+export function birthDateMin(today = new Date()): string {
+  const year = today.getFullYear() - OLDEST_YEARS_BACK;
+  return `${year}-01-01`;
+}
+
+/** Youngest selectable birth date (10 years ago). */
+export function birthDateMax(today = new Date()): string {
+  const year = today.getFullYear() - YOUNGEST_YEARS_BACK;
+  return `${year}-12-31`;
+}
