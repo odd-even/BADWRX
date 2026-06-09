@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formInputClassName, formSelectClassName } from "@/lib/form-styles";
 
 export type ContactInquiryMode = "platform" | "university" | "merch";
 
@@ -12,8 +13,8 @@ export interface ContactField {
   options: string[];
 }
 
-const inputClassName =
-  "mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red";
+const inputClassName = formInputClassName;
+const selectClassName = formSelectClassName;
 
 interface ContactFormProps {
   mode: ContactInquiryMode;
@@ -135,7 +136,7 @@ export function ContactForm({
                 required={field.required}
                 value={values[field.id] ?? ""}
                 onChange={(event) => setValue(field.id, event.target.value)}
-                className={inputClassName}
+                className={selectClassName}
               >
                 <option value="">Select…</option>
                 {field.options.map((option) => (
@@ -202,7 +203,7 @@ export function ContactForm({
               required
               value={values.course ?? ""}
               onChange={(event) => setValue("course", event.target.value)}
-              className={inputClassName}
+              className={selectClassName}
             >
               <option value="">Select a class…</option>
               {courses.map((course) => (
@@ -355,7 +356,7 @@ export function ContactForm({
         <select
           value={values.merch ?? ""}
           onChange={(event) => setValue("merch", event.target.value)}
-          className={inputClassName}
+          className={selectClassName}
         >
           <option value="">General merch inquiry</option>
           {merchItems.map((item) => (

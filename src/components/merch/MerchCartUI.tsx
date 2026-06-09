@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMerchCart } from "@/components/merch/CartProvider";
+import { formSelectClassName } from "@/lib/form-styles";
 import type { MerchItem } from "@/lib/types";
 
 interface MerchAddToCartProps {
@@ -33,7 +34,7 @@ export function MerchAddToCart({ item }: MerchAddToCartProps) {
         <select
           value={size}
           onChange={(event) => setSize(event.target.value)}
-          className="mt-1 w-full border border-white/10 bg-black-light px-3 py-2 text-sm text-white outline-none focus:border-red"
+          className={formSelectClassName}
         >
           {item.sizes.map((option) => (
             <option key={option} value={option}>
@@ -49,7 +50,7 @@ export function MerchAddToCart({ item }: MerchAddToCartProps) {
           <select
             value={color}
             onChange={(event) => setColor(event.target.value)}
-            className="mt-1 w-full border border-white/10 bg-black-light px-3 py-2 text-sm text-white outline-none focus:border-red"
+            className={formSelectClassName}
           >
             {item.colors.map((option) => (
               <option key={option} value={option}>
