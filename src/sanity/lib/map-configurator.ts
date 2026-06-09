@@ -1,3 +1,4 @@
+import { buildBasecampItemOptions } from "@/lib/configurator/basecamp-items";
 import {
   basecampPackageImage,
   configuratorPlaceholder,
@@ -305,6 +306,13 @@ export function mapConfiguratorData(
     basecamp.price,
     basecamp.priceCents,
   );
+  for (const [itemId, cents] of Object.entries(
+    fallback.pricing.optionPriceCents,
+  )) {
+    if (itemId.startsWith("basecamp-") && itemId !== "basecamp-package") {
+      optionPriceCents[itemId] = cents;
+    }
+  }
   const basecampOptions: ConfigOption[] = [
     {
       id: basecampId,
@@ -446,6 +454,9 @@ export function mapConfiguratorData(
       headline: basecamp.headline ?? fallback.basecampDetails.headline,
       description: basecamp.description ?? fallback.basecampDetails.description,
       items: basecamp.items ?? fallback.basecampDetails.items,
+      itemOptions: buildBasecampItemOptions(
+        basecamp.items ?? fallback.basecampDetails.items,
+      ),
     },
     ballisticDetails: {
       optionId: ballisticId,

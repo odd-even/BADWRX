@@ -110,6 +110,14 @@ export function mapSiteSettings(doc: Partial<SiteSettings> | null): SiteSettings
   return doc as SiteSettings;
 }
 
+function compactHeroPhraseLines(lines: string[]): string[] {
+  const joined = lines.map((line) => line.trim()).join(" ");
+  if (/^engineered\s+for\s+unrelenting\s+performance$/i.test(joined)) {
+    return ["Engineered for", "Unrelenting", "Performance"];
+  }
+  return lines;
+}
+
 /** Normalize Sanity headline phrase objects → string[] for the typewriter */
 export function normalizeHeadlines(
   headlines: SiteSettings["homeHero"]["headlines"] | undefined,
@@ -117,12 +125,15 @@ export function normalizeHeadlines(
   if (!headlines?.length) return [];
 
   return headlines.map((entry) => {
-    if (Array.isArray(entry)) return entry;
-    if (typeof entry === "string") return entry;
-    if (entry && typeof entry === "object" && "lines" in entry) {
-      const lines = (entry as { lines?: string[] }).lines;
-      return lines?.length ? lines : [];
+    let lines: string[];
+    if (Array.isArray(entry)) lines = entry;
+    else if (typeof entry === "string") lines = [entry];
+    else if (entry && typeof entry === "object" && "lines" in entry) {
+      const raw = (entry as { lines?: string[] }).lines;
+      lines = raw?.length ? raw : [];
+    } else {
+      return [];
     }
-    return [];
+    return compactHeroPhraseLines(lines);
   });
 }

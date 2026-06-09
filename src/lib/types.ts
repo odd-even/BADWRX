@@ -223,13 +223,13 @@ export interface ConfigStep {
   options: ConfigOption[];
 }
 
-export type BuildConfiguration = Record<
-  | "platform"
-  | "caliber"
-  | "stockPaint"
-  | "scope"
-  | "rings"
-  | "basecampPackage"
-  | "ballisticPackage",
-  ConfigOption | null
->;
+export interface BuildConfiguration {
+  platform: ConfigOption | null;
+  caliber: ConfigOption | null;
+  stockPaint: ConfigOption | null;
+  scope: ConfigOption | null;
+  rings: ConfigOption | null;
+  basecampPackage: ConfigOption | null;
+  basecampItems: ConfigOption[];
+  ballisticPackage: ConfigOption | null;
+}

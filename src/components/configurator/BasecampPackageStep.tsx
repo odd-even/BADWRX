@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { ConfigOption } from "@/lib/types";
 import type { ConfiguratorPricing, PackageDetails } from "@/lib/configurator/types";
+import { splitBasecampItem } from "@/lib/configurator/basecamp-items";
 import { formatPriceDelta, getOptionPrice } from "@/lib/pricing";
 
 interface BasecampPackageStepProps {
@@ -10,13 +11,11 @@ interface BasecampPackageStepProps {
   pricing: ConfiguratorPricing;
   packageOption: ConfigOption;
   noneOption: ConfigOption;
-  selectedId: string | undefined;
-  onSelect: (option: ConfigOption) => void;
-}
-
-function splitItem(item: string): { title: string; detail: string } {
-  const [title, ...rest] = item.split(" — ");
-  return { title: title.trim(), detail: rest.join(" — ").trim() };
+  itemOptions: ConfigOption[];
+  selectedIds: string[];
+  noneSelected: boolean;
+  onToggleItem: (option: ConfigOption) => void;
+  onSelectNone: () => void;
 }
 
 export function BasecampPackageStep({
@@ -24,16 +23,24 @@ export function BasecampPackageStep({
   pricing,
   packageOption,
   noneOption,
-  selectedId,
-  onSelect,
+  itemOptions,
+  selectedIds,
+  noneSelected,
+  onToggleItem,
+  onSelectNone,
 }: BasecampPackageStepProps) {
-  const items = details.items.map(splitItem);
-  const priceLabel = formatPriceDelta(
-    getOptionPrice(packageOption.id, pricing),
-    "basecampPackage",
-  );
-  const packageSelected = selectedId === packageOption.id;
-  const noneSelected = selectedId === noneOption.id;
+  const items = itemOptions.map((option, index) => {
+    const parsed = splitBasecampItem(details.items[index] ?? option.label);
+    return {
+      option,
+      title: parsed.title || option.label,
+      detail: parsed.detail || option.description || "",
+      priceLabel: formatPriceDelta(
+        getOptionPrice(option.id, pricing),
+        "basecampPackage",
+      ),
+    };
+  });
 
   return (
     <div className="mt-8 space-y-6">
@@ -47,101 +54,94 @@ export function BasecampPackageStep({
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 640px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 from-0% to-transparent to-[30%]" />
-            <div className="absolute bottom-0 left-0 p-6 sm:p-8">
-              <p className="text-xs uppercase tracking-widest text-red">
-                {details.label}
-              </p>
-              <h3 className="mt-1 text-3xl text-white sm:text-4xl">
-                {details.headline}
-              </h3>
-            </div>
           </div>
         )}
 
         <div className="p-6 sm:p-8">
-          <p className="text-sm leading-relaxed text-white-muted">
+          <p className="text-xs uppercase tracking-widest text-red">
+            {details.label}
+          </p>
+          <h3 className="mt-1 text-2xl text-white sm:text-3xl">
+            {details.headline}
+          </h3>
+          <p className="mt-4 text-sm leading-relaxed text-white-muted">
             {details.description}
           </p>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {items.map((item, index) => (
-              <div
-                key={item.title}
-                className="flex h-full flex-col border border-white/10 bg-black-light p-5"
-              >
-                <span className="text-xs font-semibold text-red">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <p className="mt-3 font-medium leading-snug text-white">
-                  {item.title}
-                </p>
-                {item.detail && (
-                  <p className="mt-2 text-sm leading-relaxed text-white-muted">
-                    {item.detail}
+          <p className="mt-8 text-xs uppercase tracking-widest text-red">
+            Add one or more
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            {items.map((item, index) => {
+              const selected = selectedIds.includes(item.option.id);
+              return (
+                <button
+                  key={item.option.id}
+                  type="button"
+                  onClick={() => onToggleItem(item.option)}
+                  className={`flex h-full flex-col border p-5 text-left transition ${
+                    selected
+                      ? "border-red bg-red/5"
+                      : "border-white/10 bg-black-light hover:border-white/30"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-xs font-semibold text-red">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={`mt-0.5 h-4 w-4 shrink-0 border ${
+                        selected ? "border-red bg-red" : "border-white/30"
+                      }`}
+                    />
+                  </div>
+                  <p className="mt-3 font-medium leading-snug text-white">
+                    {item.title}
                   </p>
-                )}
-              </div>
-            ))}
+                  {item.detail && (
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-white-muted">
+                      {item.detail}
+                    </p>
+                  )}
+                  {item.priceLabel && (
+                    <p className="mt-4 text-xs uppercase tracking-widest text-red">
+                      {item.priceLabel}
+                    </p>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <p className="mt-8 text-xs uppercase tracking-widest text-white-muted/70">
-            This is not a bundle. It&apos;s a system.
+            This is not a bundle. It&apos;s a system — add what you need.
           </p>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => onSelect(packageOption)}
-          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
-            packageSelected
-              ? "border-red bg-red/5"
-              : "border-white/10 bg-black-muted hover:border-white/30"
-          }`}
-        >
-          <div>
-            <p className="font-medium text-white">
-              Add the {details.label}
+      <button
+        type="button"
+        onClick={onSelectNone}
+        className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+          noneSelected
+            ? "border-red bg-red/5"
+            : "border-white/10 bg-black-muted hover:border-white/30"
+        }`}
+      >
+        <div>
+          <p className="font-medium text-white">{noneOption.label}</p>
+          {noneOption.description && (
+            <p className="mt-1 text-sm text-white-muted">
+              {noneOption.description}
             </p>
-            {priceLabel && (
-              <p className="mt-1 text-xs uppercase tracking-widest text-red">
-                {priceLabel}
-              </p>
-            )}
-          </div>
-          <span
-            className={`mt-1 h-4 w-4 shrink-0 border ${
-              packageSelected ? "border-red bg-red" : "border-white/30"
-            }`}
-          />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSelect(noneOption)}
-          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
-            noneSelected
-              ? "border-red bg-red/5"
-              : "border-white/10 bg-black-muted hover:border-white/30"
+          )}
+        </div>
+        <span
+          className={`mt-1 h-4 w-4 shrink-0 border ${
+            noneSelected ? "border-red bg-red" : "border-white/30"
           }`}
-        >
-          <div>
-            <p className="font-medium text-white">{noneOption.label}</p>
-            {noneOption.description && (
-              <p className="mt-1 text-sm text-white-muted">
-                {noneOption.description}
-              </p>
-            )}
-          </div>
-          <span
-            className={`mt-1 h-4 w-4 shrink-0 border ${
-              noneSelected ? "border-red bg-red" : "border-white/30"
-            }`}
-          />
-        </button>
-      </div>
+        />
+      </button>
     </div>
   );
 }

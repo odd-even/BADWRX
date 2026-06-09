@@ -22,10 +22,13 @@ export function RifleCard({
     rifle.heroImage.url.includes("copy.webp");
 
   return (
-    <article className={`rifle-card group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50 ${compact ? "h-full w-full" : ""}`}>
-      <Link href={`/builds/${rifle.slug}`} className={`rifle-card-main block ${compact ? "flex flex-1 flex-col" : ""}`}>
+    <article className="rifle-card group flex h-full w-full flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
+      <Link
+        href={`/builds/${rifle.slug}`}
+        className="rifle-card-main flex min-h-0 flex-1 flex-col"
+      >
         <div
-          className={`relative overflow-hidden ${
+          className={`relative shrink-0 overflow-hidden ${
             compact ? "aspect-[3/2]" : "aspect-[4/3]"
           }`}
         >
@@ -48,58 +51,48 @@ export function RifleCard({
         </div>
 
         <div
-          className={
-            compact
-              ? "flex flex-1 flex-col p-5 pb-3"
-              : "p-6 pb-4"
-          }
+          className={`flex min-h-0 flex-1 flex-col ${
+            compact ? "p-5 pb-3" : "p-6 pb-4"
+          }`}
         >
           <h3
-            className={`text-xl text-white transition group-hover:text-red ${
+            className={`shrink-0 text-xl text-white transition group-hover:text-red ${
               compact ? "line-clamp-1" : ""
             }`}
           >
             {rifle.title}
           </h3>
           <p
-            className={`mt-2 text-sm text-white-muted ${
-              compact ? "line-clamp-2 min-h-[2.5rem] flex-1" : ""
+            className={`mt-2 min-h-0 flex-1 text-sm text-white-muted ${
+              compact ? "line-clamp-2" : ""
             }`}
           >
             {rifle.tagline}
           </p>
-          <p
-            className={`text-xs uppercase tracking-widest text-white-muted ${
-              compact ? "mt-4 min-h-[1.25rem] shrink-0" : rifle.startingAt ? "mt-4" : "hidden"
-            }`}
-          >
-            {rifle.startingAt ? (
-              <>
-                From{" "}
-                <span className="font-semibold text-white">{rifle.startingAt}</span>
-              </>
-            ) : compact ? (
-              <span aria-hidden="true">&nbsp;</span>
-            ) : null}
-          </p>
+          {rifle.startingAt ? (
+            <p className="mt-4 shrink-0 text-xs uppercase tracking-widest text-white-muted">
+              From{" "}
+              <span className="font-semibold text-white">{rifle.startingAt}</span>
+            </p>
+          ) : null}
         </div>
       </Link>
 
       <div
-        className={`grid gap-px border-t border-white/10 bg-white/10 ${
+        className={`grid shrink-0 gap-px border-t border-white/10 bg-white/10 ${
           showConfigure ? "grid-cols-2" : "grid-cols-1"
         }`}
       >
         <Link
           href={`/builds/${rifle.slug}`}
-          className="rifle-card-action bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
+          className="rifle-card-action flex min-h-11 items-center justify-center bg-black-muted text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
         >
           View build
         </Link>
         {showConfigure ? (
           <Link
             href={configureHref(rifle.slug)}
-            className="rifle-card-action bg-black-muted py-3 text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
+            className="rifle-card-action flex min-h-11 items-center justify-center bg-black-muted text-center text-[10px] uppercase tracking-widest text-red transition hover:bg-red/10 hover:text-white"
           >
             Configure
           </Link>

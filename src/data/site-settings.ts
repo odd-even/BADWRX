@@ -72,7 +72,7 @@ export const defaultSiteSettings: SiteSettings = {
     headlinePrefix: "",
     headlines: [
       ["Crafted", "Without", "Compromise"],
-      ["Engineered", "for Unrelenting", "Performance"],
+      ["Engineered for", "Unrelenting", "Performance"],
       ["Built for", "the hard", "country"],
     ],
     subheadline: docxCopy.homeHero.subheadline,

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "syncedAt": "2026-06-09T00:11:11.385Z",
+    "syncedAt": "2026-06-09T10:10:31.680Z",
     "sources": [
       "Pricing_List_BADWRX_Final_43.xlsx",
       "BADWRX_Website_Copy_7.docx"
@@ -1451,6 +1451,9 @@
     "baseBuildCents": 0,
     "optionPriceCents": {
       "hawkins-ult-rings": 19600,
+      "basecamp-case": 45000,
+      "basecamp-chronograph": 55000,
+      "basecamp-tools": 25000,
       "basecamp-package": 125000,
       "ballistic-package": 250000,
       "scope-none": 0,

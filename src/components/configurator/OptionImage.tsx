@@ -32,7 +32,7 @@ export function OptionImage({
         }`}
       >
         {!isSwatch && (
-          <p className="text-[10px] uppercase tracking-widest text-white-muted">
+          <p className="text-xs uppercase tracking-widest text-white-muted">
             Photo
           </p>
         )}

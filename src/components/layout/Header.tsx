@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -78,10 +79,11 @@ function ctaButtonStyle(): CSSProperties {
   };
 }
 
-function ctaRevealStyle(progress: number, maxWidth: number): CSSProperties {
+function ctaRevealStyle(progress: number, gap: number): CSSProperties {
   return {
-    maxWidth: lerp(0, maxWidth, progress),
     opacity: progress,
+    maxWidth: `${lerp(0, 210, progress)}px`,
+    marginLeft: `${lerp(0, gap, progress)}px`,
     overflow: "hidden",
     pointerEvents: progress > 0.05 ? "auto" : "none",
   };
@@ -107,7 +109,14 @@ export function Header({
   const pathname = usePathname();
   const { itemCount } = useMerchCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const onConfigure = pathname === "/configure";
+  const isFullNavFade =
+    pathname === "/" || pathname.startsWith("/university");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -135,7 +144,6 @@ export function Header({
   const logoRestHeight = compact ? 44 : 56;
   const logoWidth = lerp(logoRestWidth, 56, progress);
   const logoHeight = lerp(logoRestHeight, 48, progress);
-  const ctaMaxWidth = compact ? 112 : 140;
   const bgOpacity = lerp(0, 0.95, progress);
   const borderOpacity = lerp(0, 0.1, progress);
   const blur = lerp(0, 16, progress);
@@ -153,11 +161,12 @@ export function Header({
 
   const navY = lerp(6, 0, progress);
   const navOpacity = lerp(0.72, 1, progress);
+  const ctaGap = compact ? 12 : 32;
 
   return (
     <header
       className={`fixed top-0 w-full will-change-[padding,background-color,box-shadow] ${
-        menuOpen ? "z-[60]" : "z-50"
+        menuOpen ? "z-[110]" : "z-50"
       }`}
       style={{
         paddingTop: padY,
@@ -178,7 +187,11 @@ export function Header({
     >
       {/* Top fade — keeps nav readable over hero imagery on every page */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[min(40vh,280px)] bg-gradient-to-b from-black via-black/75 to-transparent"
+        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 bg-gradient-to-b from-black to-transparent md:via-black/75 ${
+          isFullNavFade
+            ? "h-[min(16vh,112px)] via-black/60 md:h-[min(40vh,280px)]"
+            : "h-[min(8vh,56px)] via-black/50 md:h-[min(20vh,140px)]"
+        }`}
         style={{ opacity: menuOpen ? 0 : 1 - progress }}
         aria-hidden
       />
@@ -193,7 +206,7 @@ export function Header({
         aria-hidden
       />
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-5 lg:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
         <Link
           href="/"
           className="relative block shrink-0 overflow-visible will-change-[width]"
@@ -242,26 +255,28 @@ export function Header({
           </div>
         </Link>
 
-        <nav
+        <div
           className="header-nav ml-auto hidden items-center gap-3 md:flex lg:gap-8 will-change-[transform,opacity]"
           style={{
             opacity: navOpacity,
             transform: `translateY(${navY}px)`,
           }}
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="whitespace-nowrap text-xs uppercase tracking-wide text-white/80 transition-[color,text-decoration-color,letter-spacing] duration-200 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em] lg:text-sm lg:tracking-widest"
-            >
-              {link.label}
-            </Link>
-          ))}
+          <nav className="flex items-center gap-3 lg:gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="whitespace-nowrap text-xs uppercase tracking-wide text-white/80 transition-[color,text-decoration-color,letter-spacing] duration-200 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em] lg:text-sm lg:tracking-widest"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           {showConfigureCta ? (
             <span
               className="inline-flex shrink-0"
-              style={ctaRevealStyle(progress, ctaMaxWidth)}
+              style={ctaRevealStyle(progress, ctaGap)}
               aria-hidden={progress <= 0.05}
             >
               <Link
@@ -270,13 +285,14 @@ export function Header({
                 style={ctaButtonStyle()}
                 tabIndex={progress > 0.05 ? 0 : -1}
               >
-                Build Rifle
+                Configure Rifle
               </Link>
             </span>
           ) : null}
-        </nav>
+          {showMerchCart ? <MerchCartLink /> : null}
+        </div>
 
-        <div className="flex items-center gap-1 md:ml-2 lg:ml-6 lg:gap-2">
+        <div className="flex items-center gap-1 md:hidden">
           {showMerchCart ? <MerchCartLink /> : null}
           <button
             type="button"
@@ -307,69 +323,74 @@ export function Header({
         </div>
       </div>
 
-      <div
-        id="mobile-nav"
-        className={`fixed inset-0 z-[55] md:hidden ${
-          menuOpen
-            ? "visible opacity-100 pointer-events-auto"
-            : "invisible opacity-0 pointer-events-none"
-        } transition-[opacity,visibility] duration-300`}
-        aria-hidden={!menuOpen}
-        inert={!menuOpen ? true : undefined}
-      >
-        <button
-          type="button"
-          className="absolute inset-0 bg-black-light"
-          onClick={() => setMenuOpen(false)}
-          aria-label="Close menu"
-          tabIndex={menuOpen ? 0 : -1}
-        />
-        <nav className="relative flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              tabIndex={menuOpen ? 0 : -1}
-              aria-hidden={!menuOpen}
-              className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
-                pathname === link.href
-                  ? "text-red"
-                  : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
+      {mounted
+        ? createPortal(
+            <div
+              id="mobile-nav"
+              className={`fixed inset-0 z-[100] md:hidden ${
+                menuOpen
+                  ? "visible pointer-events-auto"
+                  : "invisible pointer-events-none"
               }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-          {itemCount > 0 && !onConfigure && showMerchCart ? (
-            <Link
-              href="/merch/cart"
-              onClick={() => setMenuOpen(false)}
-              tabIndex={menuOpen ? 0 : -1}
               aria-hidden={!menuOpen}
-              className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
-                pathname === "/merch/cart"
-                  ? "text-red"
-                  : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
-              }`}
+              inert={!menuOpen ? true : undefined}
             >
-              Merch cart ({itemCount})
-            </Link>
-          ) : null}
-          {showConfigureCta ? (
-            <Link
-              href="/configure"
-              onClick={() => setMenuOpen(false)}
-              tabIndex={menuOpen ? 0 : -1}
-              aria-hidden={!menuOpen}
-              className={`${ctaClassName} mt-6 w-full py-4 text-center`}
-              style={ctaButtonStyle()}
-            >
-              Build Yours
-            </Link>
-          ) : null}
-        </nav>
-      </div>
+              <button
+                type="button"
+                className="absolute inset-0 bg-[#080a07]"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close menu"
+                tabIndex={menuOpen ? 0 : -1}
+              />
+              <nav className="relative z-[1] flex h-full flex-col justify-center gap-2 px-8 pb-24 pt-28">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    tabIndex={menuOpen ? 0 : -1}
+                    aria-hidden={!menuOpen}
+                    className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
+                      pathname === link.href
+                        ? "text-red"
+                        : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                {itemCount > 0 && !onConfigure && showMerchCart ? (
+                  <Link
+                    href="/merch/cart"
+                    onClick={() => setMenuOpen(false)}
+                    tabIndex={menuOpen ? 0 : -1}
+                    aria-hidden={!menuOpen}
+                    className={`border-b border-white/5 py-4 text-lg uppercase tracking-widest transition-[color,text-decoration-color] ${
+                      pathname === "/merch/cart"
+                        ? "text-red"
+                        : "text-white/80 hover:text-white hover:underline hover:decoration-red hover:underline-offset-[0.35em]"
+                    }`}
+                  >
+                    Merch cart ({itemCount})
+                  </Link>
+                ) : null}
+                {showConfigureCta ? (
+                  <Link
+                    href="/configure"
+                    onClick={() => setMenuOpen(false)}
+                    tabIndex={menuOpen ? 0 : -1}
+                    aria-hidden={!menuOpen}
+                    className="mt-6 block w-full border px-6 py-4 text-center text-lg font-semibold uppercase tracking-widest text-white transition-[background-color,border-color] duration-200 active:scale-[0.98]"
+                    style={ctaButtonStyle()}
+                  >
+                    Configure Rifle
+                  </Link>
+                ) : null}
+              </nav>
+            </div>,
+            document.body,
+          )
+        : null}
     </header>
   );
 }

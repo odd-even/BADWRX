@@ -1,5 +1,6 @@
 import { configuratorSteps as localSteps } from "@/data/configurator-options";
 import { sourceData } from "@/lib/source-data";
+import { buildBasecampItemOptions } from "@/lib/configurator/basecamp-items";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 
 export function buildConfiguratorDataFromSource(): ConfiguratorData {
@@ -27,6 +28,7 @@ export function buildConfiguratorDataFromSource(): ConfiguratorData {
       headline: cfg.basecamp.headline,
       description: cfg.basecamp.description,
       items: cfg.basecamp.items,
+      itemOptions: buildBasecampItemOptions(cfg.basecamp.items),
     },
     ballisticDetails: {
       optionId: cfg.ballistic.id,

@@ -17,6 +17,10 @@ import {
   type BuildContactDetails,
 } from "@/lib/build-submission";
 import {
+  BASECAMP_NONE_OPTION,
+  summarizeBasecampSelection,
+} from "@/lib/configurator/basecamp-items";
+import {
   companionSelection,
   filterStepOptions,
   platformSpecDefaults,
@@ -38,6 +42,7 @@ const emptyConfig: BuildConfiguration = {
   scope: null,
   rings: null,
   basecampPackage: null,
+  basecampItems: [],
   ballisticPackage: null,
 };
 
@@ -120,7 +125,7 @@ function SpecSheetGrid({
 function SpecSheetRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-b border-white/5 pb-3">
-      <dt className="text-[10px] uppercase tracking-widest text-white-muted">
+      <dt className="text-xs uppercase tracking-widest text-white-muted">
         {label}
       </dt>
       <dd className="mt-1 text-sm text-white">{value}</dd>
@@ -163,6 +168,80 @@ function configToSummary(
 
 function scrollConfiguratorToTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
+interface StepNavButtonsProps {
+  navPosition: number;
+  isLastStep: boolean;
+  canAdvance: boolean;
+  isBuildComplete: boolean;
+  onBack: () => void;
+  onContinue: () => void;
+  onReview: () => void;
+  layout: "inline" | "sticky";
+}
+
+function stepNavPrimaryClassName(enabled: boolean, isSticky: boolean, extra = "") {
+  const layout = isSticky ? "flex-1 md:flex-none " : "";
+  const shared =
+    `${layout}px-6 py-3 text-center text-xs uppercase tracking-widest transition `.trim();
+  if (enabled) {
+    return `${shared} border border-red bg-red text-white hover:bg-red-dark ${extra}`.trim();
+  }
+  return `${shared} cursor-not-allowed border border-white/15 bg-white/5 text-white-muted ${extra}`.trim();
+}
+
+function StepNavButtons({
+  navPosition,
+  isLastStep,
+  canAdvance,
+  isBuildComplete,
+  onBack,
+  onContinue,
+  onReview,
+  layout,
+}: StepNavButtonsProps) {
+  const isSticky = layout === "sticky";
+  const backClassName = `${
+    isSticky ? "flex-1 " : ""
+  }border border-white/20 px-6 py-3 text-center text-xs uppercase tracking-widest text-white-muted transition hover:border-white hover:text-white${
+    isSticky ? " md:flex-none" : ""
+  }`;
+
+  return (
+    <>
+      {navPosition > 0 && (
+        <button type="button" onClick={onBack} className={backClassName}>
+          Back
+        </button>
+      )}
+      {isLastStep ? (
+        isSticky ? (
+          <button
+            type="button"
+            disabled={!isBuildComplete}
+            onClick={onReview}
+            className={stepNavPrimaryClassName(
+              isBuildComplete,
+              isSticky,
+              "font-semibold",
+            )}
+          >
+            Review & Submit
+          </button>
+        ) : null
+      ) : (
+        <button
+          type="button"
+          disabled={!canAdvance}
+          onClick={onContinue}
+          className={stepNavPrimaryClassName(canAdvance, isSticky)}
+        >
+          Continue
+        </button>
+      )}
+    </>
+  );
 }
 
 export function Configurator({ data }: ConfiguratorProps) {
@@ -220,12 +299,14 @@ export function Configurator({ data }: ConfiguratorProps) {
   const isLastStep = navPosition === navigableStepIndices.length - 1;
   const goToStep = (position: number) => {
     const target = navigableStepIndices[position];
-    if (target !== undefined) {
-      setStepIndex(target);
-    }
+    if (target === undefined) return;
+    setStepIndex(target);
   };
   const canAdvance = config[currentKey] !== null;
   const isBuildComplete = submission.isComplete;
+  const showStepNav =
+    navPosition > 0 || !isLastStep || (isLastStep && isBuildComplete);
+  const showInlineStepNav = navPosition > 0 || !isLastStep;
   const isSwatchStep = swatchSteps.includes(currentKey);
   const isBasecampStep = currentKey === "basecampPackage";
   const isBallisticStep = currentKey === "ballisticPackage";
@@ -237,9 +318,9 @@ export function Configurator({ data }: ConfiguratorProps) {
   const basecampPackageOption = currentStep.options.find(
     (option) => option.id !== "case-none",
   );
-  const basecampNoneOption = currentStep.options.find(
-    (option) => option.id === "case-none",
-  );
+  const basecampNoneOption =
+    currentStep.options.find((option) => option.id === "case-none") ??
+    BASECAMP_NONE_OPTION;
   const ballisticPackageOption = currentStep.options.find(
     (option) => option.id !== "ballistic-none",
   );
@@ -275,6 +356,31 @@ export function Configurator({ data }: ConfiguratorProps) {
   useLayoutEffect(() => {
     scrollConfiguratorToTop();
   }, [stepIndex, phase]);
+
+  function toggleBasecampItem(option: ConfigOption) {
+    setConfig((prev) => {
+      const selected = prev.basecampItems.some((item) => item.id === option.id);
+      const basecampItems = selected
+        ? prev.basecampItems.filter((item) => item.id !== option.id)
+        : [...prev.basecampItems, option];
+      return {
+        ...prev,
+        basecampItems,
+        basecampPackage:
+          basecampItems.length > 0
+            ? summarizeBasecampSelection(basecampItems)
+            : null,
+      };
+    });
+  }
+
+  function selectBasecampNone() {
+    setConfig((prev) => ({
+      ...prev,
+      basecampItems: [],
+      basecampPackage: BASECAMP_NONE_OPTION,
+    }));
+  }
 
   function selectOption(option: ConfigOption) {
     setConfig((prev) => {
@@ -374,7 +480,16 @@ export function Configurator({ data }: ConfiguratorProps) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-5">
+    <>
+    {navPosition === 0 && (
+      <p className="mb-8 max-w-2xl text-white-muted">
+        Walk through platform, caliber, finish, optics, rings, Basecamp Package,
+        and Ballistic Package — matching the six BADWRX builds in our source
+        spec. Muzzle device and trigger are set per platform. Submit your spec
+        for a consultation — no payment required.
+      </p>
+    )}
+    <div className={`grid gap-8 lg:grid-cols-5 ${showStepNav ? "pb-24" : ""}`}>
       <div className="lg:col-span-3">
         <div className="mb-8 flex gap-2">
           {navigableStepIndices.map((stepIdx, position) => {
@@ -401,14 +516,17 @@ export function Configurator({ data }: ConfiguratorProps) {
           {currentStep.subtitle}
         </p>
 
-        {isBasecampStep && basecampPackageOption && basecampNoneOption ? (
+        {isBasecampStep && basecampPackageOption ? (
           <BasecampPackageStep
             details={data.basecampDetails}
             pricing={pricing}
             packageOption={basecampPackageOption}
             noneOption={basecampNoneOption}
-            selectedId={config.basecampPackage?.id}
-            onSelect={selectOption}
+            itemOptions={data.basecampDetails.itemOptions ?? []}
+            selectedIds={config.basecampItems.map((item) => item.id)}
+            noneSelected={config.basecampPackage?.id === basecampNoneOption.id}
+            onToggleItem={toggleBasecampItem}
+            onSelectNone={selectBasecampNone}
           />
         ) : isBallisticStep && ballisticPackageOption && ballisticNoneOption ? (
           <BallisticPackageStep
@@ -500,37 +618,23 @@ export function Configurator({ data }: ConfiguratorProps) {
               Review your complete spec sheet, confirm pricing, and submit to a
               builder for the next step.
             </p>
-            <button
-              type="button"
-              onClick={() => setPhase("review")}
-              className="mt-6 w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto sm:px-10"
-            >
-              Review & Submit Build →
-            </button>
           </div>
         )}
 
-        <div className="mt-8 flex gap-4">
-          {navPosition > 0 && (
-            <button
-              type="button"
-              onClick={() => goToStep(navPosition - 1)}
-              className="border border-white/20 px-6 py-3 text-xs uppercase tracking-widest text-white-muted transition hover:border-white hover:text-white"
-            >
-              Back
-            </button>
-          )}
-          {!isLastStep && (
-            <button
-              type="button"
-              disabled={!canAdvance}
-              onClick={() => goToStep(navPosition + 1)}
-              className="border border-red bg-red px-6 py-3 text-xs uppercase tracking-widest text-white transition hover:bg-red-dark disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Continue
-            </button>
-          )}
-        </div>
+        {showInlineStepNav ? (
+          <div className="mt-8 hidden gap-4 md:flex">
+            <StepNavButtons
+              layout="inline"
+              navPosition={navPosition}
+              isLastStep={isLastStep}
+              canAdvance={canAdvance}
+              isBuildComplete={isBuildComplete}
+              onBack={() => goToStep(navPosition - 1)}
+              onContinue={() => goToStep(navPosition + 1)}
+              onReview={() => setPhase("review")}
+            />
+          </div>
+        ) : null}
       </div>
 
       <aside className="lg:col-span-2">
@@ -574,7 +678,7 @@ export function Configurator({ data }: ConfiguratorProps) {
 
               {selectedCount > 0 && (
                 <div className="mt-6 border-t border-white/10 pt-6">
-                  <p className="text-[10px] uppercase tracking-widest text-white-muted">
+                  <p className="text-xs uppercase tracking-widest text-white-muted">
                     Price estimate
                   </p>
                   <ul className="mt-3 space-y-2">
@@ -598,7 +702,7 @@ export function Configurator({ data }: ConfiguratorProps) {
                       {formatPrice(buildTotalCents)}
                     </span>
                   </div>
-                  <p className="mt-2 text-[10px] text-white-muted/70">
+                  <p className="mt-2 text-xs text-white-muted/70">
                     Full payment is due upfront after builder review — we
                     won&apos;t start building until payment is received.
                   </p>
@@ -628,5 +732,23 @@ export function Configurator({ data }: ConfiguratorProps) {
         </div>
       </aside>
     </div>
+
+    {showStepNav ? (
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#080a07] pb-[env(safe-area-inset-bottom,0px)]">
+        <div className="mx-auto flex max-w-7xl gap-3 px-4 py-3 md:justify-end md:gap-4 md:px-6 md:py-4">
+          <StepNavButtons
+            layout="sticky"
+            navPosition={navPosition}
+            isLastStep={isLastStep}
+            canAdvance={canAdvance}
+            isBuildComplete={isBuildComplete}
+            onBack={() => goToStep(navPosition - 1)}
+            onContinue={() => goToStep(navPosition + 1)}
+            onReview={() => setPhase("review")}
+          />
+        </div>
+      </div>
+    ) : null}
+    </>
   );
 }

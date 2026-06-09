@@ -38,7 +38,7 @@ function highlightPhrase(phrase: string, highlights: string[]) {
 
 function renderPhraseLines(lines: string[], highlights: string[]) {
   return lines.map((line, index) => (
-    <span key={`${line}-${index}`} className="block">
+    <span key={`${line}-${index}`} className="hero-headline-line block">
       {highlightPhrase(line, highlights)}
     </span>
   ));
@@ -112,7 +112,7 @@ export function TypewriterText({
       <span className="relative block">
         <span aria-hidden="true" className="invisible block">
           {phantomLines.map((line, index) => (
-            <span key={`phantom-${index}`} className="block">
+            <span key={`phantom-${index}`} className="hero-headline-line block">
               {line || "\u00A0"}
             </span>
           ))}

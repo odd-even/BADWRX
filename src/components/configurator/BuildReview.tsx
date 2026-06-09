@@ -51,8 +51,11 @@ export function BuildReview({
         </div>
         <dl className="divide-y divide-white/5">
           {submission.selections.map((line) => (
-            <div key={line.stepKey} className="grid gap-2 px-6 py-4 sm:grid-cols-[140px_1fr_auto] sm:items-start sm:gap-6">
-              <dt className="text-[10px] uppercase tracking-widest text-white-muted">
+            <div
+              key={`${line.stepKey}-${line.optionLabel}`}
+              className="grid gap-2 px-6 py-4 sm:grid-cols-[140px_1fr_auto] sm:items-start sm:gap-6"
+            >
+              <dt className="text-xs uppercase tracking-widest text-white-muted">
                 {line.stepTitle}
               </dt>
               <dd>

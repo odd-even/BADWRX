@@ -41,7 +41,7 @@ export default async function HomePage() {
             prefix={site.homeHero.headlinePrefix || undefined}
             phrases={site.homeHero.headlines}
             highlights={["Without", "Unrelenting", "Hard"]}
-            className="max-w-3xl text-5xl leading-[0.92] text-white md:text-7xl"
+            className="max-w-3xl text-4xl leading-[0.92] text-white sm:text-5xl md:text-7xl"
           />
           <p className="mt-6 max-w-xl text-lg text-white-muted">
             {site.homeHero.subheadline}
@@ -52,7 +52,7 @@ export default async function HomePage() {
                 href="/configure"
                 className="w-full border border-red bg-red px-8 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:w-auto"
               >
-                Configure Your Rifle
+                Configure Rifle
               </Link>
             ) : null}
             {showBuilds ? (

@@ -45,12 +45,9 @@ export function CoursePageContent({
               Long Range University
             </p>
           )}
-          <span
-            className={`block text-xs uppercase tracking-widest text-red ${showBackLink ? "mt-6" : "mt-2"}`}
+          <h1
+            className={`max-w-4xl text-4xl text-white md:text-6xl ${showBackLink ? "mt-6" : "mt-2"}`}
           >
-            {course.level}
-          </span>
-          <h1 className="mt-2 max-w-4xl text-4xl text-white md:text-6xl">
             {course.title}
           </h1>
           {course.tagline && (

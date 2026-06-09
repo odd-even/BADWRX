@@ -1,6 +1,7 @@
 import { stepKeys, type StepKey } from "@/data/configurator-options";
 import type { ConfiguratorPricing } from "@/lib/configurator/types";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
+import { isBasecampNoneOption } from "@/lib/configurator/basecamp-items";
 import type { BuildConfiguration } from "@/lib/types";
 
 const defaultPricing = buildConfiguratorDataFromSource().pricing;
@@ -46,10 +47,14 @@ export function computeBuildTotal(
 ): number {
   let total = pricing.baseBuildCents;
   for (const key of stepKeys) {
+    if (key === "basecampPackage") continue;
     const option = config[key];
     if (option) {
       total += getOptionPrice(option.id, pricing);
     }
+  }
+  for (const item of config.basecampItems) {
+    total += getOptionPrice(item.id, pricing);
   }
   return total;
 }
@@ -61,6 +66,17 @@ export function computeBuildLineItems(
   const items: { key: StepKey; label: string; cents: number }[] = [];
 
   for (const key of stepKeys) {
+    if (key === "basecampPackage") {
+      if (isBasecampNoneOption(config.basecampPackage)) continue;
+      for (const item of config.basecampItems) {
+        items.push({
+          key,
+          label: item.label,
+          cents: getOptionPrice(item.id, pricing),
+        });
+      }
+      continue;
+    }
     const option = config[key];
     if (!option) continue;
     items.push({

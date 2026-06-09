@@ -1,3 +1,4 @@
+import { BASECAMP_NONE_OPTION } from "@/lib/configurator/basecamp-items";
 import { sourceData } from "@/lib/source-data";
 import type { ConfigOption, ConfigStep } from "@/lib/types";
 import {
@@ -142,22 +143,14 @@ export const configuratorSteps: ConfigStep[] = [
       {
         id: cfg.basecamp.id,
         label: cfg.basecamp.label,
-        description: [
-          cfg.basecamp.headline,
-          ...cfg.basecamp.items.map((item) => `• ${item}`),
-        ].join("\n"),
+        description: cfg.basecamp.description,
         specs: { basecampPackage: cfg.basecamp.label },
         image: {
           url: basecampPackageImage,
           alt: cfg.basecamp.label,
         },
       },
-      {
-        id: "case-none",
-        label: "No Basecamp Package",
-        description: "Rifle ships in protective wrap only.",
-        specs: { basecampPackage: "None" },
-      },
+      BASECAMP_NONE_OPTION,
     ],
   },
   {

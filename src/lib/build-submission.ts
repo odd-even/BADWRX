@@ -1,4 +1,5 @@
 import { stepKeys, type StepKey } from "@/data/configurator-options";
+import { isBasecampNoneOption } from "@/lib/configurator/basecamp-items";
 import type { ConfigStep } from "@/lib/types";
 import type { BuildConfiguration } from "@/lib/types";
 import type { ConfiguratorPricing } from "@/lib/configurator/types";
@@ -30,21 +31,36 @@ export function compileBuildSubmission(
   steps: ConfigStep[],
   pricing: ConfiguratorPricing,
 ): BuildSubmission {
-  const selections: BuildSubmissionLine[] = stepKeys
-    .map((key) => {
-      const option = config[key];
-      if (!option) return null;
-      const step = steps.find((s) => s.id === key);
-      if (!step) return null;
-      return {
-        stepKey: key,
-        stepTitle: step.title,
-        optionLabel: option.label,
-        specs: option.specs ?? {},
-        priceCents: getOptionPrice(option.id, pricing),
-      };
-    })
-    .filter((line): line is BuildSubmissionLine => line !== null);
+  const selections: BuildSubmissionLine[] = [];
+  for (const key of stepKeys) {
+    const step = steps.find((s) => s.id === key);
+    if (!step) continue;
+
+    if (key === "basecampPackage") {
+      const option = config.basecampPackage;
+      if (!option || isBasecampNoneOption(option)) continue;
+      for (const item of config.basecampItems) {
+        selections.push({
+          stepKey: key,
+          stepTitle: step.title,
+          optionLabel: item.label,
+          specs: item.specs ?? {},
+          priceCents: getOptionPrice(item.id, pricing),
+        });
+      }
+      continue;
+    }
+
+    const option = config[key];
+    if (!option) continue;
+    selections.push({
+      stepKey: key,
+      stepTitle: step.title,
+      optionLabel: option.label,
+      specs: option.specs ?? {},
+      priceCents: getOptionPrice(option.id, pricing),
+    });
+  }
 
   const lineItems = computeBuildLineItems(config, pricing);
   const totalCents = computeBuildTotal(config, pricing);
@@ -54,7 +70,7 @@ export function compileBuildSubmission(
     lineItems,
     totalCents,
     totalFormatted: formatPrice(totalCents),
-    isComplete: selections.length === stepKeys.length,
+    isComplete: stepKeys.every((key) => config[key] !== null),
   };
 }
 

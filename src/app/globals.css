@@ -95,6 +95,10 @@ h3 {
   animation: hero-tag-in 0.65s ease-out 0.15s forwards;
 }
 
+.hero-headline-line {
+  white-space: nowrap;
+}
+
 .hero-suffix {
   transition: opacity 0.6s ease, transform 0.6s ease;
 }

@@ -1,4 +1,4 @@
-import type { ConfigStep } from "@/lib/types";
+import type { ConfigOption, ConfigStep } from "@/lib/types";
 import type { StepKey } from "@/data/configurator-options";
 
 export interface PlatformDefault {
@@ -12,6 +12,7 @@ export interface PackageDetails {
   headline: string;
   description: string;
   items: string[];
+  itemOptions?: ConfigOption[];
   howItWorks?: string;
 }
 

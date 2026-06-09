@@ -388,6 +388,9 @@ function main() {
     baseBuildCents: 0,
     optionPriceCents: {
       "hawkins-ult-rings": 196_00,
+      "basecamp-case": 450_00,
+      "basecamp-chronograph": 550_00,
+      "basecamp-tools": 250_00,
       "basecamp-package": 1_250_00,
       "ballistic-package": 2_500_00,
       "scope-none": 0,
