@@ -9,7 +9,7 @@ interface RifleScrollerProps {
   showConfigure?: boolean;
 }
 
-const AUTO_SCROLL_PX_PER_FRAME = 0.35;
+const AUTO_SCROLL_PX_PER_FRAME = 0.75;
 const RIFLES_PER_INTERACTION = 3;
 const SMOOTH_EASE = 0.14;
 
@@ -47,9 +47,8 @@ function isInteractiveTarget(target: EventTarget | null) {
 }
 
 /**
- * Apple-style horizontal rifle gallery: auto-scrolls slowly, pauses on hover,
- * and accepts smooth wheel / drag for up to 3 rifles before releasing to the page.
- * Vertical scroll-up always passes through so the page can move back up freely.
+ * Horizontal rifle gallery: auto-scrolls slowly, pauses only during manual
+ * drag/wheel, and releases horizontal input after 3 rifles so page scroll takes over.
  */
 export function RifleScroller({
   rifles,
@@ -58,7 +57,6 @@ export function RifleScroller({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
   const [released, setReleased] = useState(false);
-  const [canHover, setCanHover] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -70,6 +68,16 @@ export function RifleScroller({
   const dragMoved = useRef(false);
   const dragStartX = useRef(0);
   const dragStartScroll = useRef(0);
+  const userInteracting = useRef(false);
+  const interactTimeout = useRef(0);
+
+  const markInteracting = useCallback(() => {
+    userInteracting.current = true;
+    window.clearTimeout(interactTimeout.current);
+    interactTimeout.current = window.setTimeout(() => {
+      userInteracting.current = false;
+    }, 2500);
+  }, []);
 
   const maxManualDelta = useCallback(
     () => cardStep.current * RIFLES_PER_INTERACTION,
@@ -183,19 +191,15 @@ export function RifleScroller({
   );
 
   useEffect(() => {
-    const hoverQuery = window.matchMedia("(hover: hover)");
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const sync = () => {
-      setCanHover(hoverQuery.matches);
       setReducedMotion(motionQuery.matches);
     };
 
     sync();
-    hoverQuery.addEventListener("change", sync);
     motionQuery.addEventListener("change", sync);
     return () => {
-      hoverQuery.removeEventListener("change", sync);
       motionQuery.removeEventListener("change", sync);
     };
   }, []);
@@ -247,24 +251,28 @@ export function RifleScroller({
 
   useEffect(() => {
     const el = scrollerRef.current;
-    const pauseForHover = canHover && hovered;
-    if (!el || !isVisible || reducedMotion || pauseForHover) return;
+    if (!el || !isVisible || reducedMotion) return;
 
     let frame = 0;
     const tick = () => {
-      const max = Math.max(0, el.scrollWidth - el.clientWidth);
-      if (max > 1) {
-        el.scrollLeft += AUTO_SCROLL_PX_PER_FRAME;
-        if (el.scrollLeft >= max) {
-          el.scrollLeft = 0;
+      if (!userInteracting.current) {
+        const max = Math.max(0, el.scrollWidth - el.clientWidth);
+        if (max > 1) {
+          el.scrollLeft += AUTO_SCROLL_PX_PER_FRAME;
+          if (el.scrollLeft >= max) {
+            el.scrollLeft = 0;
+          }
         }
       }
       frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [canHover, reducedMotion, hovered, rifles.length, isVisible]);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(interactTimeout.current);
+    };
+  }, [reducedMotion, rifles.length, isVisible]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -283,16 +291,20 @@ export function RifleScroller({
       if (delta === 0) return;
 
       const consumed = tryConsumeDelta(delta * 0.85);
-      if (consumed) event.preventDefault();
+      if (consumed) {
+        markInteracting();
+        event.preventDefault();
+      }
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [hovered, released, tryConsumeDelta]);
+  }, [hovered, released, tryConsumeDelta, markInteracting]);
 
   const onPointerDown = (event: React.PointerEvent) => {
     if (!hovered || released) return;
     if (isInteractiveTarget(event.target)) return;
+    markInteracting();
     dragging.current = true;
     dragMoved.current = false;
     dragStartX.current = event.clientX;
@@ -302,6 +314,7 @@ export function RifleScroller({
 
   const onPointerMove = (event: React.PointerEvent) => {
     if (!dragging.current || released) return;
+    markInteracting();
     const delta = dragStartX.current - event.clientX;
     if (Math.abs(delta) > 3) dragMoved.current = true;
 
@@ -379,7 +392,7 @@ export function RifleScroller({
         onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
         onDragStart={(event) => event.preventDefault()}
-        className={`flex items-stretch gap-5 overflow-x-scroll px-6 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
+        className={`flex items-stretch gap-5 overflow-x-scroll px-6 pb-1 [scroll-behavior:auto] [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-8 [&::-webkit-scrollbar]:hidden ${
           hovered && !released
             ? "cursor-grab active:cursor-grabbing"
             : ""
