@@ -73,7 +73,7 @@ export function FooterTagline() {
   return (
     <p
       ref={ref}
-      className="mx-auto max-w-7xl px-6 pb-12 pt-10 text-3xl font-bold uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
+      className="font-display mx-auto max-w-7xl px-6 pb-12 pt-10 text-3xl uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
       aria-label="Precision rifles for the American patriot"
     >
       <span className="text-red">Precision rifles</span>

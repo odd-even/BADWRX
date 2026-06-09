@@ -106,7 +106,13 @@ function normalizeHomeHero(
   hero: SiteSettings["homeHero"],
 ): SiteSettings["homeHero"] {
   const headlines = normalizeHeadlines(hero.headlines as Parameters<typeof normalizeHeadlines>[0]);
-  const normalized = { ...hero, headlines };
+  const normalized = {
+    ...hero,
+    headlines,
+    subheadline: hero.subheadline
+      .replace(/\s*Every rifle guaranteed\.?\s*$/i, "")
+      .trim(),
+  };
 
   if (
     headlines.some((item) => {

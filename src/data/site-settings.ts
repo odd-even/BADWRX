@@ -75,7 +75,9 @@ export const defaultSiteSettings: SiteSettings = {
       ["Engineered for", "Unrelenting", "Performance"],
       ["Built for", "the hard", "country"],
     ],
-    subheadline: docxCopy.homeHero.subheadline,
+    subheadline: docxCopy.homeHero.subheadline
+      .replace(/\s*Every rifle guaranteed\.?\s*$/i, "")
+      .trim(),
   },
   homePlatforms: {
     eyebrow: "Our platforms",

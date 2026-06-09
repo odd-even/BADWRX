@@ -1,5 +1,20 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const neulisBold = localFont({
+  src: "../../_assets/fonts/neulis-neue-bold.otf",
+  variable: "--font-display",
+  display: "swap",
+  weight: "700",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${neulisBold.variable}`}>
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
