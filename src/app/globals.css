@@ -102,8 +102,35 @@ h3 {
   animation: trust-marquee 28s linear infinite;
 }
 
+.rifle-scroller-track {
+  --rifle-scroll-distance: 1200px;
+  --rifle-scroll-duration: 50s;
+  will-change: transform;
+}
+
+.rifle-scroller-track.is-animating {
+  animation: rifle-scroll var(--rifle-scroll-duration, 50s) linear infinite;
+}
+
+.rifle-scroller-track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes rifle-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--rifle-scroll-distance, 1200px)));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .trust-marquee-track {
+    animation: none;
+  }
+
+  .rifle-scroller-track.is-animating {
     animation: none;
   }
 }
