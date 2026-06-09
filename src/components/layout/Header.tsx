@@ -139,7 +139,7 @@ export function Header({
   }, [menuOpen]);
 
   const padY = lerp(compact ? 16 : 22, compact ? 10 : 12, progress);
-  // Full-name SVG ~365×95 — scale width with larger resting logo
+  // Gunworks wordmark ~375×105 — scale width with larger resting logo
   const logoRestWidth = compact ? 200 : 270;
   const logoRestHeight = compact ? 44 : 56;
   const logoWidth = lerp(logoRestWidth, 56, progress);
@@ -224,10 +224,10 @@ export function Header({
             }}
           >
             <Image
-              src={images.logos.fullName}
+              src={images.logos.headerLogo}
               alt={`${brand.short} — ${brand.name}`}
-              width={270}
-              height={70}
+              width={375}
+              height={105}
               priority
               className="h-9 w-auto max-w-none md:h-10 lg:h-12"
             />

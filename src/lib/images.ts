@@ -19,8 +19,9 @@ export const images = {
   },
   logos: {
     fullName: `${logoBase}/full-name_left_white.svg`,
+    headerLogo: `${logoBase}/badgergunworks_white.svg`,
     stack: `${logoBase}/BADWRX-stack_white-red.svg`,
-    badge: `${logoBase}/CPR_Badge_Black_1.svg`,
+    badge: `${logoBase}/Gunworks_badge.svg`,
   },
   about: {
     story: `${assetBase}/IMG_1192%20copy.webp`,
