@@ -1,4 +1,4 @@
-# BADWRX — Badger Rifleworks
+# BADWRX — Badger Gunworks
 
 Custom hunting rifle showcase site — black/white/red theme, build gallery, step-by-step configurator, and quote-only contact flow (no checkout).
 

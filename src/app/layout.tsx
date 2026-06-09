@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { PreviewGate } from "@/components/layout/PreviewGate";
+import { brand, siteTitle } from "@/lib/brand";
 import "./globals.css";
 
 const inter = Inter({
@@ -19,11 +20,10 @@ const neulisBold = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "BADWRX | Badger Rifleworks",
-    template: "%s | BADWRX",
+    default: siteTitle,
+    template: `%s | ${brand.short}`,
   },
-  description:
-    "Precision rifles built to order by Badger Rifleworks (BADWRX). Hand test-fired before delivery with a ballistics table and rifle-specific ammunition data.",
+  description: `Precision rifles built to order by ${brand.name} (${brand.short}). Hand test-fired before delivery with a ballistics table and rifle-specific ammunition data.`,
   robots: {
     index: false,
     follow: false,

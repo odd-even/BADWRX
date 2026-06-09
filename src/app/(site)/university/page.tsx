@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CoursePageContent } from "@/components/university/CoursePageContent";
+import { brand } from "@/lib/brand";
 import { getAllCourses } from "@/lib/content";
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Long Range University",
-  description:
-    "Professional long range shooting and ballistics training from Badger Rifleworks. One-on-one instruction from industry professionals.",
+  description: `Professional long range shooting and ballistics training from ${brand.name}. One-on-one instruction from industry professionals.`,
 };
 
 export default async function UniversityPage() {

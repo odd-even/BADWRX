@@ -7,7 +7,7 @@ import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "The story behind Badger Rifleworks (BADWRX) and our build philosophy.",
+  description: `The story behind ${brand.name} (${brand.short}) and our build philosophy.`,
 };
 
 export default async function AboutPage() {

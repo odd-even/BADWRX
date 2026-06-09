@@ -22,18 +22,23 @@ export async function Footer({
     <footer className="border-t border-white/10 bg-black-light">
       <div className="mx-auto max-w-7xl px-6 pt-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-x-10">
-          <Link
-            href="/"
-            className="inline-block opacity-90 transition hover:opacity-100"
-          >
-            <Image
-              src={images.logos.badge}
-              alt={`${content.short} — ${content.name}`}
-              width={220}
-              height={208}
-              className="h-40 w-auto sm:h-48 md:h-52 lg:h-56"
-            />
-          </Link>
+          <div>
+            <Link
+              href="/"
+              className="inline-block opacity-90 transition hover:opacity-100"
+            >
+              <Image
+                src={images.logos.badge}
+                alt={`${content.short} — ${content.name}`}
+                width={220}
+                height={208}
+                className="h-40 w-auto sm:h-48 md:h-52 lg:h-56"
+              />
+            </Link>
+            <p className="mt-6 max-w-xs text-sm leading-relaxed text-white-muted">
+              {brand.fflBlurb}
+            </p>
+          </div>
 
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-red">

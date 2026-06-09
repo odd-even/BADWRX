@@ -4,6 +4,8 @@ export const brand = {
   tagline: "Precision rifles, engineered without compromise",
   email: "info@badwrx.com",
   location: "Diamondhead, Mississippi",
+  fflBlurb:
+    "An ATF-compliant firearms builder licensed as a Type 07 Federal Firearms License (FFL) holder.",
   partners: {
     barrels: "Proof Research / Carbon Six",
     optics: "NightForce",

@@ -66,7 +66,7 @@ export function SitePasswordOverlay() {
             alt={`${brand.short} logo`}
             width={120}
             height={113}
-            className="h-20 w-auto"
+            className="h-40 w-auto"
             priority
           />
         </div>
