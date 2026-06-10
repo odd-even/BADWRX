@@ -2,7 +2,7 @@ import type { Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/
 import { defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
-import { imageUrl } from "./image";
+import { imageUrl, type ImageWidthPreset } from "./image";
 
 interface SanityImageField {
   asset?: { url?: string };
@@ -49,9 +49,10 @@ function mapImage(
   image: SanityImageField | undefined,
   fallbackAlt = riflePlaceholderAlt,
   fallbackUrl: string = configuratorPlaceholder,
+  width: ImageWidthPreset = "default",
 ): RifleImage {
   const url =
-    imageUrl(image) ??
+    imageUrl(image, width) ??
     image?.asset?.url ??
     fallbackUrl;
 
@@ -72,8 +73,8 @@ export function mapRifle(doc: SanityRifle): Rifle {
     featured: Boolean(doc.featured),
     startingAt: doc.startingAt,
     description: doc.description,
-    heroImage: mapImage(doc.configuratorImage ?? doc.heroImage),
-    gallery: (doc.gallery ?? []).map((item) => mapImage(item)),
+    heroImage: mapImage(doc.configuratorImage ?? doc.heroImage, riflePlaceholderAlt, configuratorPlaceholder, "hero"),
+    gallery: (doc.gallery ?? []).map((item) => mapImage(item, riflePlaceholderAlt, configuratorPlaceholder, "content")),
     specs: doc.specs ?? {},
     highlights: doc.highlights ?? [],
   };
@@ -100,18 +101,28 @@ export function mapCourse(doc: SanityCourse): Course {
           doc.heroImage,
           "Long range shooter behind a precision rifle on a carbon fiber tripod",
           images.rifle.universityHero,
+          "hero",
         )
       : undefined,
     featured: doc.featured,
   };
 }
 
+const siteImageWidths = {
+  reticleOverlay: "overlay",
+  homeHeroBanner: "hero",
+  homeFieldTested: "content",
+  homeBallisticSection: "section",
+  aboutStory: "portrait",
+} as const satisfies Record<keyof SiteImages, ImageWidthPreset>;
+
 function mapSiteImageField(
   image: SanityImageField | undefined,
   fallback: RifleImage,
+  width: ImageWidthPreset,
 ): RifleImage {
-  if (!image?.asset && !imageUrl(image)) return fallback;
-  return mapImage(image, fallback.alt, fallback.url);
+  if (!image?.asset && !imageUrl(image, width)) return fallback;
+  return mapImage(image, fallback.alt, fallback.url, width);
 }
 
 export function mapSiteImages(
@@ -121,14 +132,31 @@ export function mapSiteImages(
   if (!raw) return defaults;
 
   return {
-    reticleOverlay: mapSiteImageField(raw.reticleOverlay, defaults.reticleOverlay),
-    homeHeroBanner: mapSiteImageField(raw.homeHeroBanner, defaults.homeHeroBanner),
-    homeFieldTested: mapSiteImageField(raw.homeFieldTested, defaults.homeFieldTested),
+    reticleOverlay: mapSiteImageField(
+      raw.reticleOverlay,
+      defaults.reticleOverlay,
+      siteImageWidths.reticleOverlay,
+    ),
+    homeHeroBanner: mapSiteImageField(
+      raw.homeHeroBanner,
+      defaults.homeHeroBanner,
+      siteImageWidths.homeHeroBanner,
+    ),
+    homeFieldTested: mapSiteImageField(
+      raw.homeFieldTested,
+      defaults.homeFieldTested,
+      siteImageWidths.homeFieldTested,
+    ),
     homeBallisticSection: mapSiteImageField(
       raw.homeBallisticSection,
       defaults.homeBallisticSection,
+      siteImageWidths.homeBallisticSection,
     ),
-    aboutStory: mapSiteImageField(raw.aboutStory, defaults.aboutStory),
+    aboutStory: mapSiteImageField(
+      raw.aboutStory,
+      defaults.aboutStory,
+      siteImageWidths.aboutStory,
+    ),
   };
 }
 

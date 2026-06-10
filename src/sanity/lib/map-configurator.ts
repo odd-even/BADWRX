@@ -10,7 +10,7 @@ import {
 import type { ConfigOption, ConfigStep } from "@/lib/types";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
-import { imageUrl } from "./image";
+import { imageUrl, type ImageWidthPreset } from "./image";
 import { sanityPriceToCents } from "./price";
 
 interface SanityImageField {
@@ -135,8 +135,9 @@ function mapImageOption(
   image: SanityImageField | undefined,
   fallbackUrl: string,
   alt: string,
+  width: ImageWidthPreset = "configuratorOption",
 ): { url: string; alt: string } {
-  const url = imageUrl(image) ?? image?.asset?.url ?? fallbackUrl;
+  const url = imageUrl(image, width) ?? image?.asset?.url ?? fallbackUrl;
   return { url, alt: image?.alt ?? alt };
 }
 
@@ -204,6 +205,7 @@ export function mapConfiguratorData(
           rifle.configuratorImage ?? rifle.heroImage,
           platformImages[rifle.slug] ?? configuratorPlaceholder,
           `${rifle.title} platform`,
+          "configuratorOption",
         ),
       };
     });
@@ -233,6 +235,7 @@ export function mapConfiguratorData(
         finish.image,
         stockPaintImages[id] ?? configuratorPlaceholder,
         `${finish.label} finish`,
+        "swatch",
       ),
     };
   });
@@ -255,6 +258,7 @@ export function mapConfiguratorData(
           optic.image,
           scopeImageForMagnification(optic.magnification ?? "", id),
           label,
+          "configuratorOption",
         ),
       };
     }),
@@ -291,6 +295,7 @@ export function mapConfiguratorData(
         rings.image,
         ringsImage,
         "Hawkins precision rings",
+        "configurator",
       ),
     },
     {
@@ -326,6 +331,7 @@ export function mapConfiguratorData(
         basecamp.image,
         basecampPackageImage,
         basecamp.label ?? fallback.basecampDetails.label,
+        "configurator",
       ),
     },
     {

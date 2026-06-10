@@ -81,7 +81,7 @@ export function mapMerchItem(doc: SanityMerchItem): MerchItem {
     sizes: doc.sizes ?? ["One Size"],
     ...(doc.colors?.length ? { colors: doc.colors } : {}),
     image: {
-      url: imageUrl(doc.image) ?? doc.image?.asset?.url ?? fallbackUrl,
+      url: imageUrl(doc.image, "card") ?? doc.image?.asset?.url ?? fallbackUrl,
       alt: doc.image?.alt ?? fallback?.alt ?? doc.title,
     },
   };
