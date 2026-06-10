@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SanityResponsiveImage } from "@/components/ui/SanityResponsiveImage";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
 import { CourseRegisterActions } from "@/components/university/CourseRegisterActions";
 import { images } from "@/lib/images";
@@ -21,8 +21,10 @@ export function CoursePageContent({
   openRegistration = false,
   reticleOverlay,
 }: CoursePageContentProps) {
-  const heroUrl = course.heroImage?.url ?? images.rifle.field;
-  const heroAlt = course.heroImage?.alt ?? course.title;
+  const heroImage = course.heroImage ?? {
+    url: images.rifle.universityHero,
+    alt: course.title,
+  };
   const reticleUrl = reticleOverlay?.url ?? images.rifle.reticleOverlay;
   const reticleAlt = reticleOverlay?.alt ?? "";
 
@@ -30,14 +32,7 @@ export function CoursePageContent({
     <article>
       <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <div className="hover-zoom absolute inset-0">
-          <Image
-            src={heroUrl}
-            alt={heroAlt}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+          <SanityResponsiveImage image={heroImage} priority />
         </div>
         <ReticleMouseFollow
           src={reticleUrl}

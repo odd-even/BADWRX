@@ -8,35 +8,13 @@ import {
   type ElementType,
   type ReactNode,
 } from "react";
+import { observeScrollReveal } from "@/lib/scroll-reveal";
 
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
   as?: ElementType;
   delay?: number;
-}
-
-const OBSERVER_OPTIONS: IntersectionObserverInit = {
-  threshold: 0.12,
-  rootMargin: "0px 0px -6% 0px",
-};
-
-let sharedObserver: IntersectionObserver | null = null;
-
-function getSharedObserver() {
-  if (typeof window === "undefined") return null;
-
-  if (!sharedObserver) {
-    sharedObserver = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        entry.target.classList.add("is-visible");
-        sharedObserver?.unobserve(entry.target);
-      }
-    }, OBSERVER_OPTIONS);
-  }
-
-  return sharedObserver;
 }
 
 export function ScrollReveal({
@@ -51,20 +29,12 @@ export function ScrollReveal({
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("is-visible");
-      return;
+    if (delay > 0) {
+      el.style.setProperty("--scroll-reveal-delay", `${delay}ms`);
     }
 
-    const observer = getSharedObserver();
-    if (!observer) {
-      el.classList.add("is-visible");
-      return;
-    }
-
-    observer.observe(el);
-    return () => observer.unobserve(el);
-  }, []);
+    return observeScrollReveal(el);
+  }, [delay]);
 
   const style: CSSProperties | undefined =
     delay > 0

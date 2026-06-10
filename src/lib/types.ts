@@ -2,6 +2,8 @@ export interface RifleImage {
   url: string;
   alt: string;
   caption?: string;
+  /** Sanity CDN srcSet — used for full-bleed heroes and section backgrounds */
+  srcSet?: string;
 }
 
 export interface RifleSpecs {

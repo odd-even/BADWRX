@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteScrollReveal } from "@/components/layout/SiteScrollReveal";
 import { SiteProviders } from "@/components/layout/SiteProviders";
 import { getSiteSettings } from "@/lib/content";
 import {
@@ -26,7 +27,10 @@ export default async function SiteLayout({
         showMerchCart={isPageEnabled("merch", visibility)}
         navImageFade={settings.navImageFade}
       />
-      <main className="pt-[72px]">{children}</main>
+      <main className="pt-[72px]">
+        <SiteScrollReveal />
+        {children}
+      </main>
       <Footer
         navLinks={footerNavLinks(visibility)}
         showConfigureCta={isPageEnabled("configure", visibility)}

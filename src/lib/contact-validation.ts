@@ -6,8 +6,114 @@ const US_POSTAL_PATTERN = /^\d{5}(?:-\d{4})?$/;
 const PERSON_NAME_PATTERN = /^[A-Za-z][A-Za-z\s'.-]{0,59}$/;
 const FULL_NAME_PATTERN = /^[A-Za-z][A-Za-z\s'.-]{0,79}$/;
 const CITY_PATTERN = /^[A-Za-z][A-Za-z\s'.-]{0,59}$/;
-const STATE_PATTERN = /^[A-Za-z]{2,30}(?:[\s.-][A-Za-z]{2,30})*$/;
 const STREET_PATTERN = /^[A-Za-z0-9][A-Za-z0-9\s#.,/'-]{2,119}$/;
+
+/** US states, DC, territories, and military post codes accepted for shipping. */
+const US_STATE_NAMES: Record<string, string> = {
+  AL: "Alabama",
+  AK: "Alaska",
+  AZ: "Arizona",
+  AR: "Arkansas",
+  CA: "California",
+  CO: "Colorado",
+  CT: "Connecticut",
+  DE: "Delaware",
+  FL: "Florida",
+  GA: "Georgia",
+  HI: "Hawaii",
+  ID: "Idaho",
+  IL: "Illinois",
+  IN: "Indiana",
+  IA: "Iowa",
+  KS: "Kansas",
+  KY: "Kentucky",
+  LA: "Louisiana",
+  ME: "Maine",
+  MD: "Maryland",
+  MA: "Massachusetts",
+  MI: "Michigan",
+  MN: "Minnesota",
+  MS: "Mississippi",
+  MO: "Missouri",
+  MT: "Montana",
+  NE: "Nebraska",
+  NV: "Nevada",
+  NH: "New Hampshire",
+  NJ: "New Jersey",
+  NM: "New Mexico",
+  NY: "New York",
+  NC: "North Carolina",
+  ND: "North Dakota",
+  OH: "Ohio",
+  OK: "Oklahoma",
+  OR: "Oregon",
+  PA: "Pennsylvania",
+  RI: "Rhode Island",
+  SC: "South Carolina",
+  SD: "South Dakota",
+  TN: "Tennessee",
+  TX: "Texas",
+  UT: "Utah",
+  VT: "Vermont",
+  VA: "Virginia",
+  WA: "Washington",
+  WV: "West Virginia",
+  WI: "Wisconsin",
+  WY: "Wyoming",
+  DC: "District of Columbia",
+  PR: "Puerto Rico",
+  GU: "Guam",
+  VI: "Virgin Islands",
+  AS: "American Samoa",
+  MP: "Northern Mariana Islands",
+  AA: "Armed Forces Americas",
+  AE: "Armed Forces Europe",
+  AP: "Armed Forces Pacific",
+};
+
+const US_STATE_NAME_TO_CODE = Object.fromEntries(
+  Object.entries(US_STATE_NAMES).map(([code, name]) => [name.toLowerCase(), code]),
+);
+
+export const US_SHIPPING_COUNTRY = "United States";
+
+const US_COUNTRY_ALIASES = new Set([
+  "us",
+  "usa",
+  "u.s.",
+  "u.s.a.",
+  "united states",
+  "united states of america",
+]);
+
+export function normalizeUsState(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const upper = trimmed.toUpperCase();
+  if (US_STATE_NAMES[upper]) return upper;
+
+  const byName = US_STATE_NAME_TO_CODE[trimmed.toLowerCase()];
+  if (byName) return byName;
+
+  if (/^district of columbia$/i.test(trimmed)) return "DC";
+
+  return null;
+}
+
+export function isValidUsState(value: string): boolean {
+  return normalizeUsState(value) !== null;
+}
+
+export function normalizeUsCountry(value: string): string | null {
+  const normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+  if (!normalized) return null;
+  return US_COUNTRY_ALIASES.has(normalized) ? US_SHIPPING_COUNTRY : null;
+}
+
+export function isValidUsCountry(value: string): boolean {
+  return normalizeUsCountry(value) !== null;
+}
 
 export function isValidEmail(value: string): boolean {
   return EMAIL_PATTERN.test(value.trim());
@@ -47,11 +153,6 @@ export function isValidStreetAddress(value: string): boolean {
 export function isValidCity(value: string): boolean {
   const trimmed = value.trim();
   return trimmed.length >= 2 && CITY_PATTERN.test(trimmed);
-}
-
-export function isValidStateRegion(value: string): boolean {
-  const trimmed = value.trim();
-  return trimmed.length >= 2 && STATE_PATTERN.test(trimmed);
 }
 
 export type BuildContactField = keyof BuildContactDetails;
@@ -104,8 +205,8 @@ export function validateBuildContact(
 
   if (!state) {
     fieldErrors.state = "State is required";
-  } else if (!isValidStateRegion(state)) {
-    fieldErrors.state = "Enter a valid state";
+  } else if (!isValidUsState(state)) {
+    fieldErrors.state = "Enter a valid US state (e.g. MS or Mississippi)";
   }
 
   if (!postalCode) {
@@ -145,6 +246,8 @@ export function validateBuildContact(
     return { ok: false, error: firstError, fieldErrors };
   }
 
+  const normalizedState = normalizeUsState(state)!;
+
   return {
     ok: true,
     fieldErrors,
@@ -154,7 +257,7 @@ export function validateBuildContact(
       addressLine1,
       addressLine2,
       city,
-      state,
+      state: normalizedState,
       postalCode,
       email,
       phone,
@@ -235,8 +338,8 @@ export function validateMerchShippingAddress(
 
   if (!state) {
     fieldErrors.state = "State is required";
-  } else if (!isValidStateRegion(state)) {
-    fieldErrors.state = "Enter a valid state";
+  } else if (!isValidUsState(state)) {
+    fieldErrors.state = "Enter a valid US state (e.g. MS or Mississippi)";
   }
 
   if (!postalCode) {
@@ -247,6 +350,8 @@ export function validateMerchShippingAddress(
 
   if (!country) {
     fieldErrors.country = "Country is required";
+  } else if (!isValidUsCountry(country)) {
+    fieldErrors.country = "We only ship within the United States";
   }
 
   const error =
@@ -257,4 +362,18 @@ export function validateMerchShippingAddress(
     fieldErrors.country;
 
   return { fieldErrors, error };
+}
+
+export function normalizeMerchShippingAddress(
+  shipping: MerchShippingAddress,
+): MerchShippingAddress {
+  return {
+    ...shipping,
+    line1: shipping.line1.trim(),
+    line2: shipping.line2?.trim(),
+    city: shipping.city.trim(),
+    state: normalizeUsState(shipping.state.trim())!,
+    postalCode: shipping.postalCode.trim(),
+    country: normalizeUsCountry(shipping.country.trim())!,
+  };
 }

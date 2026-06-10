@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { SanityResponsiveImage, SECTION_IMAGE_SIZES } from "@/components/ui/SanityResponsiveImage";
 import { siteTitle } from "@/lib/brand";
 import { defaultSiteDescription } from "@/lib/site";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
@@ -39,14 +40,7 @@ export default async function HomePage() {
     <>
       <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <div className="hover-zoom absolute inset-0">
-          <Image
-            src={photos.homeHeroBanner.url}
-            alt={photos.homeHeroBanner.alt}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+          <SanityResponsiveImage image={photos.homeHeroBanner} priority />
         </div>
         <ReticleMouseFollow
           src={photos.reticleOverlay.url}
@@ -189,12 +183,10 @@ export default async function HomePage() {
       <section className="group relative min-h-[70vh] overflow-hidden bg-black">
         <div className="pointer-events-none absolute inset-0">
           <div className="hover-zoom absolute inset-0">
-            <Image
-              src={photos.homeBallisticSection.url}
-              alt={photos.homeBallisticSection.alt}
-              fill
-              className="object-cover object-[center_26%]"
-              sizes="100vw"
+            <SanityResponsiveImage
+              image={photos.homeBallisticSection}
+              sizes={SECTION_IMAGE_SIZES}
+              imgClassName="h-full w-full object-cover object-[center_26%]"
             />
           </div>
           <ReticleMouseFollow

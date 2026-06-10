@@ -17,7 +17,8 @@
     "lint": "next lint",
     "seed:sanity": "tsx --env-file=.env.local sanity/seed/seed.ts",
     "seed:sanity:force": "tsx --env-file=.env.local sanity/seed/seed.ts --force",
-    "seed:sanity:images": "tsx --env-file=.env.local sanity/seed/migrate-site-images.ts"
+    "seed:sanity:images": "tsx --env-file=.env.local sanity/seed/migrate-site-images.ts",
+    "seed:sanity:nav-fade": "tsx --env-file=.env.local sanity/seed/migrate-nav-image-fade.ts"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",

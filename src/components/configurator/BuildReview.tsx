@@ -115,7 +115,8 @@ export function BuildReview({
         <h3 className="text-xl text-white">Submit for builder review</h3>
         <p className="mt-2 text-sm text-white-muted">
           No payment required now. We&apos;ll confirm your spec and timeline
-          before sending a Square invoice for the full build price.
+          before sending a Square invoice for the full build price. US shipping
+          addresses only.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block">
@@ -255,6 +256,7 @@ export function BuildReview({
                 name="state"
                 type="text"
                 autoComplete="shipping address-level1"
+                placeholder="MS"
                 value={form.state}
                 onChange={(e) =>
                   onFormChange({ ...form, state: e.target.value })

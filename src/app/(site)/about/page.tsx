@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { SanityResponsiveImage } from "@/components/ui/SanityResponsiveImage";
 import { brand } from "@/lib/brand";
 import { getSiteSettings } from "@/lib/content";
 
@@ -24,14 +25,7 @@ export default async function AboutPage() {
     <>
       <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <div className="hover-zoom absolute inset-0">
-          <Image
-            src={banner.url}
-            alt={banner.alt}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+          <SanityResponsiveImage image={banner} priority />
         </div>
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />

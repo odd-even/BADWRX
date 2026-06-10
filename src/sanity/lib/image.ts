@@ -7,9 +7,9 @@ const builder = createImageUrlBuilder(client);
 /** Max CDN widths tuned to how each image is displayed on the site. */
 export const imageWidths = {
   /** Full-bleed heroes — home banner, university, rifle detail */
-  hero: 2560,
+  hero: 3840,
   /** Large section backgrounds — ballistic band on home */
-  section: 1920,
+  section: 2560,
   /** Half-page content — field proven, rifle gallery */
   content: 1280,
   /** Sidebar / portrait — about page photo */
@@ -35,6 +35,16 @@ export const imageWidths = {
   /** Default when no specific context applies */
   default: 1280,
 } as const;
+
+/** Width steps for responsive srcSet — tuned to common viewports × DPR. */
+export const responsiveWidths = {
+  /** Full-bleed page heroes and banners */
+  hero: [640, 750, 828, 1080, 1200, 1536, 1920, 2560, 3200, 3840],
+  /** Full-width section backgrounds */
+  section: [640, 828, 1080, 1280, 1536, 1920, 2560],
+} as const;
+
+export type ResponsiveWidthPreset = keyof typeof responsiveWidths;
 
 /** Cropped output sizes for social / browser branding assets. */
 export const brandAssetDimensions = {
@@ -63,7 +73,7 @@ export function imageUrl(
 /** Width descriptors for responsive srcSet (Sanity CDN). */
 export function imageSrcSet(
   source: SanityImageSource | undefined,
-  widths: number[],
+  widths: readonly number[],
 ): string | undefined {
   if (!source || widths.length === 0) return undefined;
   return widths
@@ -72,6 +82,13 @@ export function imageSrcSet(
       return `${url} ${width}w`;
     })
     .join(", ");
+}
+
+export function imageSrcSetForPreset(
+  source: SanityImageSource | undefined,
+  preset: ResponsiveWidthPreset,
+): string | undefined {
+  return imageSrcSet(source, responsiveWidths[preset]);
 }
 
 /** OG cover and favicon — crop to exact dimensions (respects Sanity hotspot). */

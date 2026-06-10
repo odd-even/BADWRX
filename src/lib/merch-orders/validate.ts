@@ -1,4 +1,5 @@
 import {
+  normalizeMerchShippingAddress,
   validateMerchContact,
   validateMerchShippingAddress,
 } from "@/lib/contact-validation";
@@ -90,7 +91,7 @@ export function validateMerchCheckoutBody(
     return { ok: false, error: "Select a shipping method" };
   }
 
-  const shipping = input.shipping;
+  const shipping = normalizeMerchShippingAddress(input.shipping);
   const totals = orderTotalCents(items, input.shippingMethod);
   const orderId = crypto.randomUUID();
 
@@ -105,12 +106,12 @@ export function validateMerchCheckoutBody(
         phone: input.contact.phone?.trim(),
       },
       shipping: {
-        line1: shipping.line1.trim(),
-        line2: shipping.line2?.trim(),
-        city: shipping.city.trim(),
-        state: shipping.state.trim(),
-        postalCode: shipping.postalCode.trim(),
-        country: shipping.country.trim(),
+        line1: shipping.line1,
+        line2: shipping.line2,
+        city: shipping.city,
+        state: shipping.state,
+        postalCode: shipping.postalCode,
+        country: shipping.country,
       },
       shippingMethod: input.shippingMethod,
       items,

@@ -229,11 +229,17 @@ async function migratePageVisibilityIfNeeded() {
 }
 
 async function migrateNavImageFadeIfNeeded() {
-  const doc = await client.fetch<{ navImageFade?: unknown }>(
+  const doc = await client.fetch<{ navImageFade?: Partial<typeof defaultNavImageFade> }>(
     `*[_id == "siteSettings"][0]{ navImageFade }`,
   );
 
-  if (doc?.navImageFade) return;
+  const current = doc?.navImageFade;
+  const hasAllSections =
+    current?.home?.topOpacity !== undefined &&
+    current?.university?.topOpacity !== undefined &&
+    current?.default?.topOpacity !== undefined;
+
+  if (hasAllSections) return;
 
   await client
     .patch("siteSettings")

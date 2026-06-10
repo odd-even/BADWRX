@@ -3,7 +3,7 @@ import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings }
 import { defaultBrandAssets, defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
-import { imageUrl, brandAssetImageUrl, type ImageWidthPreset } from "./image";
+import { imageUrl, brandAssetImageUrl, imageSrcSetForPreset, type ImageWidthPreset, type ResponsiveWidthPreset } from "./image";
 
 interface SanityImageField {
   asset?: { url?: string };
@@ -46,20 +46,32 @@ interface SanityCourse {
   featured?: boolean;
 }
 
+const widthToResponsive: Partial<Record<ImageWidthPreset, ResponsiveWidthPreset>> = {
+  hero: "hero",
+  section: "section",
+};
+
 function mapImage(
   image: SanityImageField | undefined,
   fallbackAlt = riflePlaceholderAlt,
   fallbackUrl: string = configuratorPlaceholder,
   width: ImageWidthPreset = "default",
 ): RifleImage {
+  const responsivePreset = widthToResponsive[width];
   const url =
     imageUrl(image, width) ??
     image?.asset?.url ??
     fallbackUrl;
 
+  const srcSet =
+    responsivePreset && image
+      ? imageSrcSetForPreset(image, responsivePreset)
+      : undefined;
+
   return {
     url,
     alt: image?.alt ?? fallbackAlt,
+    ...(srcSet ? { srcSet } : {}),
     ...(image?.caption ? { caption: image.caption } : {}),
   };
 }

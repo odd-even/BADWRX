@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { SanityResponsiveImage } from "@/components/ui/SanityResponsiveImage";
 import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
 import { configureHref } from "@/lib/configurator/constants";
@@ -51,13 +52,10 @@ export default async function BuildDetailPage({ params }: PageProps) {
     <article>
       <section className="group relative -mt-[72px] flex min-h-[calc(50vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <div className="hover-zoom absolute inset-0">
-          <Image
-            src={rifle.heroImage.url}
-            alt={rifle.heroImage.alt}
-            fill
+          <SanityResponsiveImage
+            image={rifle.heroImage}
             priority
-            className="object-contain bg-black-light"
-            sizes="100vw"
+            imgClassName="h-full w-full object-contain bg-black-light"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />

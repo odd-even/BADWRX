@@ -32,7 +32,7 @@ export default async function ConfigurePage() {
         Configure Your Rifle
       </h1>
 
-      <div className="mt-12">
+      <div className="mt-12" data-configurator data-no-reveal>
         <Suspense
           fallback={
             <p className="text-sm text-white-muted">Loading configurator…</p>

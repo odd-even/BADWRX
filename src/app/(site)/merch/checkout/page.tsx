@@ -15,6 +15,7 @@ import {
 import type { MerchShippingAddress, MerchShippingMethod } from "@/lib/types";
 import { formInputClassName } from "@/lib/form-styles";
 import {
+  US_SHIPPING_COUNTRY,
   validateMerchContact,
   validateMerchShippingAddress,
   type MerchCheckoutFieldErrors,
@@ -50,7 +51,7 @@ export default function MerchCheckoutPage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "United States",
+    country: US_SHIPPING_COUNTRY,
   });
 
   const [notes, setNotes] = useState("");
@@ -255,6 +256,9 @@ export default function MerchCheckoutPage() {
             <h2 className="text-sm font-semibold uppercase tracking-widest text-red">
               Shipping address
             </h2>
+            <p className="mt-2 text-xs text-white-muted">
+              US addresses only. We ship to all 50 states, DC, and US territories.
+            </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="block sm:col-span-2">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -320,6 +324,7 @@ export default function MerchCheckoutPage() {
                   required
                   name="state"
                   autoComplete="shipping address-level1"
+                  placeholder="MS"
                   value={shipping.state}
                   onChange={(event) => {
                     setShipping((current) => ({ ...current, state: event.target.value }));
@@ -365,18 +370,12 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  readOnly
                   name="country"
                   autoComplete="shipping country"
                   value={shipping.country}
-                  onChange={(event) => {
-                    setShipping((current) => ({ ...current, country: event.target.value }));
-                    if (Object.keys(fieldErrors).length > 0) {
-                      setFieldErrors({});
-                      setError(null);
-                    }
-                  }}
                   aria-invalid={Boolean(fieldErrors.country)}
-                  className={checkoutInputClass(Boolean(fieldErrors.country))}
+                  className={`${checkoutInputClass(Boolean(fieldErrors.country))} cursor-default opacity-80`}
                 />
                 <FieldError message={fieldErrors.country} />
               </label>
