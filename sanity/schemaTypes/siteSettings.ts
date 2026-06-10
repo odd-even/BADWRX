@@ -7,6 +7,7 @@ export const siteSettings = defineType({
   type: "document",
   groups: [
     { name: "brand", title: "Brand", default: true },
+    { name: "sharing", title: "Sharing & icons" },
     { name: "photos", title: "Photos" },
     { name: "pages", title: "Pages" },
     { name: "home", title: "Home page" },
@@ -60,6 +61,27 @@ export const siteSettings = defineType({
       group: "brand",
       of: [{ type: "string" }],
       description: "Scrolling partner badges on the home page",
+    }),
+
+    defineField({
+      name: "brandAssets",
+      title: "Sharing & browser icons",
+      type: "object",
+      group: "sharing",
+      description:
+        "Images used when the site is shared (iMessage, Slack, social) and in the browser tab.",
+      fields: [
+        cmsImageField(
+          "shareImage",
+          "Link preview image",
+          "Cover image for link previews (iMessage, Facebook, X, Slack). Recommended 1200×630 px, JPG or PNG.",
+        ),
+        cmsImageField(
+          "favicon",
+          "Favicon",
+          "Browser tab icon. Square PNG or SVG; at least 32×32 px (512×512 works well for all sizes).",
+        ),
+      ],
     }),
 
     defineField({

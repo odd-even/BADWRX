@@ -24,6 +24,10 @@ export const imageWidths = {
   swatch: 320,
   /** Decorative overlays — reticle */
   overlay: 1600,
+  /** Open Graph / iMessage / social link previews (1200×630) */
+  og: 1200,
+  /** Favicon and Apple touch icon source */
+  icon: 512,
   /** Default when no specific context applies */
   default: 1280,
 } as const;

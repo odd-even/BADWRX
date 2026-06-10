@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { Configurator } from "@/components/configurator/Configurator";
 import { getConfiguratorData } from "@/lib/content";
+
+const Configurator = dynamic(
+  () =>
+    import("@/components/configurator/Configurator").then((mod) => ({
+      default: mod.Configurator,
+    })),
+  {
+    loading: () => (
+      <p className="text-sm text-white-muted">Loading configurator…</p>
+    ),
+  },
+);
 
 export const metadata: Metadata = {
   title: "Configure Your Rifle",
   description:
     "Configure a BADWRX platform, caliber, finish, optics, and packages. Submit your build for a quote.",
+  alternates: { canonical: "/configure" },
 };
 
 export default async function ConfigurePage() {

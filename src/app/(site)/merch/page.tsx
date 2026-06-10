@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Merch",
   description:
     "BADWRX caps, t-shirts, and sweaters. Rep the brand on the range and in the field.",
+  alternates: { canonical: "/merch" },
 };
 
 export default async function MerchPage() {

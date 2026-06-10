@@ -130,6 +130,10 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   contactSection,
   pageVisibility,
   aboutPage,
+  brandAssets {
+    shareImage { asset->{ url }, alt },
+    favicon { asset->{ url }, alt }
+  },
   siteImages {
     reticleOverlay { asset->{ url }, alt },
     homeHeroBanner { asset->{ url }, alt },

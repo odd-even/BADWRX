@@ -4,11 +4,10 @@ import { CoursePageContent } from "@/components/university/CoursePageContent";
 import { brand } from "@/lib/brand";
 import { getAllCourses, getSiteSettings } from "@/lib/content";
 
-export const revalidate = 60;
-
 export const metadata: Metadata = {
   title: "Long Range University",
   description: `Professional long range shooting and ballistics training from ${brand.name}. One-on-one instruction from industry professionals.`,
+  alternates: { canonical: "/university" },
 };
 
 interface UniversityPageProps {

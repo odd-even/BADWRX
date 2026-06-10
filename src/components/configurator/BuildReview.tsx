@@ -97,7 +97,7 @@ export function BuildReview({
         </div>
       </div>
 
-      <form onSubmit={onSubmit} className="border border-white/10 bg-black-muted p-6 sm:p-8">
+      <form onSubmit={onSubmit} autoComplete="on" className="border border-white/10 bg-black-muted p-6 sm:p-8">
         <h3 className="text-xl text-white">Submit for builder review</h3>
         <p className="mt-2 text-sm text-white-muted">
           No payment required now. We&apos;ll confirm your spec and timeline
@@ -113,12 +113,12 @@ export function BuildReview({
               id="build-firstName"
               name="firstName"
               type="text"
-              autoComplete="given-name"
+              autoComplete="shipping given-name"
               value={form.firstName}
               onChange={(e) =>
                 onFormChange({ ...form, firstName: e.target.value })
               }
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block">
@@ -130,12 +130,12 @@ export function BuildReview({
               id="build-lastName"
               name="lastName"
               type="text"
-              autoComplete="family-name"
+              autoComplete="shipping family-name"
               value={form.lastName}
               onChange={(e) =>
                 onFormChange({ ...form, lastName: e.target.value })
               }
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block">
@@ -150,7 +150,7 @@ export function BuildReview({
               autoComplete="email"
               value={form.email}
               onChange={(e) => onFormChange({ ...form, email: e.target.value })}
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block">
@@ -166,7 +166,7 @@ export function BuildReview({
               inputMode="tel"
               value={form.phone}
               onChange={(e) => onFormChange({ ...form, phone: e.target.value })}
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block sm:col-span-2">
@@ -178,12 +178,12 @@ export function BuildReview({
               id="build-addressLine1"
               name="address-line1"
               type="text"
-              autoComplete="address-line1"
+              autoComplete="shipping address-line1"
               value={form.addressLine1}
               onChange={(e) =>
                 onFormChange({ ...form, addressLine1: e.target.value })
               }
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block sm:col-span-2">
@@ -194,12 +194,12 @@ export function BuildReview({
               id="build-addressLine2"
               name="address-line2"
               type="text"
-              autoComplete="address-line2"
+              autoComplete="shipping address-line2"
               value={form.addressLine2}
               onChange={(e) =>
                 onFormChange({ ...form, addressLine2: e.target.value })
               }
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <label className="block">
@@ -211,10 +211,10 @@ export function BuildReview({
               id="build-city"
               name="city"
               type="text"
-              autoComplete="address-level2"
+              autoComplete="shipping address-level2"
               value={form.city}
               onChange={(e) => onFormChange({ ...form, city: e.target.value })}
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
             />
           </label>
           <div className="grid grid-cols-2 gap-4">
@@ -227,12 +227,12 @@ export function BuildReview({
                 id="build-state"
                 name="state"
                 type="text"
-                autoComplete="address-level1"
+                autoComplete="shipping address-level1"
                 value={form.state}
                 onChange={(e) =>
                   onFormChange({ ...form, state: e.target.value })
                 }
-                className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+                className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
               />
             </label>
             <label className="block">
@@ -244,13 +244,13 @@ export function BuildReview({
                 id="build-postalCode"
                 name="postal-code"
                 type="text"
-                autoComplete="postal-code"
+                autoComplete="shipping postal-code"
                 inputMode="numeric"
                 value={form.postalCode}
                 onChange={(e) =>
                   onFormChange({ ...form, postalCode: e.target.value })
                 }
-                className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+                className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
               />
             </label>
           </div>

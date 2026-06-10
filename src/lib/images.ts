@@ -13,10 +13,6 @@ export const images = {
     hunt: `${assetBase}/IMG_1125bighorn.jpg`,
     reticleOverlay: `${assetBase}/FC-DMx_MOA__16268%20copy.webp`,
   },
-  landscape: {
-    mountains: `${assetBase}/mountain-panorama-just-after-the-storm-2025-01-15-14-24-51-utc.jpg`,
-    peaks: `${assetBase}/cadini-di-misurina-in-darkness-illuminated-by-sunl-2025-01-10-03-08-57-utc.jpeg`,
-  },
   logos: {
     fullName: `${logoBase}/full-name_left_white.svg`,
     headerLogo: `${logoBase}/badgergunworks_white.svg`,

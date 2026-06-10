@@ -4,10 +4,10 @@ import {
   getContactFullName,
   type BuildRequestPayload,
 } from "@/lib/build-submission";
+import { notificationRecipients } from "@/lib/notifications/recipients";
 import { formatLineItemPrice } from "@/lib/pricing";
 
-const DEFAULT_TO = "ernest@oddpluseven.com";
-const DEFAULT_FROM = "BADWRX Builds <builds@oddpluseven.com>";
+const DEFAULT_FROM = "BADWRX Builds <builds@badwrx.com>";
 
 export function isEmailConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY?.trim());
@@ -102,7 +102,7 @@ export async function sendBuildRequestEmail(
 ): Promise<boolean> {
   if (!isEmailConfigured()) return false;
 
-  const to = process.env.BUILD_NOTIFICATION_TO?.trim() || DEFAULT_TO;
+  const to = notificationRecipients(process.env.BUILD_NOTIFICATION_TO);
   const from = process.env.BUILD_NOTIFICATION_FROM?.trim() || DEFAULT_FROM;
 
   try {

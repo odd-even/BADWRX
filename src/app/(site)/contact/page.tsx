@@ -10,6 +10,7 @@ import { sourceData } from "@/lib/source-data";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Request a consultation or ask questions about a custom rifle build.",
+  alternates: { canonical: "/contact" },
 };
 
 interface ContactPageProps {

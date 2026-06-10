@@ -5,5 +5,6 @@ export const client = createClient({
   projectId: sanityProjectId ?? "placeholder",
   dataset: sanityDataset,
   apiVersion: sanityApiVersion,
-  useCdn: process.env.NODE_ENV === "production",
+  // API (not CDN) so Studio uploads appear on the site without CDN lag.
+  useCdn: false,
 });

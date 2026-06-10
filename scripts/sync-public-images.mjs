@@ -16,6 +16,11 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const imagesDir = join(root, "public", "images");
 const fontsDir = join(root, "public", "fonts");
 
+const EXCLUDED_PHOTO_FILES = new Set([
+  "cadini-di-misurina-in-darkness-illuminated-by-sunl-2025-01-10-03-08-57-utc.jpeg",
+  "mountain-panorama-just-after-the-storm-2025-01-15-14-24-51-utc.jpg",
+]);
+
 const mappings = [
   { name: "assets", src: join(root, "_assets", "photos") },
   { name: "logos", src: join(root, "_assets", "logos", "SVG") },
@@ -61,6 +66,19 @@ for (const { name, src } of mappings) {
 
   const dest = join(imagesDir, name);
   rmSync(dest, { recursive: true, force: true });
-  cpSync(src, dest, { recursive: true });
+  mkdirSync(dest, { recursive: true });
+
+  if (name === "assets") {
+    for (const file of readdirSync(src)) {
+      if (EXCLUDED_PHOTO_FILES.has(file)) {
+        console.warn(`Skipping excluded photo: ${file}`);
+        continue;
+      }
+      cpSync(join(src, file), join(dest, file));
+    }
+  } else {
+    cpSync(src, dest, { recursive: true });
+  }
+
   console.log(`Synced public/images/${name}`);
 }

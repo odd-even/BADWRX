@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { RifleCard } from "@/components/rifles/RifleCard";
-import { categoryLabels } from "@/data/rifles";
+import { categoryLabels } from "@/lib/rifle-labels";
 import type { Rifle, RifleCategory } from "@/lib/types";
 
 type FilterKey = RifleCategory | "all";
@@ -57,7 +57,12 @@ export function BuildsGallery({
 
       <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((rifle) => (
-          <RifleCard key={rifle.id} rifle={rifle} showConfigure={showConfigure} />
+          <RifleCard
+            key={rifle.id}
+            rifle={rifle}
+            showConfigure={showConfigure}
+            titleAs="h2"
+          />
         ))}
       </div>
 

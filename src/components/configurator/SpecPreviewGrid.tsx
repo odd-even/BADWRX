@@ -1,4 +1,4 @@
-import { stepKeys } from "@/data/configurator-options";
+import { stepKeys } from "@/lib/configurator/constants";
 import { showsInSpecPreview } from "@/lib/configurator/spec-preview";
 import type { BuildConfiguration, ConfigStep } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";

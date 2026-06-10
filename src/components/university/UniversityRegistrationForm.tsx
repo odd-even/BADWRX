@@ -42,7 +42,7 @@ export function UniversityRegistrationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} autoComplete="on" className="space-y-4">
       <div className="border border-red/30 bg-black-light px-4 py-3">
         <p className="text-xs uppercase tracking-widest text-red">Registering for</p>
         <p className="mt-1 text-sm text-white">{course.title}</p>
@@ -55,6 +55,7 @@ export function UniversityRegistrationForm({
         <input
           required
           type="text"
+          name="name"
           autoComplete="name"
           value={values["full-name"] ?? ""}
           onChange={(event) => setValue("full-name", event.target.value)}
@@ -73,7 +74,8 @@ export function UniversityRegistrationForm({
           <input
             required
             type="text"
-            autoComplete="address-line1"
+            name="address-line1"
+            autoComplete="shipping address-line1"
             value={values["address-line1"] ?? ""}
             onChange={(event) => setValue("address-line1", event.target.value)}
             className={formInputClassName}
@@ -85,7 +87,8 @@ export function UniversityRegistrationForm({
           </span>
           <input
             type="text"
-            autoComplete="address-line2"
+            name="address-line2"
+            autoComplete="shipping address-line2"
             value={values["address-line2"] ?? ""}
             onChange={(event) => setValue("address-line2", event.target.value)}
             className={formInputClassName}
@@ -99,7 +102,8 @@ export function UniversityRegistrationForm({
             <input
               required
               type="text"
-              autoComplete="address-level2"
+              name="city"
+              autoComplete="shipping address-level2"
               value={values.city ?? ""}
               onChange={(event) => setValue("city", event.target.value)}
               className={formInputClassName}
@@ -112,7 +116,8 @@ export function UniversityRegistrationForm({
             <input
               required
               type="text"
-              autoComplete="address-level1"
+              name="state"
+              autoComplete="shipping address-level1"
               value={values.state ?? ""}
               onChange={(event) => setValue("state", event.target.value)}
               className={formInputClassName}
@@ -125,7 +130,8 @@ export function UniversityRegistrationForm({
             <input
               required
               type="text"
-              autoComplete="postal-code"
+              name="postal-code"
+              autoComplete="shipping postal-code"
               inputMode="numeric"
               value={values["postal-code"] ?? ""}
               onChange={(event) => setValue("postal-code", event.target.value)}
@@ -142,7 +148,9 @@ export function UniversityRegistrationForm({
         <input
           required
           type="tel"
+          name="tel"
           autoComplete="tel"
+          inputMode="tel"
           value={values.phone ?? ""}
           onChange={(event) => setValue("phone", event.target.value)}
           className={formInputClassName}
@@ -155,6 +163,7 @@ export function UniversityRegistrationForm({
         <input
           required
           type="email"
+          name="email"
           autoComplete="email"
           value={values.email ?? ""}
           onChange={(event) => setValue("email", event.target.value)}

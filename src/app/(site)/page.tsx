@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { siteTitle } from "@/lib/brand";
+import { defaultSiteDescription } from "@/lib/site";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
@@ -9,6 +12,17 @@ import { HomePillarsGrid } from "@/components/home/HomePillarsGrid";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
 import { isPageEnabled } from "@/lib/pages";
+
+export const metadata: Metadata = {
+  title: siteTitle,
+  description: defaultSiteDescription,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: siteTitle,
+    description: defaultSiteDescription,
+    url: "/",
+  },
+};
 
 export default async function HomePage() {
   const [rifles, site] = await Promise.all([

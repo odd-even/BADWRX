@@ -8,6 +8,8 @@ import {
   isPageEnabled,
 } from "@/lib/pages";
 
+export const revalidate = 60;
+
 export default async function SiteLayout({
   children,
 }: {

@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
-import { configureHref } from "@/data/configurator-options";
-import { categoryLabels } from "@/data/rifles";
+import { configureHref } from "@/lib/configurator/constants";
+import { categoryLabels } from "@/lib/rifle-labels";
 import { getAllRifles, getRifleBySlug, getSiteSettings } from "@/lib/content";
 import { isPageEnabled } from "@/lib/pages";
 
@@ -24,6 +24,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: rifle.title,
     description: rifle.description,
+    alternates: { canonical: `/builds/${slug}` },
+    openGraph: {
+      title: rifle.title,
+      description: rifle.description,
+      url: `/builds/${slug}`,
+      images: rifle.heroImage?.url
+        ? [{ url: rifle.heroImage.url, alt: rifle.heroImage.alt }]
+        : undefined,
+    },
   };
 }
 

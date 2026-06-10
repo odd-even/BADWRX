@@ -1,5 +1,5 @@
-import type { Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/types";
-import { defaultSiteImages } from "@/data/site-settings";
+import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/types";
+import { defaultBrandAssets, defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
 import { imageUrl, type ImageWidthPreset } from "./image";
@@ -166,16 +166,30 @@ export function mapSiteImages(
   };
 }
 
-interface SanitySiteSettingsDoc extends Omit<Partial<SiteSettings>, "siteImages"> {
+export function mapBrandAssets(
+  raw: Partial<Record<keyof BrandAssets, SanityImageField>> | undefined,
+  defaults: BrandAssets = defaultBrandAssets,
+): BrandAssets {
+  if (!raw) return defaults;
+
+  return {
+    shareImage: mapSiteImageField(raw.shareImage, defaults.shareImage, "og"),
+    favicon: mapSiteImageField(raw.favicon, defaults.favicon, "icon"),
+  };
+}
+
+interface SanitySiteSettingsDoc extends Omit<Partial<SiteSettings>, "siteImages" | "brandAssets"> {
   siteImages?: Partial<Record<keyof SiteImages, SanityImageField>>;
+  brandAssets?: Partial<Record<keyof BrandAssets, SanityImageField>>;
 }
 
 export function mapSiteSettings(doc: SanitySiteSettingsDoc | null): SiteSettings | null {
   if (!doc?.name) return null;
-  const { siteImages: rawImages, ...rest } = doc;
+  const { siteImages: rawImages, brandAssets: rawBrandAssets, ...rest } = doc;
   return {
     ...rest,
     siteImages: mapSiteImages(rawImages),
+    brandAssets: mapBrandAssets(rawBrandAssets),
   } as SiteSettings;
 }
 

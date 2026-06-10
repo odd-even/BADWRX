@@ -98,6 +98,17 @@ h3 {
   color: #fafafa;
 }
 
+/* Keep Safari/Chrome autofill readable on dark inputs */
+.autofill-target:-webkit-autofill,
+.autofill-target:-webkit-autofill:hover,
+.autofill-target:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-white);
+  caret-color: var(--color-white);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-black-light) inset;
+  box-shadow: 0 0 0 1000px var(--color-black-light) inset;
+  transition: background-color 99999s ease-out 0s;
+}
+
 /* Subtle zoom on hover — image scales inside overflow-hidden container */
 .hover-zoom {
   overflow: hidden;

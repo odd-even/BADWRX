@@ -7,6 +7,7 @@ import { getSiteSettings } from "@/lib/content";
 export const metadata: Metadata = {
   title: "About",
   description: `The story behind ${brand.name} (${brand.short}) and our build philosophy.`,
+  alternates: { canonical: "/about" },
 };
 
 export default async function AboutPage() {

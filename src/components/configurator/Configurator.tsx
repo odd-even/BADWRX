@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { stepKeys, type StepKey } from "@/data/configurator-options";
+import { stepKeys, type StepKey } from "@/lib/configurator/constants";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";

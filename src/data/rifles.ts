@@ -1,6 +1,9 @@
 import { sourceData } from "@/lib/source-data";
+import { categoryLabels } from "@/lib/rifle-labels";
 import type { Rifle, RifleCategory } from "@/lib/types";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
+
+export { categoryLabels };
 
 const categoryBySlug: Record<string, RifleCategory> = {
   specter: "hunting",
@@ -34,13 +37,6 @@ function rifleImage(caption?: string) {
 const heroImage = {
   url: configuratorPlaceholder,
   alt: riflePlaceholderAlt,
-};
-
-export const categoryLabels: Record<RifleCategory, string> = {
-  hunting: "Hunting",
-  "long-range": "Long Range",
-  safari: "Safari / Dangerous Game",
-  precision: "Precision",
 };
 
 export const rifles: Rifle[] = sourceData.website.rifles.map((r, index) => {

@@ -77,7 +77,7 @@ export function ContactForm({
 
   if (mode === "platform" && buildFields?.length) {
     return (
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
         <div className="grid gap-4 sm:grid-cols-2">
           {buildFields
             .filter((field) => field.id === "first-name" || field.id === "last-name")
@@ -89,6 +89,10 @@ export function ContactForm({
                 <input
                   required={field.required}
                   type="text"
+                  name={field.id === "first-name" ? "givenName" : "familyName"}
+                  autoComplete={
+                    field.id === "first-name" ? "given-name" : "family-name"
+                  }
                   value={values[field.id] ?? ""}
                   onChange={(event) => setValue(field.id, event.target.value)}
                   className={inputClassName}
@@ -109,6 +113,9 @@ export function ContactForm({
               <input
                 required={field.required}
                 type={field.id === "email-address" ? "email" : "tel"}
+                name={field.id === "email-address" ? "email" : "tel"}
+                autoComplete={field.id === "email-address" ? "email" : "tel"}
+                inputMode={field.id === "phone-number" ? "tel" : undefined}
                 value={values[field.id] ?? ""}
                 onChange={(event) => setValue(field.id, event.target.value)}
                 className={inputClassName}
@@ -183,7 +190,7 @@ export function ContactForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
       <label className="block">
         <span className="text-xs uppercase tracking-widest text-white-muted">
           Product
@@ -214,6 +221,7 @@ export function ContactForm({
         <input
           required
           type="text"
+          name="name"
           autoComplete="name"
           value={values.name ?? ""}
           onChange={(event) => setValue("name", event.target.value)}
@@ -225,6 +233,7 @@ export function ContactForm({
         <input
           required
           type="email"
+          name="email"
           autoComplete="email"
           value={values.email ?? ""}
           onChange={(event) => setValue("email", event.target.value)}

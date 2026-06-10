@@ -13,9 +13,7 @@ import {
   shippingOptions,
 } from "@/lib/merch/shipping";
 import type { MerchShippingAddress, MerchShippingMethod } from "@/lib/types";
-
-const inputClassName =
-  "mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red";
+import { formInputClassName as inputClassName } from "@/lib/form-styles";
 
 export default function MerchCheckoutPage() {
   const router = useRouter();
@@ -146,7 +144,7 @@ export default function MerchCheckoutPage() {
         redirected to Square to pay securely. We ship once payment clears.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
+      <form onSubmit={handleSubmit} autoComplete="on" className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
         <div className="space-y-8">
           <section className="border border-white/10 bg-black-muted p-6">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-red">
@@ -159,6 +157,8 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="name"
+                  autoComplete="name"
                   value={contact.name}
                   onChange={(event) =>
                     setContact((current) => ({ ...current, name: event.target.value }))
@@ -173,6 +173,8 @@ export default function MerchCheckoutPage() {
                 <input
                   required
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   value={contact.email}
                   onChange={(event) =>
                     setContact((current) => ({ ...current, email: event.target.value }))
@@ -186,6 +188,9 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   type="tel"
+                  name="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
                   value={contact.phone}
                   onChange={(event) =>
                     setContact((current) => ({ ...current, phone: event.target.value }))
@@ -207,6 +212,8 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="address-line1"
+                  autoComplete="shipping address-line1"
                   value={shipping.line1}
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, line1: event.target.value }))
@@ -219,6 +226,8 @@ export default function MerchCheckoutPage() {
                   Apartment, suite, etc.
                 </span>
                 <input
+                  name="address-line2"
+                  autoComplete="shipping address-line2"
                   value={shipping.line2 ?? ""}
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, line2: event.target.value }))
@@ -232,6 +241,8 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="city"
+                  autoComplete="shipping address-level2"
                   value={shipping.city}
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, city: event.target.value }))
@@ -245,6 +256,8 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="state"
+                  autoComplete="shipping address-level1"
                   value={shipping.state}
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, state: event.target.value }))
@@ -258,6 +271,9 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="postal-code"
+                  autoComplete="shipping postal-code"
+                  inputMode="numeric"
                   value={shipping.postalCode}
                   onChange={(event) =>
                     setShipping((current) => ({
@@ -274,6 +290,8 @@ export default function MerchCheckoutPage() {
                 </span>
                 <input
                   required
+                  name="country"
+                  autoComplete="shipping country"
                   value={shipping.country}
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, country: event.target.value }))

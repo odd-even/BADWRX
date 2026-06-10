@@ -2,7 +2,7 @@ import { brand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
 import { images, riflePlaceholderAlt } from "@/lib/images";
-import type { SiteImages, SiteSettings } from "@/lib/types";
+import type { BrandAssets, SiteImages, SiteSettings } from "@/lib/types";
 
 const { docxCopy } = sourceData;
 
@@ -75,6 +75,17 @@ export const defaultSiteImages: SiteImages = {
   },
 };
 
+export const defaultBrandAssets: BrandAssets = {
+  shareImage: {
+    url: images.rifle.homeCover,
+    alt: `${brand.short} — precision rifles built to order`,
+  },
+  favicon: {
+    url: "/images/logos/Gunworks_badge.svg",
+    alt: brand.short,
+  },
+};
+
 /** Local `_assets/photos` filenames for seeding Sanity site image fields */
 export const defaultSiteImageFiles: Record<keyof SiteImages, string> = {
   reticleOverlay: "FC-DMx_MOA__16268 copy.webp",
@@ -106,6 +117,7 @@ export const defaultSiteSettings: SiteSettings = {
     "Built to Order",
   ],
   siteImages: defaultSiteImages,
+  brandAssets: defaultBrandAssets,
   homeHero: {
     eyebrow: "Unrelenting performance",
     headlinePrefix: "",

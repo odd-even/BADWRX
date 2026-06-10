@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { configureHref } from "@/data/configurator-options";
-import { categoryLabels } from "@/data/rifles";
+import { configureHref } from "@/lib/configurator/constants";
+import { categoryLabels } from "@/lib/rifle-labels";
 import type { Rifle } from "@/lib/types";
 
 interface RifleCardProps {
@@ -10,6 +10,7 @@ interface RifleCardProps {
   compact?: boolean;
   showConfigure?: boolean;
   showPricing?: boolean;
+  titleAs?: "h2" | "h3";
 }
 
 export function RifleCard({
@@ -18,6 +19,7 @@ export function RifleCard({
   compact = false,
   showConfigure = true,
   showPricing = true,
+  titleAs: TitleTag = "h3",
 }: RifleCardProps) {
   const isTightHero =
     rifle.heroImage.url.includes("cropped") ||
@@ -55,13 +57,13 @@ export function RifleCard({
               compact ? "px-5 pt-7 pb-6" : "px-6 pt-8 pb-8"
             }`}
           >
-            <h3
+            <TitleTag
               className={`shrink-0 text-white transition group-hover:text-red ${
                 compact ? "text-2xl line-clamp-1" : "text-2xl md:text-3xl"
               }`}
             >
               {rifle.title}
-            </h3>
+            </TitleTag>
             <p
               className={`mt-2 min-h-0 flex-1 text-sm text-white-muted ${
                 compact ? "line-clamp-2" : ""

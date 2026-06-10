@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { rifles as localRifles, getRifleBySlug as localGetRifleBySlug, getFeaturedRifles as localGetFeaturedRifles } from "@/data/rifles";
 import { courses as localCourses, getCourseBySlug as localGetCourseBySlug } from "@/data/courses";
 import { merchItems as localMerchItems, getMerchBySlug as localGetMerchBySlug } from "@/data/merch";
@@ -23,7 +24,7 @@ import {
   siteSettingsQuery,
 } from "@/sanity/lib/queries";
 
-export async function getAllRifles(): Promise<Rifle[]> {
+export const getAllRifles = cache(async (): Promise<Rifle[]> => {
   if (!isSanityConfigured()) return localRifles;
   try {
     const docs = await client.fetch(riflesQuery, {}, sanityFetchOptions);
@@ -31,7 +32,7 @@ export async function getAllRifles(): Promise<Rifle[]> {
   } catch {
     return localRifles;
   }
-}
+});
 
 export async function getFeaturedRifles(): Promise<Rifle[]> {
   const rifles = await getAllRifles();
@@ -83,7 +84,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | undefined>
   }
 }
 
-export async function getAllMerch(): Promise<MerchItem[]> {
+export const getAllMerch = cache(async (): Promise<MerchItem[]> => {
   if (!isSanityConfigured()) return localMerchItems;
   try {
     const docs = await client.fetch(merchQuery, {}, sanityFetchOptions);
@@ -91,7 +92,7 @@ export async function getAllMerch(): Promise<MerchItem[]> {
   } catch {
     return localMerchItems;
   }
-}
+});
 
 export async function getMerchBySlug(slug: string): Promise<MerchItem | undefined> {
   if (!isSanityConfigured()) return localGetMerchBySlug(slug);
@@ -128,7 +129,7 @@ function normalizeHomeHero(
   return normalized;
 }
 
-export async function getSiteSettings(): Promise<SiteSettings> {
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   if (!isSanityConfigured()) return defaultSiteSettings;
   try {
     const doc = await client.fetch(siteSettingsQuery, {}, sanityFetchOptions);
@@ -163,7 +164,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   } catch {
     return defaultSiteSettings;
   }
-}
+});
 
 function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
   const testimonials = settings.testimonials?.filter(
@@ -173,6 +174,7 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
   return {
     ...settings,
     siteImages: settings.siteImages ?? defaultSiteSettings.siteImages,
+    brandAssets: settings.brandAssets ?? defaultSiteSettings.brandAssets,
     aboutPage: mergeAboutPage(settings),
     pageVisibility: normalizePageVisibility(
       settings.pageVisibility ?? defaultSiteSettings.pageVisibility,

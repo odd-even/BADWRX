@@ -1,15 +1,12 @@
-import { stepKeys, type StepKey } from "@/data/configurator-options";
+import { stepKeys, type StepKey } from "@/lib/configurator/constants";
 import type { ConfiguratorPricing } from "@/lib/configurator/types";
-import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
 import { isBasecampNoneOption } from "@/lib/configurator/basecamp-items";
 import type { BuildConfiguration } from "@/lib/types";
 
-const defaultPricing = buildConfiguratorDataFromSource().pricing;
-
-export const optionPriceCents: Record<string, number> =
-  defaultPricing.optionPriceCents;
-
-export const baseBuildCents = defaultPricing.baseBuildCents;
+const emptyPricing: ConfiguratorPricing = {
+  baseBuildCents: 0,
+  optionPriceCents: {},
+};
 
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -36,14 +33,14 @@ export function formatLineItemPrice(cents: number, stepKey?: StepKey): string {
 
 export function getOptionPrice(
   optionId: string,
-  pricing: ConfiguratorPricing = defaultPricing,
+  pricing: ConfiguratorPricing = emptyPricing,
 ): number {
   return pricing.optionPriceCents[optionId] ?? 0;
 }
 
 export function computeBuildTotal(
   config: BuildConfiguration,
-  pricing: ConfiguratorPricing = defaultPricing,
+  pricing: ConfiguratorPricing = emptyPricing,
 ): number {
   let total = pricing.baseBuildCents;
   for (const key of stepKeys) {
@@ -61,7 +58,7 @@ export function computeBuildTotal(
 
 export function computeBuildLineItems(
   config: BuildConfiguration,
-  pricing: ConfiguratorPricing = defaultPricing,
+  pricing: ConfiguratorPricing = emptyPricing,
 ): { key: StepKey; label: string; cents: number }[] {
   const items: { key: StepKey; label: string; cents: number }[] = [];
 

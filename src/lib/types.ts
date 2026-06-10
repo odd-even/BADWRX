@@ -151,6 +151,12 @@ export interface SiteImages {
   aboutStory: RifleImage;
 }
 
+/** Social / browser branding assets (OG cover, favicon). */
+export interface BrandAssets {
+  shareImage: RifleImage;
+  favicon: RifleImage;
+}
+
 export interface SiteSettings {
   name: string;
   short: string;
@@ -162,6 +168,7 @@ export interface SiteSettings {
   deliveryPackage: string;
   trustMarqueeItems: string[];
   siteImages: SiteImages;
+  brandAssets: BrandAssets;
   homeHero: {
     eyebrow: string;
     headlinePrefix: string;

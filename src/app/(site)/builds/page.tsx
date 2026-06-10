@@ -7,6 +7,7 @@ import { sourceData } from "@/lib/source-data";
 export const metadata: Metadata = {
   title: "Rifle Builds",
   description: sourceData.docxCopy.buildsPage.subcopy,
+  alternates: { canonical: "/builds" },
 };
 
 export default async function BuildsPage() {

@@ -1,4 +1,4 @@
-import { stepKeys, type StepKey } from "@/data/configurator-options";
+import { stepKeys, type StepKey } from "@/lib/configurator/constants";
 import { isBasecampNoneOption } from "@/lib/configurator/basecamp-items";
 import type { ConfigStep } from "@/lib/types";
 import type { BuildConfiguration } from "@/lib/types";

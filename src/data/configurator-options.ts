@@ -180,24 +180,12 @@ export const configuratorSteps: ConfigStep[] = [
   },
 ];
 
-export const stepKeys = [
-  "platform",
-  "caliber",
-  "stockPaint",
-  "scope",
-  "rings",
-  "basecampPackage",
-  "ballisticPackage",
-] as const;
-
-export type StepKey = (typeof stepKeys)[number];
+export {
+  configureHref,
+  stepKeys,
+  type StepKey,
+} from "@/lib/configurator/constants";
 
 export function getPlatformOption(slug: string): ConfigOption | undefined {
   return configuratorSteps[0].options.find((option) => option.id === slug);
-}
-
-export function configureHref(platformSlug?: string): string {
-  return platformSlug
-    ? `/configure?platform=${encodeURIComponent(platformSlug)}`
-    : "/configure";
 }
