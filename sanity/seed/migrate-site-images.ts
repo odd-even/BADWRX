@@ -75,6 +75,7 @@ export async function migrateSiteImages(options?: { force?: boolean }) {
         homeHeroBanner { asset->{ _id } },
         homeFieldTested { asset->{ _id } },
         homeBallisticSection { asset->{ _id } },
+        aboutHeroBanner { asset->{ _id } },
         aboutStory { asset->{ _id } }
       }
     }`,

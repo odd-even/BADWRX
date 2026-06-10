@@ -91,9 +91,14 @@ export const siteSettings = defineType({
           "Background for the Ballistic Package section on the home page.",
         ),
         cmsImageField(
+          "aboutHeroBanner",
+          "About hero banner",
+          "Full-bleed cover image at the top of the about page.",
+        ),
+        cmsImageField(
           "aboutStory",
-          "About page photo",
-          "Large portrait photo on the about page.",
+          "About page sidebar photo",
+          "Portrait photo beside the story on the about page.",
         ),
       ],
     }),

@@ -65,6 +65,10 @@ export const defaultSiteImages: SiteImages = {
     url: images.rifle.studioCropped,
     alt: riflePlaceholderAlt,
   },
+  aboutHeroBanner: {
+    url: images.rifle.field,
+    alt: "Precision rifle in mountain country",
+  },
   aboutStory: {
     url: images.about.story,
     alt: "BADWRX craftsmanship in the build shop",
@@ -77,6 +81,7 @@ export const defaultSiteImageFiles: Record<keyof SiteImages, string> = {
   homeHeroBanner: "IMG_5613cover.webp",
   homeFieldTested: "IMG_1125bighorn.jpg",
   homeBallisticSection: "IMG_0058-cropped.jpg",
+  aboutHeroBanner: "IMG_5613.jpeg",
   aboutStory: "IMG_1192 copy.webp",
 };
 

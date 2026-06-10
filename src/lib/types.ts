@@ -147,6 +147,7 @@ export interface SiteImages {
   homeHeroBanner: RifleImage;
   homeFieldTested: RifleImage;
   homeBallisticSection: RifleImage;
+  aboutHeroBanner: RifleImage;
   aboutStory: RifleImage;
 }
 

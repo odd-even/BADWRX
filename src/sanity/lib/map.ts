@@ -113,6 +113,7 @@ const siteImageWidths = {
   homeHeroBanner: "hero",
   homeFieldTested: "content",
   homeBallisticSection: "section",
+  aboutHeroBanner: "hero",
   aboutStory: "portrait",
 } as const satisfies Record<keyof SiteImages, ImageWidthPreset>;
 
@@ -151,6 +152,11 @@ export function mapSiteImages(
       raw.homeBallisticSection,
       defaults.homeBallisticSection,
       siteImageWidths.homeBallisticSection,
+    ),
+    aboutHeroBanner: mapSiteImageField(
+      raw.aboutHeroBanner,
+      defaults.aboutHeroBanner,
+      siteImageWidths.aboutHeroBanner,
     ),
     aboutStory: mapSiteImageField(
       raw.aboutStory,

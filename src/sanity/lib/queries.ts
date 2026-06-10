@@ -135,6 +135,7 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
     homeHeroBanner { asset->{ url }, alt },
     homeFieldTested { asset->{ url }, alt },
     homeBallisticSection { asset->{ url }, alt },
+    aboutHeroBanner { asset->{ url }, alt },
     aboutStory { asset->{ url }, alt }
   }
 }`;
