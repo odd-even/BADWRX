@@ -13,7 +13,21 @@ import {
   shippingOptions,
 } from "@/lib/merch/shipping";
 import type { MerchShippingAddress, MerchShippingMethod } from "@/lib/types";
-import { formInputClassName as inputClassName } from "@/lib/form-styles";
+import { formInputClassName } from "@/lib/form-styles";
+import {
+  validateMerchContact,
+  validateMerchShippingAddress,
+  type MerchCheckoutFieldErrors,
+} from "@/lib/contact-validation";
+
+function checkoutInputClass(hasError: boolean) {
+  return `${formInputClassName} ${hasError ? "border-red" : ""}`.trim();
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-red">{message}</p>;
+}
 
 export default function MerchCheckoutPage() {
   const router = useRouter();
@@ -22,6 +36,7 @@ export default function MerchCheckoutPage() {
     useState<MerchShippingMethod>("standard");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<MerchCheckoutFieldErrors>({});
 
   const [contact, setContact] = useState({
     name: "",
@@ -63,8 +78,23 @@ export default function MerchCheckoutPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setSubmitting(true);
     setError(null);
+
+    const contactResult = validateMerchContact(contact);
+    const shippingResult = validateMerchShippingAddress(shipping);
+    const mergedErrors = {
+      ...contactResult.fieldErrors,
+      ...shippingResult.fieldErrors,
+    };
+
+    if (contactResult.error || shippingResult.error) {
+      setFieldErrors(mergedErrors);
+      setError(contactResult.error ?? shippingResult.error ?? "Check the form");
+      return;
+    }
+
+    setFieldErrors({});
+    setSubmitting(true);
 
     try {
       const response = await fetch("/api/merch-orders", {
@@ -160,11 +190,17 @@ export default function MerchCheckoutPage() {
                   name="name"
                   autoComplete="name"
                   value={contact.name}
-                  onChange={(event) =>
-                    setContact((current) => ({ ...current, name: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setContact((current) => ({ ...current, name: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.name)}
+                  className={checkoutInputClass(Boolean(fieldErrors.name))}
                 />
+                <FieldError message={fieldErrors.name} />
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -176,27 +212,41 @@ export default function MerchCheckoutPage() {
                   name="email"
                   autoComplete="email"
                   value={contact.email}
-                  onChange={(event) =>
-                    setContact((current) => ({ ...current, email: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setContact((current) => ({ ...current, email: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  className={checkoutInputClass(Boolean(fieldErrors.email))}
                 />
+                <FieldError message={fieldErrors.email} />
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
                   Phone
                 </span>
                 <input
+                  required
                   type="tel"
                   name="tel"
                   autoComplete="tel"
                   inputMode="tel"
+                  placeholder="(555) 555-5555"
                   value={contact.phone}
-                  onChange={(event) =>
-                    setContact((current) => ({ ...current, phone: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setContact((current) => ({ ...current, phone: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.phone)}
+                  className={checkoutInputClass(Boolean(fieldErrors.phone))}
                 />
+                <FieldError message={fieldErrors.phone} />
               </label>
             </div>
           </section>
@@ -215,11 +265,17 @@ export default function MerchCheckoutPage() {
                   name="address-line1"
                   autoComplete="shipping address-line1"
                   value={shipping.line1}
-                  onChange={(event) =>
-                    setShipping((current) => ({ ...current, line1: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setShipping((current) => ({ ...current, line1: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.line1)}
+                  className={checkoutInputClass(Boolean(fieldErrors.line1))}
                 />
+                <FieldError message={fieldErrors.line1} />
               </label>
               <label className="block sm:col-span-2">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -232,7 +288,7 @@ export default function MerchCheckoutPage() {
                   onChange={(event) =>
                     setShipping((current) => ({ ...current, line2: event.target.value }))
                   }
-                  className={inputClassName}
+                  className={checkoutInputClass(false)}
                 />
               </label>
               <label className="block">
@@ -244,11 +300,17 @@ export default function MerchCheckoutPage() {
                   name="city"
                   autoComplete="shipping address-level2"
                   value={shipping.city}
-                  onChange={(event) =>
-                    setShipping((current) => ({ ...current, city: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setShipping((current) => ({ ...current, city: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.city)}
+                  className={checkoutInputClass(Boolean(fieldErrors.city))}
                 />
+                <FieldError message={fieldErrors.city} />
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -259,11 +321,17 @@ export default function MerchCheckoutPage() {
                   name="state"
                   autoComplete="shipping address-level1"
                   value={shipping.state}
-                  onChange={(event) =>
-                    setShipping((current) => ({ ...current, state: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setShipping((current) => ({ ...current, state: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.state)}
+                  className={checkoutInputClass(Boolean(fieldErrors.state))}
                 />
+                <FieldError message={fieldErrors.state} />
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -274,15 +342,22 @@ export default function MerchCheckoutPage() {
                   name="postal-code"
                   autoComplete="shipping postal-code"
                   inputMode="numeric"
+                  placeholder="12345"
                   value={shipping.postalCode}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setShipping((current) => ({
                       ...current,
                       postalCode: event.target.value,
-                    }))
-                  }
-                  className={inputClassName}
+                    }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.postalCode)}
+                  className={checkoutInputClass(Boolean(fieldErrors.postalCode))}
                 />
+                <FieldError message={fieldErrors.postalCode} />
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -293,11 +368,17 @@ export default function MerchCheckoutPage() {
                   name="country"
                   autoComplete="shipping country"
                   value={shipping.country}
-                  onChange={(event) =>
-                    setShipping((current) => ({ ...current, country: event.target.value }))
-                  }
-                  className={inputClassName}
+                  onChange={(event) => {
+                    setShipping((current) => ({ ...current, country: event.target.value }));
+                    if (Object.keys(fieldErrors).length > 0) {
+                      setFieldErrors({});
+                      setError(null);
+                    }
+                  }}
+                  aria-invalid={Boolean(fieldErrors.country)}
+                  className={checkoutInputClass(Boolean(fieldErrors.country))}
                 />
+                <FieldError message={fieldErrors.country} />
               </label>
             </div>
           </section>
@@ -360,7 +441,7 @@ export default function MerchCheckoutPage() {
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="Gift message, delivery instructions, etc."
-                className={inputClassName}
+                className={checkoutInputClass(false)}
               />
             </label>
           </section>

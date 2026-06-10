@@ -17,6 +17,10 @@ import {
   type BuildContactDetails,
 } from "@/lib/build-submission";
 import {
+  validateBuildContact,
+  type BuildContactFieldErrors,
+} from "@/lib/contact-validation";
+import {
   BASECAMP_NONE_OPTION,
   summarizeBasecampSelection,
 } from "@/lib/configurator/basecamp-items";
@@ -262,6 +266,7 @@ export function Configurator({ data }: ConfiguratorProps) {
   const [config, setConfig] = useState<BuildConfiguration>(emptyConfig);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<BuildContactFieldErrors>({});
   const [requestId, setRequestId] = useState<string | null>(null);
   const [form, setForm] = useState<BuildContactDetails>({
     firstName: "",
@@ -403,14 +408,23 @@ export function Configurator({ data }: ConfiguratorProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
     setSubmitError(null);
+
+    const validated = validateBuildContact(form);
+    if (!validated.ok) {
+      setFieldErrors(validated.fieldErrors);
+      setSubmitError(validated.error);
+      return;
+    }
+
+    setFieldErrors({});
+    setSubmitting(true);
 
     try {
       const response = await fetch("/api/build-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ config, contact: form }),
+        body: JSON.stringify({ config, contact: validated.contact }),
       });
 
       const data = (await response.json()) as {
@@ -469,11 +483,18 @@ export function Configurator({ data }: ConfiguratorProps) {
         config={config}
         submission={submission}
         form={form}
-        onFormChange={setForm}
+        onFormChange={(next) => {
+          setForm(next);
+          if (Object.keys(fieldErrors).length > 0) {
+            setFieldErrors({});
+            setSubmitError(null);
+          }
+        }}
         onSubmit={handleSubmit}
         onEdit={() => setPhase("configure")}
         submitting={submitting}
         submitError={submitError}
+        fieldErrors={fieldErrors}
         steps={configuratorSteps}
       />
     );

@@ -1,3 +1,7 @@
+import {
+  validateMerchContact,
+  validateMerchShippingAddress,
+} from "@/lib/contact-validation";
 import { orderTotalCents } from "@/lib/merch/shipping";
 import type { MerchCartLine, MerchItem, MerchOrderPayload, MerchShippingAddress, MerchShippingMethod } from "@/lib/types";
 
@@ -72,30 +76,21 @@ export function validateMerchCheckoutBody(
     return { ok: false, error: "One or more cart items are invalid" };
   }
 
-  if (
-    !input.contact ||
-    !isNonEmptyString(input.contact.name) ||
-    !isNonEmptyString(input.contact.email)
-  ) {
-    return { ok: false, error: "Name and email are required" };
+  const contactResult = validateMerchContact(input.contact ?? {});
+  if (contactResult.error) {
+    return { ok: false, error: contactResult.error };
   }
 
-  const shipping = input.shipping;
-  if (
-    !shipping ||
-    !isNonEmptyString(shipping.line1) ||
-    !isNonEmptyString(shipping.city) ||
-    !isNonEmptyString(shipping.state) ||
-    !isNonEmptyString(shipping.postalCode) ||
-    !isNonEmptyString(shipping.country)
-  ) {
-    return { ok: false, error: "Complete shipping address is required" };
+  const shippingResult = validateMerchShippingAddress(input.shipping ?? {});
+  if (shippingResult.error) {
+    return { ok: false, error: shippingResult.error };
   }
 
   if (input.shippingMethod !== "standard" && input.shippingMethod !== "express") {
     return { ok: false, error: "Select a shipping method" };
   }
 
+  const shipping = input.shipping;
   const totals = orderTotalCents(items, input.shippingMethod);
   const orderId = crypto.randomUUID();
 

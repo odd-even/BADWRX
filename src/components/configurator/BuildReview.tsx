@@ -1,5 +1,6 @@
 import type { BuildConfiguration, ConfigStep } from "@/lib/types";
 import type { BuildContactDetails, BuildSubmission } from "@/lib/build-submission";
+import type { BuildContactFieldErrors } from "@/lib/contact-validation";
 import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 import { formatPrice, formatLineItemPrice } from "@/lib/pricing";
 
@@ -12,7 +13,19 @@ interface BuildReviewProps {
   onEdit: () => void;
   submitting?: boolean;
   submitError?: string | null;
+  fieldErrors?: BuildContactFieldErrors;
   steps: ConfigStep[];
+}
+
+function inputClassName(hasError: boolean) {
+  return `autofill-target mt-1 w-full border bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red ${
+    hasError ? "border-red" : "border-white/10"
+  }`;
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="mt-1 text-xs text-red">{message}</p>;
 }
 
 export function BuildReview({
@@ -24,6 +37,7 @@ export function BuildReview({
   onEdit,
   submitting = false,
   submitError = null,
+  fieldErrors = {},
   steps,
 }: BuildReviewProps) {
   return (
@@ -118,8 +132,10 @@ export function BuildReview({
               onChange={(e) =>
                 onFormChange({ ...form, firstName: e.target.value })
               }
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.firstName)}
+              className={inputClassName(Boolean(fieldErrors.firstName))}
             />
+            <FieldError message={fieldErrors.firstName} />
           </label>
           <label className="block">
             <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -135,8 +151,10 @@ export function BuildReview({
               onChange={(e) =>
                 onFormChange({ ...form, lastName: e.target.value })
               }
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.lastName)}
+              className={inputClassName(Boolean(fieldErrors.lastName))}
             />
+            <FieldError message={fieldErrors.lastName} />
           </label>
           <label className="block">
             <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -150,8 +168,10 @@ export function BuildReview({
               autoComplete="email"
               value={form.email}
               onChange={(e) => onFormChange({ ...form, email: e.target.value })}
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.email)}
+              className={inputClassName(Boolean(fieldErrors.email))}
             />
+            <FieldError message={fieldErrors.email} />
           </label>
           <label className="block">
             <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -164,10 +184,13 @@ export function BuildReview({
               type="tel"
               autoComplete="tel"
               inputMode="tel"
+              placeholder="(555) 555-5555"
               value={form.phone}
               onChange={(e) => onFormChange({ ...form, phone: e.target.value })}
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.phone)}
+              className={inputClassName(Boolean(fieldErrors.phone))}
             />
+            <FieldError message={fieldErrors.phone} />
           </label>
           <label className="block sm:col-span-2">
             <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -183,8 +206,10 @@ export function BuildReview({
               onChange={(e) =>
                 onFormChange({ ...form, addressLine1: e.target.value })
               }
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.addressLine1)}
+              className={inputClassName(Boolean(fieldErrors.addressLine1))}
             />
+            <FieldError message={fieldErrors.addressLine1} />
           </label>
           <label className="block sm:col-span-2">
             <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -214,8 +239,10 @@ export function BuildReview({
               autoComplete="shipping address-level2"
               value={form.city}
               onChange={(e) => onFormChange({ ...form, city: e.target.value })}
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              aria-invalid={Boolean(fieldErrors.city)}
+              className={inputClassName(Boolean(fieldErrors.city))}
             />
+            <FieldError message={fieldErrors.city} />
           </label>
           <div className="grid grid-cols-2 gap-4">
             <label className="block">
@@ -232,8 +259,10 @@ export function BuildReview({
                 onChange={(e) =>
                   onFormChange({ ...form, state: e.target.value })
                 }
-                className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+                aria-invalid={Boolean(fieldErrors.state)}
+                className={inputClassName(Boolean(fieldErrors.state))}
               />
+              <FieldError message={fieldErrors.state} />
             </label>
             <label className="block">
               <span className="text-xs uppercase tracking-widest text-white-muted">
@@ -246,12 +275,15 @@ export function BuildReview({
                 type="text"
                 autoComplete="shipping postal-code"
                 inputMode="numeric"
+                placeholder="12345"
                 value={form.postalCode}
                 onChange={(e) =>
                   onFormChange({ ...form, postalCode: e.target.value })
                 }
-                className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+                aria-invalid={Boolean(fieldErrors.postalCode)}
+                className={inputClassName(Boolean(fieldErrors.postalCode))}
               />
+              <FieldError message={fieldErrors.postalCode} />
             </label>
           </div>
           <label className="block sm:col-span-2">
