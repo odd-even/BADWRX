@@ -3,6 +3,7 @@ import { brand, siteTitle } from "@/lib/brand";
 import { defaultBrandAssets } from "@/data/site-settings";
 import { getSiteSettings } from "@/lib/content";
 import { defaultSiteDescription, getSiteUrl, isSitePublic } from "@/lib/site";
+import { brandAssetDimensions } from "@/sanity/lib/image";
 import type { BrandAssets, SiteSettings } from "@/lib/types";
 
 function absoluteAssetUrl(url: string, siteUrl: string): string {
@@ -42,6 +43,8 @@ export function buildSiteMetadata(
       images: [
         {
           url: shareUrl,
+          width: brandAssetDimensions.og.width,
+          height: brandAssetDimensions.og.height,
           alt: shareAlt,
         },
       ],

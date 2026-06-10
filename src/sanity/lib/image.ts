@@ -28,9 +28,20 @@ export const imageWidths = {
   og: 1200,
   /** Favicon and Apple touch icon source */
   icon: 512,
+  /** Apple touch icon (home screen) */
+  appleIcon: 180,
   /** Default when no specific context applies */
   default: 1280,
 } as const;
+
+/** Cropped output sizes for social / browser branding assets. */
+export const brandAssetDimensions = {
+  og: { width: imageWidths.og, height: 630 },
+  icon: { width: imageWidths.icon, height: imageWidths.icon },
+  appleIcon: { width: imageWidths.appleIcon, height: imageWidths.appleIcon },
+} as const;
+
+export type BrandAssetPreset = keyof typeof brandAssetDimensions;
 
 export type ImageWidthPreset = keyof typeof imageWidths;
 
@@ -45,4 +56,20 @@ export function imageUrl(
   if (!source) return undefined;
   const resolvedWidth = typeof width === "number" ? width : imageWidths[width];
   return urlFor(source).width(resolvedWidth).auto("format").quality(80).url();
+}
+
+/** OG cover and favicon — crop to exact dimensions (respects Sanity hotspot). */
+export function brandAssetImageUrl(
+  source: SanityImageSource | undefined,
+  preset: BrandAssetPreset,
+): string | undefined {
+  if (!source) return undefined;
+  const { width, height } = brandAssetDimensions[preset];
+  return urlFor(source)
+    .width(width)
+    .height(height)
+    .fit("crop")
+    .auto("format")
+    .quality(preset === "og" ? 85 : 90)
+    .url();
 }

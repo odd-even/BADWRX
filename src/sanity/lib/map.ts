@@ -2,7 +2,7 @@ import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings }
 import { defaultBrandAssets, defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
-import { imageUrl, type ImageWidthPreset } from "./image";
+import { imageUrl, brandAssetImageUrl, type ImageWidthPreset } from "./image";
 
 interface SanityImageField {
   asset?: { url?: string };
@@ -173,8 +173,23 @@ export function mapBrandAssets(
   if (!raw) return defaults;
 
   return {
-    shareImage: mapSiteImageField(raw.shareImage, defaults.shareImage, "og"),
-    favicon: mapSiteImageField(raw.favicon, defaults.favicon, "icon"),
+    shareImage: mapBrandAssetImage(raw.shareImage, defaults.shareImage, "og"),
+    favicon: mapBrandAssetImage(raw.favicon, defaults.favicon, "icon"),
+  };
+}
+
+function mapBrandAssetImage(
+  image: SanityImageField | undefined,
+  fallback: RifleImage,
+  preset: "og" | "icon",
+): RifleImage {
+  const url =
+    brandAssetImageUrl(image, preset) ??
+    image?.asset?.url ??
+    fallback.url;
+  return {
+    url,
+    alt: image?.alt ?? fallback.alt,
   };
 }
 
