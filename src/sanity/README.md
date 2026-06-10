@@ -22,12 +22,25 @@ Log in with the Sanity account that has access to project **imo49u00**.
 
 **Still in code (not CMS):** contact form layout, merch page shipping blurb, configurator placeholder images until uploaded in Studio.
 
+## Source of truth
+
+**Sanity Studio is the source of truth** for CMS content once the project is set up. Edit in `/studio` and click **Publish** — the live site reads from Sanity.
+
+Local files in `src/data/` are **fallbacks** (when Sanity env vars are missing) and **initial seed templates** only. They do not automatically sync back to Sanity.
+
 ## One-time setup
 
 1. Create a project at [sanity.io/manage](https://www.sanity.io/manage)
 2. Copy `.env.example` → `.env.local` and fill in project ID, dataset, and an **Editor** API token
-3. Run `npm run seed:sanity` to load current site content
+3. Run `npm run seed:sanity` to create **missing** documents on a fresh project
 4. Invite your client at **Manage → Members** with the **Editor** role
+
+### Seed commands
+
+| Command | Behavior |
+|---------|----------|
+| `npm run seed:sanity` | Creates documents that **don't exist yet**. **Never overwrites** Studio edits. |
+| `npm run seed:sanity:force` | **Overwrites** all seed documents from repo files. Use only when you intentionally want to reset CMS content from code. |
 
 ## Deploying
 

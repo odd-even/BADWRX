@@ -1,12 +1,17 @@
 /**
- * Seed Sanity with current BADWRX content.
+ * Seed Sanity with BADWRX content from repo files.
+ *
+ * By default Sanity is the source of truth: existing documents are NOT overwritten.
+ * Use --force only when you intentionally want to replace Studio content from code.
  *
  * Requires:
  *   NEXT_PUBLIC_SANITY_PROJECT_ID
  *   NEXT_PUBLIC_SANITY_DATASET (default: production)
  *   SANITY_API_TOKEN (Editor token from sanity.io/manage)
  *
- * Run: npm run seed:sanity
+ * Run:
+ *   npm run seed:sanity          # create missing documents only
+ *   npm run seed:sanity:force    # overwrite existing documents from repo
  */
 import { createClient } from "@sanity/client";
 import fs from "node:fs";
@@ -64,6 +69,51 @@ const client = createClient({
   apiVersion: "2024-01-01",
   useCdn: false,
 });
+
+const forceOverwrite = process.argv.includes("--force");
+
+function courseDocumentId(slug: string): string {
+  return slug === "ballistics-101" ? "course-ballistics-201" : `course-${slug}`;
+}
+
+function allSeedDocumentIds(): string[] {
+  return [
+    "siteSettings",
+    "configuratorSettings",
+    ...courses.map((course) => courseDocumentId(course.slug)),
+    ...merchItems.map((item) => `merch-${item.slug}`),
+    ...rifles.map((rifle) => `rifle-${rifle.slug}`),
+  ];
+}
+
+async function documentExists(id: string): Promise<boolean> {
+  const existingId = await client.fetch<string | null>(`*[_id == $id][0]._id`, { id });
+  return Boolean(existingId);
+}
+
+async function getMissingSeedDocumentIds(): Promise<string[]> {
+  const ids = allSeedDocumentIds();
+  const existing = await client.fetch<string[]>(`*[_id in $ids]._id`, { ids });
+  const existingSet = new Set(existing);
+  return ids.filter((id) => !existingSet.has(id));
+}
+
+async function writeSeedDocument(
+  id: string,
+  document: Record<string, unknown>,
+  label: string,
+): Promise<"created" | "overwritten" | "skipped"> {
+  const exists = await documentExists(id);
+
+  if (exists && !forceOverwrite) {
+    console.log(`  ↷ ${label} — kept existing Sanity content`);
+    return "skipped";
+  }
+
+  await client.createOrReplace({ _id: id, ...document });
+  console.log(`  ✓ ${label}${exists ? " (overwritten from repo)" : ""}`);
+  return exists ? "overwritten" : "created";
+}
 
 async function uploadPhoto(filename: string) {
   const filePath = path.join(photosDir, filename);
@@ -179,49 +229,52 @@ async function migratePageVisibilityIfNeeded() {
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
   await migratePageVisibilityIfNeeded();
-  await client.createOrReplace({
-    _id: "siteSettings",
-    _type: "siteSettings",
-    ...sanitySiteSettings(),
-  });
+  await writeSeedDocument(
+    "siteSettings",
+    {
+      _type: "siteSettings",
+      ...sanitySiteSettings(),
+    },
+    "Site settings",
+  );
 }
 
 async function seedCourses(universityHeroAssetId: string) {
   console.log("\n→ Courses");
   for (const course of courses) {
-    // Stable document id — slug may change without migrating _id in Sanity.
-    const documentId =
-      course.slug === "ballistics-101" ? "course-ballistics-201" : `course-${course.slug}`;
+    const documentId = courseDocumentId(course.slug);
 
-    await client.createOrReplace({
-      _id: documentId,
-      _type: "course",
-      title: course.title,
-      slug: { _type: "slug", current: course.slug },
-      tagline: course.tagline,
-      level: course.level,
-      price: course.price,
-      duration: course.duration,
-      format: course.format,
-      description: course.description,
-      topics: course.topics,
-      outcomes: course.outcomes,
-      curriculum: course.curriculum?.map((item, index) => ({
-        _type: "curriculumItem",
-        _key: `curriculum-${index}`,
-        title: item.title,
-        detail: item.detail,
-      })),
-      audience: course.audience,
-      includes: course.includes,
-      heroImage: imageRef(
-        universityHeroAssetId,
-        course.heroImage?.alt ??
-          "Long range shooter behind a precision rifle on a carbon fiber tripod",
-      ),
-      featured: course.featured ?? false,
-    });
-    console.log(`  ✓ ${course.title}`);
+    await writeSeedDocument(
+      documentId,
+      {
+        _type: "course",
+        title: course.title,
+        slug: { _type: "slug", current: course.slug },
+        tagline: course.tagline,
+        level: course.level,
+        price: course.price,
+        duration: course.duration,
+        format: course.format,
+        description: course.description,
+        topics: course.topics,
+        outcomes: course.outcomes,
+        curriculum: course.curriculum?.map((item, index) => ({
+          _type: "curriculumItem",
+          _key: `curriculum-${index}`,
+          title: item.title,
+          detail: item.detail,
+        })),
+        audience: course.audience,
+        includes: course.includes,
+        heroImage: imageRef(
+          universityHeroAssetId,
+          course.heroImage?.alt ??
+            "Long range shooter behind a precision rifle on a carbon fiber tripod",
+        ),
+        featured: course.featured ?? false,
+      },
+      course.title,
+    );
   }
 }
 
@@ -253,20 +306,22 @@ async function seedMerch() {
       assetCache.set(cacheKey, assetId);
     }
 
-    await client.createOrReplace({
-      _id: `merch-${item.slug}`,
-      _type: "merchItem",
-      title: item.title,
-      slug: { _type: "slug", current: item.slug },
-      category: item.category,
-      price: centsToSanityPrice(item.priceCents),
-      description: item.description,
-      sizes: item.sizes,
-      ...(item.colors?.length ? { colors: item.colors } : {}),
-      active: true,
-      image: imageRef(assetId, item.image.alt),
-    });
-    console.log(`  ✓ ${item.title}`);
+    await writeSeedDocument(
+      `merch-${item.slug}`,
+      {
+        _type: "merchItem",
+        title: item.title,
+        slug: { _type: "slug", current: item.slug },
+        category: item.category,
+        price: centsToSanityPrice(item.priceCents),
+        description: item.description,
+        sizes: item.sizes,
+        ...(item.colors?.length ? { colors: item.colors } : {}),
+        active: true,
+        image: imageRef(assetId, item.image.alt),
+      },
+      item.title,
+    );
   }
 }
 
@@ -283,36 +338,38 @@ async function seedRifles(
     const heroAsset = useCropped ? croppedAssetId : studioAssetId;
     const sourceRifle = sourceData.website.rifles.find((r) => r.slug === rifle.slug);
 
-    await client.createOrReplace({
-      _id: `rifle-${rifle.slug}`,
-      _type: "rifle",
-      title: rifle.title,
-      slug: { _type: "slug", current: rifle.slug },
-      tagline: rifle.tagline,
-      category: rifle.category,
-      featured: rifle.featured,
-      startingAt: rifle.startingAt,
-      description: rifle.description,
-      primaryUse: sourceRifle?.primaryUse,
-      chassis: sourceRifle?.platform,
-      actionName: sourceRifle?.action,
-      barrelSummary: sourceRifle?.barrel,
-      configuratorPrice: centsToSanityPrice(
-        sourceData.pricing.optionPriceCents[rifle.slug] ?? 0,
-      ),
-      showInConfigurator: true,
-      heroImage: imageRef(heroAsset, rifle.heroImage.alt || defaultAlt),
-      configuratorImage: imageRef(
-        configuratorAssetId,
-        `${rifle.title} platform`,
-      ),
-      gallery: rifle.gallery.map((item) =>
-        imageRef(studioAssetId, item.alt || defaultAlt, item.caption),
-      ),
-      specs: rifle.specs,
-      highlights: rifle.highlights,
-    });
-    console.log(`  ✓ ${rifle.title}`);
+    await writeSeedDocument(
+      `rifle-${rifle.slug}`,
+      {
+        _type: "rifle",
+        title: rifle.title,
+        slug: { _type: "slug", current: rifle.slug },
+        tagline: rifle.tagline,
+        category: rifle.category,
+        featured: rifle.featured,
+        startingAt: rifle.startingAt,
+        description: rifle.description,
+        primaryUse: sourceRifle?.primaryUse,
+        chassis: sourceRifle?.platform,
+        actionName: sourceRifle?.action,
+        barrelSummary: sourceRifle?.barrel,
+        configuratorPrice: centsToSanityPrice(
+          sourceData.pricing.optionPriceCents[rifle.slug] ?? 0,
+        ),
+        showInConfigurator: true,
+        heroImage: imageRef(heroAsset, rifle.heroImage.alt || defaultAlt),
+        configuratorImage: imageRef(
+          configuratorAssetId,
+          `${rifle.title} platform`,
+        ),
+        gallery: rifle.gallery.map((item) =>
+          imageRef(studioAssetId, item.alt || defaultAlt, item.caption),
+        ),
+        specs: rifle.specs,
+        highlights: rifle.highlights,
+      },
+      rifle.title,
+    );
   }
 }
 
@@ -336,129 +393,148 @@ async function seedConfiguratorSettings(
     .filter(Boolean)
     .join(" — ");
 
-  await client.createOrReplace({
-    _id: "configuratorSettings",
-    _type: "configuratorSettings",
-    baseBuildPrice: centsToSanityPrice(pricing.baseBuildCents),
-    platformDefaults: Object.entries(cfg.platformDefaults).map(
-      ([platformSlug, defaults], index) => ({
-        _key: `platform-${index}`,
-        _type: "platformDefault",
-        platformSlug,
-        trigger: defaults.trigger,
-        ...(defaults.muzzleBrake ? { muzzleBrake: defaults.muzzleBrake } : {}),
-      }),
-    ),
-    stepCopy: {
-      platform: website.rifles.length
-        ? `${website.rifles.length} purpose-built BADWRX platforms — all built to order`
-        : "Select your BADWRX platform",
-      caliber:
-        "Chambered and proofed for your platform — contact us for custom chamberings.",
-      stockPaint:
-        "Available on all platforms · Custom Cerakote and paint · stock, action, and barrel as a complete system",
-      scope:
-        opticsCopy ||
-        "NightForce optics — mounted, leveled, and bore-sighted in-house",
-      rings: "Included with all Optics Package configurations",
-      basecampPackage: cfg.basecamp.description,
-      ballisticPackage: cfg.ballistic.description,
-    },
-    calibers: website.caliberMatrix.map((row, index) => ({
-      _key: `caliber-${index}`,
-      _type: "caliberOption",
-      optionId: slugField(row.id),
-      label: row.caliber,
-      notes: row.notes,
-      price: centsToSanityPrice(pricing.optionPriceCents[row.id] ?? 0),
-      platformSlugs: Object.entries(row.platforms)
-        .filter(([, enabled]) => enabled)
-        .map(([slug]) => slug),
-    })),
-    finishes: website.stockColors.map((color, index) => ({
-      _key: `finish-${index}`,
-      _type: "finishOption",
-      optionId: slugField(color.id),
-      label: color.label,
-      code: color.code,
-      description: color.description,
-      bestFor: color.bestFor,
-      price: centsToSanityPrice(pricing.optionPriceCents[color.id] ?? 0),
-      image: imageRef(
-        camoAssets[color.id] ?? camoAssets.custom,
-        `${color.label} finish`,
+  await writeSeedDocument(
+    "configuratorSettings",
+    {
+      _type: "configuratorSettings",
+      baseBuildPrice: centsToSanityPrice(pricing.baseBuildCents),
+      platformDefaults: Object.entries(cfg.platformDefaults).map(
+        ([platformSlug, defaults], index) => ({
+          _key: `platform-${index}`,
+          _type: "platformDefault",
+          platformSlug,
+          trigger: defaults.trigger,
+          ...(defaults.muzzleBrake ? { muzzleBrake: defaults.muzzleBrake } : {}),
+        }),
       ),
-    })),
-    optics: website.optics.map((optic, index) => {
-      const scopeKey = scopeImageKeyForOptic(optic.magnification, optic.id);
-      const scopeAssetId = scopeAssets[scopeKey];
-      return {
-        _key: `optic-${index}`,
-        _type: "opticOption",
-        optionId: slugField(optic.id),
-        brand: optic.brand,
-        model: optic.model,
-        magnification: optic.magnification,
-        focalPlane: optic.focalPlane,
-        reticle: optic.reticle,
-        tube: optic.tube,
-        msrp: optic.msrp,
-        notes: optic.notes,
-        price: centsToSanityPrice(
-          pricing.optionPriceCents[optic.id] ?? optic.msrpCents ?? 0,
-        ),
+      stepCopy: {
+        platform: website.rifles.length
+          ? `${website.rifles.length} purpose-built BADWRX platforms — all built to order`
+          : "Select your BADWRX platform",
+        caliber:
+          "Chambered and proofed for your platform — contact us for custom chamberings.",
+        stockPaint:
+          "Available on all platforms · Custom Cerakote and paint · stock, action, and barrel as a complete system",
+        scope:
+          opticsCopy ||
+          "NightForce optics — mounted, leveled, and bore-sighted in-house",
+        rings: "Included with all Optics Package configurations",
+        basecampPackage: cfg.basecamp.description,
+        ballisticPackage: cfg.ballistic.description,
+      },
+      calibers: website.caliberMatrix.map((row, index) => ({
+        _key: `caliber-${index}`,
+        _type: "caliberOption",
+        optionId: slugField(row.id),
+        label: row.caliber,
+        notes: row.notes,
+        price: centsToSanityPrice(pricing.optionPriceCents[row.id] ?? 0),
+        platformSlugs: Object.entries(row.platforms)
+          .filter(([, enabled]) => enabled)
+          .map(([slug]) => slug),
+      })),
+      finishes: website.stockColors.map((color, index) => ({
+        _key: `finish-${index}`,
+        _type: "finishOption",
+        optionId: slugField(color.id),
+        label: color.label,
+        code: color.code,
+        description: color.description,
+        bestFor: color.bestFor,
+        price: centsToSanityPrice(pricing.optionPriceCents[color.id] ?? 0),
         image: imageRef(
-          scopeAssetId,
-          `Nightforce ${optic.model} ${optic.magnification} ${optic.reticle}`,
+          camoAssets[color.id] ?? camoAssets.custom,
+          `${color.label} finish`,
         ),
-      };
-    }),
-    opticsConsult: {
-      label: "Discuss optics with the BADWRX team",
-      description:
-        "Contact us to discuss your specific optic configuration. We will match the right glass to your platform, your caliber, and your intended use.",
+      })),
+      optics: website.optics.map((optic, index) => {
+        const scopeKey = scopeImageKeyForOptic(optic.magnification, optic.id);
+        const scopeAssetId = scopeAssets[scopeKey];
+        return {
+          _key: `optic-${index}`,
+          _type: "opticOption",
+          optionId: slugField(optic.id),
+          brand: optic.brand,
+          model: optic.model,
+          magnification: optic.magnification,
+          focalPlane: optic.focalPlane,
+          reticle: optic.reticle,
+          tube: optic.tube,
+          msrp: optic.msrp,
+          notes: optic.notes,
+          price: centsToSanityPrice(
+            pricing.optionPriceCents[optic.id] ?? optic.msrpCents ?? 0,
+          ),
+          image: imageRef(
+            scopeAssetId,
+            `Nightforce ${optic.model} ${optic.magnification} ${optic.reticle}`,
+          ),
+        };
+      }),
+      opticsConsult: {
+        label: "Discuss optics with the BADWRX team",
+        description:
+          "Contact us to discuss your specific optic configuration. We will match the right glass to your platform, your caliber, and your intended use.",
+      },
+      opticsNone: {
+        label: "No optics package",
+        description: "Picatinny prepared; customer-supplied optic.",
+      },
+      rings: {
+        optionId: cfg.rings.id,
+        label: cfg.rings.label,
+        description: cfg.rings.description,
+        price: centsToSanityPrice(pricing.optionPriceCents[cfg.rings.id] ?? 0),
+        image: imageRef(ringsAssetId, "Hawkins precision rings"),
+      },
+      basecamp: {
+        optionId: cfg.basecamp.id,
+        label: cfg.basecamp.label,
+        headline: cfg.basecamp.headline,
+        description: cfg.basecamp.description,
+        items: cfg.basecamp.items,
+        price: centsToSanityPrice(pricing.optionPriceCents[cfg.basecamp.id] ?? 0),
+        image: imageRef(basecampAssetId, cfg.basecamp.label),
+        noneLabel: "No Basecamp Package",
+        noneDescription: "Rifle ships in protective wrap only.",
+      },
+      ballistic: {
+        optionId: cfg.ballistic.id,
+        label: cfg.ballistic.label,
+        headline: cfg.ballistic.headline,
+        description: cfg.ballistic.description,
+        howItWorks: cfg.ballistic.howItWorks,
+        deliverables: cfg.ballistic.deliverables,
+        price: centsToSanityPrice(pricing.optionPriceCents[cfg.ballistic.id] ?? 0),
+        noneLabel: "No Ballistic Package",
+        noneDescription: "Standard zero and function verification only.",
+      },
     },
-    opticsNone: {
-      label: "No optics package",
-      description: "Picatinny prepared; customer-supplied optic.",
-    },
-    rings: {
-      optionId: cfg.rings.id,
-      label: cfg.rings.label,
-      description: cfg.rings.description,
-      price: centsToSanityPrice(pricing.optionPriceCents[cfg.rings.id] ?? 0),
-      image: imageRef(ringsAssetId, "Hawkins precision rings"),
-    },
-    basecamp: {
-      optionId: cfg.basecamp.id,
-      label: cfg.basecamp.label,
-      headline: cfg.basecamp.headline,
-      description: cfg.basecamp.description,
-      items: cfg.basecamp.items,
-      price: centsToSanityPrice(pricing.optionPriceCents[cfg.basecamp.id] ?? 0),
-      image: imageRef(basecampAssetId, cfg.basecamp.label),
-      noneLabel: "No Basecamp Package",
-      noneDescription: "Rifle ships in protective wrap only.",
-    },
-    ballistic: {
-      optionId: cfg.ballistic.id,
-      label: cfg.ballistic.label,
-      headline: cfg.ballistic.headline,
-      description: cfg.ballistic.description,
-      howItWorks: cfg.ballistic.howItWorks,
-      deliverables: cfg.ballistic.deliverables,
-      price: centsToSanityPrice(pricing.optionPriceCents[cfg.ballistic.id] ?? 0),
-      noneLabel: "No Ballistic Package",
-      noneDescription: "Standard zero and function verification only.",
-    },
-  });
-  console.log("  ✓ Build configurator");
+    "Build configurator",
+  );
 }
 
 async function main() {
   console.log(`Seeding Sanity project ${projectId} (${dataset})`);
 
-  console.log("\n→ Uploading photos");
+  if (forceOverwrite) {
+    console.log("\n⚠ --force: overwriting existing documents from repo seed data.\n");
+  } else {
+    console.log("\nSanity is the source of truth — existing documents will be kept.");
+    console.log("Use npm run seed:sanity:force only when you mean to overwrite Studio content.\n");
+    await migratePageVisibilityIfNeeded();
+
+    const missing = await getMissingSeedDocumentIds();
+    if (missing.length === 0) {
+      console.log("All seed documents already exist. Nothing to create.");
+      console.log("Edit content in /studio, or run npm run seed:sanity:force to overwrite from repo.\n");
+      return;
+    }
+
+    console.log(`Creating ${missing.length} missing document(s):\n  ${missing.join("\n  ")}\n`);
+  }
+
+  console.log("→ Uploading photos");
   const studio = await uploadPhoto("IMG_0058.jpg");
   const cropped = await uploadPhoto("IMG_0058-cropped.jpg");
   const university = await uploadPhoto("Kyle_Lamb_MDT_CRBN_Tripod.jpg.webp");
@@ -480,7 +556,11 @@ async function main() {
     basecampAsset._id,
   );
 
-  console.log("\nDone. Open /studio to edit content.\n");
+  console.log(
+    forceOverwrite
+      ? "\nDone. Existing documents were overwritten from repo seed data.\n"
+      : "\nDone. Missing documents were created; existing Sanity content was kept.\n",
+  );
 }
 
 main().catch((error) => {

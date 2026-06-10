@@ -37,7 +37,8 @@ export function StudioSetup() {
           </li>
           <li>
             <span className="text-red">4.</span> Run{" "}
-            <code className="text-white">npm run seed:sanity</code>, then restart the dev server
+            <code className="text-white">npm run seed:sanity</code> on a fresh project
+            (creates missing content only — it will not overwrite existing Studio edits)
           </li>
         </ol>
 
