@@ -32,6 +32,7 @@ import {
   pageVisibilityForSanity,
   pageVisibilityNeedsMigration,
 } from "../../src/lib/pages";
+import { migrateSiteImages } from "./migrate-site-images";
 import { centsToSanityPrice } from "../../src/sanity/lib/price";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -229,6 +230,7 @@ async function migratePageVisibilityIfNeeded() {
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
   await migratePageVisibilityIfNeeded();
+  await migrateSiteImages();
   await writeSeedDocument(
     "siteSettings",
     {
@@ -523,6 +525,7 @@ async function main() {
     console.log("\nSanity is the source of truth — existing documents will be kept.");
     console.log("Use npm run seed:sanity:force only when you mean to overwrite Studio content.\n");
     await migratePageVisibilityIfNeeded();
+    await migrateSiteImages();
 
     const missing = await getMissingSeedDocumentIds();
     if (missing.length === 0) {

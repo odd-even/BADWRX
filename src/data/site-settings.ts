@@ -71,6 +71,15 @@ export const defaultSiteImages: SiteImages = {
   },
 };
 
+/** Local `_assets/photos` filenames for seeding Sanity site image fields */
+export const defaultSiteImageFiles: Record<keyof SiteImages, string> = {
+  reticleOverlay: "FC-DMx_MOA__16268 copy.webp",
+  homeHeroBanner: "IMG_5613cover.webp",
+  homeFieldTested: "IMG_1125bighorn.jpg",
+  homeBallisticSection: "IMG_0058-cropped.jpg",
+  aboutStory: "IMG_1192 copy.webp",
+};
+
 export const defaultSiteSettings: SiteSettings = {
   name: brand.name,
   short: brand.short,
