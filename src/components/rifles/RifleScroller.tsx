@@ -69,8 +69,15 @@ export function RifleScroller({
     if (!alignEl) return;
 
     const rect = alignEl.getBoundingClientRect();
-    const left = Math.round(rect.left);
-    const right = Math.round(window.innerWidth - rect.right);
+    const styles = window.getComputedStyle(alignEl);
+    const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
+    const paddingRight = Number.parseFloat(styles.paddingRight) || 0;
+
+    // Use the content box — border-box rect ignores inner px-* on full-width containers.
+    const left = Math.round(rect.left + paddingLeft);
+    const right = Math.round(
+      window.innerWidth - rect.right + paddingRight,
+    );
 
     trackEl.style.paddingLeft = `${left}px`;
     trackEl.style.paddingRight = `${right}px`;
