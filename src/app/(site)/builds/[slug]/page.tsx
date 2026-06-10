@@ -37,7 +37,6 @@ export default async function BuildDetailPage({ params }: PageProps) {
   if (!rifle) notFound();
 
   const showConfigure = isPageEnabled("configure", site.pageVisibility);
-  const showContact = isPageEnabled("contact", site.pageVisibility);
 
   return (
     <article>
@@ -158,14 +157,6 @@ export default async function BuildDetailPage({ params }: PageProps) {
                   className="block w-full border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
                 >
                   Configure {rifle.title}
-                </Link>
-              ) : null}
-              {showContact ? (
-                <Link
-                  href="/contact"
-                  className="block w-full border border-white/20 py-4 text-center text-xs uppercase tracking-widest text-white-muted transition hover:border-red hover:text-red"
-                >
-                  Ask About This Build
                 </Link>
               ) : null}
             </div>

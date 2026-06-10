@@ -172,6 +172,7 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
 
   return {
     ...settings,
+    siteImages: settings.siteImages ?? defaultSiteSettings.siteImages,
     aboutPage: mergeAboutPage(settings),
     pageVisibility: normalizePageVisibility(
       settings.pageVisibility ?? defaultSiteSettings.pageVisibility,

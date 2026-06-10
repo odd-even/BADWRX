@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { pageToggleField, pillarFields, sectionFields } from "./shared";
+import { cmsImageField, pageToggleField, pillarFields, sectionFields } from "./shared";
 
 export const siteSettings = defineType({
   name: "siteSettings",
@@ -7,6 +7,7 @@ export const siteSettings = defineType({
   type: "document",
   groups: [
     { name: "brand", title: "Brand", default: true },
+    { name: "photos", title: "Photos" },
     { name: "pages", title: "Pages" },
     { name: "home", title: "Home page" },
     { name: "about", title: "About page" },
@@ -59,6 +60,42 @@ export const siteSettings = defineType({
       group: "brand",
       of: [{ type: "string" }],
       description: "Scrolling partner badges on the home page",
+    }),
+
+    defineField({
+      name: "siteImages",
+      title: "Site photos",
+      type: "object",
+      group: "photos",
+      description:
+        "Upload replacements for key site photos. Leave a field empty to keep the current built-in default.",
+      fields: [
+        cmsImageField(
+          "reticleOverlay",
+          "Reticle overlay",
+          "Decorative scope reticle over hero sections on the home and university pages.",
+        ),
+        cmsImageField(
+          "homeHeroBanner",
+          "Home hero banner",
+          "Full-bleed cover image at the top of the home page.",
+        ),
+        cmsImageField(
+          "homeFieldTested",
+          "Home field proven photo",
+          "Photo beside the Field Proven section on the home page.",
+        ),
+        cmsImageField(
+          "homeBallisticSection",
+          "Home ballistic package photo",
+          "Background for the Ballistic Package section on the home page.",
+        ),
+        cmsImageField(
+          "aboutStory",
+          "About page photo",
+          "Large portrait photo on the about page.",
+        ),
+      ],
     }),
 
     defineField({

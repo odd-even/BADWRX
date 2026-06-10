@@ -1,7 +1,8 @@
 import { brand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
-import type { SiteSettings } from "@/lib/types";
+import { images, riflePlaceholderAlt } from "@/lib/images";
+import type { SiteImages, SiteSettings } from "@/lib/types";
 
 const { docxCopy } = sourceData;
 
@@ -47,6 +48,29 @@ function aboutPillarFromCopy(key: string, fallback: string) {
   };
 }
 
+export const defaultSiteImages: SiteImages = {
+  reticleOverlay: {
+    url: images.rifle.reticleOverlay,
+    alt: "",
+  },
+  homeHeroBanner: {
+    url: images.rifle.homeCover,
+    alt: "Custom precision rifle on a mountain ridgeline",
+  },
+  homeFieldTested: {
+    url: images.rifle.hunt,
+    alt: "Hunter in Alaska mountain country",
+  },
+  homeBallisticSection: {
+    url: images.rifle.studioCropped,
+    alt: riflePlaceholderAlt,
+  },
+  aboutStory: {
+    url: images.about.story,
+    alt: "BADWRX craftsmanship in the build shop",
+  },
+};
+
 export const defaultSiteSettings: SiteSettings = {
   name: brand.name,
   short: brand.short,
@@ -67,6 +91,7 @@ export const defaultSiteSettings: SiteSettings = {
     "½ MOA Guarantee",
     "Built to Order",
   ],
+  siteImages: defaultSiteImages,
   homeHero: {
     eyebrow: "Unrelenting performance",
     headlinePrefix: "",

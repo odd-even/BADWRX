@@ -8,7 +8,6 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 import { HomePillarsGrid } from "@/components/home/HomePillarsGrid";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
-import { images, riflePlaceholderAlt } from "@/lib/images";
 import { isPageEnabled } from "@/lib/pages";
 
 export default async function HomePage() {
@@ -20,21 +19,26 @@ export default async function HomePage() {
   const showBuilds = isPageEnabled("builds", pages);
   const showConfigure = isPageEnabled("configure", pages);
   const showContact = isPageEnabled("contact", pages);
+  const photos = site.siteImages;
 
   return (
     <>
       <section className="group relative -mt-[72px] flex min-h-[calc(85vh+72px)] items-end overflow-hidden bg-black pt-[72px]">
         <div className="hover-zoom absolute inset-0">
           <Image
-            src={images.rifle.homeCover}
-            alt="Custom precision rifle on a mountain ridgeline"
+            src={photos.homeHeroBanner.url}
+            alt={photos.homeHeroBanner.alt}
             fill
             priority
             className="object-cover"
             sizes="100vw"
           />
         </div>
-        <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
+        <ReticleMouseFollow
+          src={photos.reticleOverlay.url}
+          alt={photos.reticleOverlay.alt}
+          className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen"
+        />
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
@@ -148,8 +152,8 @@ export default async function HomePage() {
           <ScrollReveal>
             <div className="relative aspect-[4/3] overflow-hidden border border-white/10 hover-zoom">
               <Image
-                src={images.rifle.hunt}
-                alt="Hunter in Alaska mountain country"
+                src={photos.homeFieldTested.url}
+                alt={photos.homeFieldTested.alt}
                 fill
                 className="object-cover object-left"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -172,14 +176,16 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-0">
           <div className="hover-zoom absolute inset-0">
             <Image
-              src={images.rifle.studioCropped}
-              alt={riflePlaceholderAlt}
+              src={photos.homeBallisticSection.url}
+              alt={photos.homeBallisticSection.alt}
               fill
               className="object-cover object-[center_26%]"
               sizes="100vw"
             />
           </div>
           <ReticleMouseFollow
+            src={photos.reticleOverlay.url}
+            alt={photos.reticleOverlay.alt}
             className="top-[16%] left-[68%] aspect-square w-[70vw] min-w-[70vw] opacity-50 mix-blend-screen"
             sizes="70vw"
           />

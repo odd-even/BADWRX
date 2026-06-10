@@ -40,6 +40,24 @@ export function sectionFields() {
   ];
 }
 
+/** CMS image with optional alt text */
+export function cmsImageField(
+  name: string,
+  title: string,
+  description?: string,
+): FieldDefinition {
+  return defineField({
+    name,
+    title,
+    type: "image",
+    description,
+    options: { hotspot: true },
+    fields: [
+      defineField({ name: "alt", title: "Alt text", type: "string" }),
+    ],
+  });
+}
+
 export function pillarFields() {
   return [
     defineField({ name: "title", title: "Title", type: "string" }),

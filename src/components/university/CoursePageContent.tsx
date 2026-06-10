@@ -9,15 +9,22 @@ interface CoursePageContentProps {
   course: Course;
   showBackLink?: boolean;
   openRegistration?: boolean;
+  reticleOverlay?: {
+    url: string;
+    alt?: string;
+  };
 }
 
 export function CoursePageContent({
   course,
   showBackLink = false,
   openRegistration = false,
+  reticleOverlay,
 }: CoursePageContentProps) {
   const heroUrl = course.heroImage?.url ?? images.rifle.field;
   const heroAlt = course.heroImage?.alt ?? course.title;
+  const reticleUrl = reticleOverlay?.url ?? images.rifle.reticleOverlay;
+  const reticleAlt = reticleOverlay?.alt ?? "";
 
   return (
     <article>
@@ -32,7 +39,11 @@ export function CoursePageContent({
             sizes="100vw"
           />
         </div>
-        <ReticleMouseFollow className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen" />
+        <ReticleMouseFollow
+          src={reticleUrl}
+          alt={reticleAlt}
+          className="top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-90 mix-blend-screen"
+        />
         <div className="pointer-events-none absolute inset-0 z-[1]">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>

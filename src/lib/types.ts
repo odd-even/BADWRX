@@ -142,6 +142,14 @@ export interface MerchOrderPayload {
   totalCents: number;
 }
 
+export interface SiteImages {
+  reticleOverlay: RifleImage;
+  homeHeroBanner: RifleImage;
+  homeFieldTested: RifleImage;
+  homeBallisticSection: RifleImage;
+  aboutStory: RifleImage;
+}
+
 export interface SiteSettings {
   name: string;
   short: string;
@@ -152,6 +160,7 @@ export interface SiteSettings {
   buildPromise: string;
   deliveryPackage: string;
   trustMarqueeItems: string[];
+  siteImages: SiteImages;
   homeHero: {
     eyebrow: string;
     headlinePrefix: string;

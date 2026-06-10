@@ -1,4 +1,5 @@
-import type { Course, Rifle, RifleImage, SiteSettings } from "@/lib/types";
+import type { Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/types";
+import { defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
 import { imageUrl } from "./image";
@@ -105,9 +106,43 @@ export function mapCourse(doc: SanityCourse): Course {
   };
 }
 
-export function mapSiteSettings(doc: Partial<SiteSettings> | null): SiteSettings | null {
+function mapSiteImageField(
+  image: SanityImageField | undefined,
+  fallback: RifleImage,
+): RifleImage {
+  if (!image?.asset && !imageUrl(image)) return fallback;
+  return mapImage(image, fallback.alt, fallback.url);
+}
+
+export function mapSiteImages(
+  raw: Partial<Record<keyof SiteImages, SanityImageField>> | undefined,
+  defaults: SiteImages = defaultSiteImages,
+): SiteImages {
+  if (!raw) return defaults;
+
+  return {
+    reticleOverlay: mapSiteImageField(raw.reticleOverlay, defaults.reticleOverlay),
+    homeHeroBanner: mapSiteImageField(raw.homeHeroBanner, defaults.homeHeroBanner),
+    homeFieldTested: mapSiteImageField(raw.homeFieldTested, defaults.homeFieldTested),
+    homeBallisticSection: mapSiteImageField(
+      raw.homeBallisticSection,
+      defaults.homeBallisticSection,
+    ),
+    aboutStory: mapSiteImageField(raw.aboutStory, defaults.aboutStory),
+  };
+}
+
+interface SanitySiteSettingsDoc extends Partial<SiteSettings> {
+  siteImages?: Partial<Record<keyof SiteImages, SanityImageField>>;
+}
+
+export function mapSiteSettings(doc: SanitySiteSettingsDoc | null): SiteSettings | null {
   if (!doc?.name) return null;
-  return doc as SiteSettings;
+  const { siteImages: rawImages, ...rest } = doc;
+  return {
+    ...rest,
+    siteImages: mapSiteImages(rawImages),
+  } as SiteSettings;
 }
 
 function compactHeroPhraseLines(lines: string[]): string[] {

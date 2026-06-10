@@ -13,7 +13,7 @@ Log in with the Sanity account that has access to project **imo49u00**.
 
 | Section | Controls |
 |--------|----------|
-| **Site Settings** | Brand info, home hero phrases, platforms copy, pillars, ballistic section, testimonials, about page, contact blurb |
+| **Site Settings** | Brand info, **site photos** (hero, reticle, about), home hero phrases, platforms copy, pillars, ballistic section, testimonials, about page, contact blurb |
 | **Rifle Builds** | Title, specs, photos, descriptions, featured flag |
 | **University Courses** | Full course page — tagline, price, curriculum, outcomes, hero image |
 | **Merch** | Caps, tees, sweaters — title, price, sizes, colors, product photo |

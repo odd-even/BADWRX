@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CoursePageContent } from "@/components/university/CoursePageContent";
 import { brand } from "@/lib/brand";
-import { getAllCourses } from "@/lib/content";
+import { getAllCourses, getSiteSettings } from "@/lib/content";
 
 export const revalidate = 60;
 
@@ -17,7 +17,7 @@ interface UniversityPageProps {
 
 export default async function UniversityPage({ searchParams }: UniversityPageProps) {
   const { register } = await searchParams;
-  const courses = await getAllCourses();
+  const [courses, site] = await Promise.all([getAllCourses(), getSiteSettings()]);
   const course = courses.find((entry) => entry.featured) ?? courses[0];
 
   if (!course) notFound();
@@ -26,6 +26,7 @@ export default async function UniversityPage({ searchParams }: UniversityPagePro
     <CoursePageContent
       course={course}
       openRegistration={register === "1"}
+      reticleOverlay={site.siteImages.reticleOverlay}
     />
   );
 }

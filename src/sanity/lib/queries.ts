@@ -129,7 +129,14 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   testimonials,
   contactSection,
   pageVisibility,
-  aboutPage
+  aboutPage,
+  siteImages {
+    reticleOverlay { asset->{ url }, alt },
+    homeHeroBanner { asset->{ url }, alt },
+    homeFieldTested { asset->{ url }, alt },
+    homeBallisticSection { asset->{ url }, alt },
+    aboutStory { asset->{ url }, alt }
+  }
 }`;
 
 export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] {

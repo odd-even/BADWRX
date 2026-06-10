@@ -14,11 +14,15 @@ const baseClassName =
 type ReticleMouseFollowProps = {
   className?: string;
   sizes?: string;
+  src?: string;
+  alt?: string;
 };
 
 export function ReticleMouseFollow({
   className = "top-[16%] left-[68%] aspect-square w-[80vw] min-w-[80vw] opacity-70 mix-blend-screen",
   sizes = "80vw",
+  src = images.rifle.reticleOverlay,
+  alt = "",
 }: ReticleMouseFollowProps = {}) {
   const reticleRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -188,8 +192,8 @@ export function ReticleMouseFollow({
       aria-hidden
     >
       <Image
-        src={images.rifle.reticleOverlay}
-        alt=""
+        src={src}
+        alt={alt}
         fill
         className="object-contain"
         sizes={sizes}

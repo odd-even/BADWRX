@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { brand } from "@/lib/brand";
 import { getSiteSettings } from "@/lib/content";
-import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "About",
@@ -95,8 +94,8 @@ export default async function AboutPage() {
         <div className="space-y-6">
           <div className="relative aspect-[4/5] overflow-hidden border border-white/10 bg-black-light hover-zoom">
             <Image
-              src={images.about.story}
-              alt="BADWRX craftsmanship in the build shop"
+              src={site.siteImages.aboutStory.url}
+              alt={site.siteImages.aboutStory.alt}
               fill
               priority
               className="object-cover object-center"
