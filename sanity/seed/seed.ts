@@ -189,8 +189,12 @@ async function seedSiteSettings() {
 async function seedCourses(universityHeroAssetId: string) {
   console.log("\n→ Courses");
   for (const course of courses) {
+    // Stable document id — slug may change without migrating _id in Sanity.
+    const documentId =
+      course.slug === "ballistics-101" ? "course-ballistics-201" : `course-${course.slug}`;
+
     await client.createOrReplace({
-      _id: `course-${course.slug}`,
+      _id: documentId,
       _type: "course",
       title: course.title,
       slug: { _type: "slug", current: course.slug },

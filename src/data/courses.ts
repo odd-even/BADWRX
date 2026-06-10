@@ -4,15 +4,15 @@ import { images } from "@/lib/images";
 export const courses: Course[] = [
   {
     id: "1",
-    slug: "ballistics-201",
-    title: "Long Range Shooting / Ballistics 201",
-    level: "Advanced",
+    slug: "ballistics-101",
+    title: "Long Range Shooting / Ballistics 101",
+    level: "Beginner to advanced progression.",
     price: "$1,200.00",
-    tagline: "Real ballistics. Real distance. No guesswork.",
+    tagline: "Real ballistics, at distance. No guesswork.",
     duration: "2 days · Full-day range sessions",
     format: "Small class · Max 6 shooters",
     description:
-      "This is not a beginner intro — Ballistics 201 is built for shooters who already understand the fundamentals and want to close the gap between theory and repeatable hits at distance. You will work one-on-one with professional long range competitors and hunters who solve ballistics problems in the field, not just on paper.",
+      "Ballistics 101 is built for all levels. We designed this for shooters who want to close the gap between theory and repeatable hits at distance. You will work one-on-one with professional long range competitors and hunters who solve ballistics problems in the field, not just on paper.",
     topics: [
       "Advanced wind calling",
       "Advanced ballistics",
