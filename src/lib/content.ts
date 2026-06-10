@@ -175,6 +175,7 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
     ...settings,
     siteImages: settings.siteImages ?? defaultSiteSettings.siteImages,
     brandAssets: settings.brandAssets ?? defaultSiteSettings.brandAssets,
+    navImageFade: settings.navImageFade ?? defaultSiteSettings.navImageFade,
     aboutPage: mergeAboutPage(settings),
     pageVisibility: normalizePageVisibility(
       settings.pageVisibility ?? defaultSiteSettings.pageVisibility,

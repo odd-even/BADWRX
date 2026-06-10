@@ -11,6 +11,13 @@ import { MerchCartLink } from "@/components/merch/MerchCartLink";
 import { useMerchCart } from "@/components/merch/CartProvider";
 import type { NavLink } from "@/lib/pages";
 import { headerNavLinks } from "@/lib/pages";
+import type { NavImageFadeSettings } from "@/lib/nav-image-fade";
+import {
+  navFadeGradient,
+  navFadePanelHeight,
+  navFadeUsesLargePanel,
+  resolveNavImageFade,
+} from "@/lib/nav-image-fade";
 
 const defaultNavLinks = headerNavLinks();
 
@@ -96,12 +103,14 @@ interface HeaderProps {
   navLinks?: NavLink[];
   showConfigureCta?: boolean;
   showMerchCart?: boolean;
+  navImageFade?: NavImageFadeSettings;
 }
 
 export function Header({
   navLinks = defaultNavLinks,
   showConfigureCta = true,
   showMerchCart = true,
+  navImageFade,
 }: HeaderProps) {
   const progress = useScrollProgress();
   const compact = useCompactHeader();
@@ -111,8 +120,11 @@ export function Header({
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const onConfigure = pathname === "/configure";
-  const isFullNavFade =
-    pathname === "/" || (pathname?.startsWith("/university") ?? false);
+  const fadeOpacity = resolveNavImageFade(pathname, navImageFade);
+  const largeFadePanel = navFadeUsesLargePanel(pathname);
+  const midFadeOpacity = compact
+    ? fadeOpacity.midOpacityMobile
+    : fadeOpacity.midOpacityDesktop;
 
   useEffect(() => {
     setMounted(true);
@@ -187,12 +199,12 @@ export function Header({
     >
       {/* Top fade — keeps nav readable over hero imagery on every page */}
       <div
-        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 bg-gradient-to-b from-black to-transparent md:via-black/75 ${
-          isFullNavFade
-            ? "h-[min(16vh,112px)] via-black/60 md:h-[min(40vh,280px)]"
-            : "h-[min(8vh,56px)] via-black/50 md:h-[min(20vh,140px)]"
-        }`}
-        style={{ opacity: menuOpen ? 0 : 1 - progress }}
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10"
+        style={{
+          height: navFadePanelHeight(compact, largeFadePanel),
+          opacity: menuOpen ? 0 : 1 - progress,
+          background: navFadeGradient(fadeOpacity, midFadeOpacity),
+        }}
         aria-hidden
       />
 

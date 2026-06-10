@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { cmsImageField, pageToggleField, pillarFields, sectionFields } from "./shared";
+import { cmsImageField, navFadeOpacityFields, pageToggleField, pillarFields, sectionFields } from "./shared";
 
 export const siteSettings = defineType({
   name: "siteSettings",
@@ -8,6 +8,7 @@ export const siteSettings = defineType({
   groups: [
     { name: "brand", title: "Brand", default: true },
     { name: "sharing", title: "Sharing & icons" },
+    { name: "layout", title: "Layout" },
     { name: "photos", title: "Photos" },
     { name: "pages", title: "Pages" },
     { name: "home", title: "Home page" },
@@ -81,6 +82,39 @@ export const siteSettings = defineType({
           "Favicon",
           "Browser tab icon. Square PNG or SVG; at least 32×32 px (512×512 works well for all sizes).",
         ),
+      ],
+    }),
+
+    defineField({
+      name: "navImageFade",
+      title: "Nav fade over hero images",
+      type: "object",
+      group: "layout",
+      description:
+        "Dark gradient under the navigation on photo heroes. Lower numbers = lighter fade, more photo visible.",
+      fields: [
+        defineField({
+          name: "home",
+          title: "Home page",
+          type: "object",
+          fields: navFadeOpacityFields(),
+          initialValue: { topOpacity: 100, midOpacityMobile: 60, midOpacityDesktop: 75 },
+        }),
+        defineField({
+          name: "university",
+          title: "University pages",
+          type: "object",
+          fields: navFadeOpacityFields(),
+          initialValue: { topOpacity: 100, midOpacityMobile: 60, midOpacityDesktop: 75 },
+        }),
+        defineField({
+          name: "default",
+          title: "Other hero pages",
+          type: "object",
+          description: "About, build detail, and similar inner pages with a top banner.",
+          fields: navFadeOpacityFields(),
+          initialValue: { topOpacity: 100, midOpacityMobile: 50, midOpacityDesktop: 75 },
+        }),
       ],
     }),
 

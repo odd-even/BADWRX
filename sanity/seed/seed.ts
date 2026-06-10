@@ -21,6 +21,7 @@ import { courses } from "../../src/data/courses";
 import { merchImageSources, merchItems } from "../../src/data/merch";
 import { rifles } from "../../src/data/rifles";
 import { defaultSiteSettings } from "../../src/data/site-settings";
+import { defaultNavImageFade } from "../../src/lib/nav-image-fade";
 import { sourceData } from "../../src/lib/source-data";
 import {
   scopeFilenames,
@@ -227,9 +228,25 @@ async function migratePageVisibilityIfNeeded() {
   console.log("  ✓ Migrated page visibility toggles to redirect format");
 }
 
+async function migrateNavImageFadeIfNeeded() {
+  const doc = await client.fetch<{ navImageFade?: unknown }>(
+    `*[_id == "siteSettings"][0]{ navImageFade }`,
+  );
+
+  if (doc?.navImageFade) return;
+
+  await client
+    .patch("siteSettings")
+    .set({ navImageFade: defaultNavImageFade })
+    .commit();
+
+  console.log("  ✓ Seeded nav image fade opacity defaults");
+}
+
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
   await migratePageVisibilityIfNeeded();
+  await migrateNavImageFadeIfNeeded();
   await migrateSiteImages();
   await writeSeedDocument(
     "siteSettings",

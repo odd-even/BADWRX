@@ -1,3 +1,4 @@
+import { normalizeNavImageFade } from "@/lib/nav-image-fade";
 import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/types";
 import { defaultBrandAssets, defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
@@ -193,18 +194,20 @@ function mapBrandAssetImage(
   };
 }
 
-interface SanitySiteSettingsDoc extends Omit<Partial<SiteSettings>, "siteImages" | "brandAssets"> {
+interface SanitySiteSettingsDoc extends Omit<Partial<SiteSettings>, "siteImages" | "brandAssets" | "navImageFade"> {
   siteImages?: Partial<Record<keyof SiteImages, SanityImageField>>;
   brandAssets?: Partial<Record<keyof BrandAssets, SanityImageField>>;
+  navImageFade?: Partial<SiteSettings["navImageFade"]>;
 }
 
 export function mapSiteSettings(doc: SanitySiteSettingsDoc | null): SiteSettings | null {
   if (!doc?.name) return null;
-  const { siteImages: rawImages, brandAssets: rawBrandAssets, ...rest } = doc;
+  const { siteImages: rawImages, brandAssets: rawBrandAssets, navImageFade, ...rest } = doc;
   return {
     ...rest,
     siteImages: mapSiteImages(rawImages),
     brandAssets: mapBrandAssets(rawBrandAssets),
+    navImageFade: normalizeNavImageFade(navImageFade),
   } as SiteSettings;
 }
 

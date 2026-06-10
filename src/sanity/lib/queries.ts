@@ -130,6 +130,11 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   contactSection,
   pageVisibility,
   aboutPage,
+  navImageFade {
+    home { topOpacity, midOpacityMobile, midOpacityDesktop },
+    university { topOpacity, midOpacityMobile, midOpacityDesktop },
+    default { topOpacity, midOpacityMobile, midOpacityDesktop }
+  },
   brandAssets {
     shareImage { asset->{ url }, alt },
     favicon { asset->{ url }, alt }

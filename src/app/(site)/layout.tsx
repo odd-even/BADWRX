@@ -24,6 +24,7 @@ export default async function SiteLayout({
         navLinks={headerNavLinks(visibility)}
         showConfigureCta={isPageEnabled("configure", visibility)}
         showMerchCart={isPageEnabled("merch", visibility)}
+        navImageFade={settings.navImageFade}
       />
       <main className="pt-[72px]">{children}</main>
       <Footer

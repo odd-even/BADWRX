@@ -157,6 +157,10 @@ export interface BrandAssets {
   favicon: RifleImage;
 }
 
+import type { NavImageFadeSettings } from "./nav-image-fade";
+
+export type { NavImageFadeOpacity, NavImageFadeSettings } from "./nav-image-fade";
+
 export interface SiteSettings {
   name: string;
   short: string;
@@ -169,6 +173,7 @@ export interface SiteSettings {
   trustMarqueeItems: string[];
   siteImages: SiteImages;
   brandAssets: BrandAssets;
+  navImageFade: NavImageFadeSettings;
   homeHero: {
     eyebrow: string;
     headlinePrefix: string;

@@ -26,6 +26,33 @@ export function usdPriceField(
   });
 }
 
+/** Percent field for nav fade opacity (0 = transparent, 100 = solid black). */
+export function navFadeOpacityFields() {
+  return [
+    defineField({
+      name: "topOpacity",
+      title: "Top darkness",
+      type: "number",
+      description: "How dark the fade is at the very top, under the nav (0–100).",
+      validation: (rule) => rule.min(0).max(100),
+    }),
+    defineField({
+      name: "midOpacityMobile",
+      title: "Mid fade — mobile",
+      type: "number",
+      description: "Gradient strength on phones and small tablets (0–100).",
+      validation: (rule) => rule.min(0).max(100),
+    }),
+    defineField({
+      name: "midOpacityDesktop",
+      title: "Mid fade — desktop",
+      type: "number",
+      description: "Gradient strength on desktop (0–100).",
+      validation: (rule) => rule.min(0).max(100),
+    }),
+  ];
+}
+
 /** Eyebrow + title + body block used across home sections */
 export function sectionFields() {
   return [

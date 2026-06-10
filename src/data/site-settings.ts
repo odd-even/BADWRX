@@ -2,7 +2,8 @@ import { brand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
 import { images, riflePlaceholderAlt } from "@/lib/images";
-import type { BrandAssets, SiteImages, SiteSettings } from "@/lib/types";
+import { defaultNavImageFade } from "@/lib/nav-image-fade";
+import type { BrandAssets, NavImageFadeSettings, SiteImages, SiteSettings } from "@/lib/types";
 
 const { docxCopy } = sourceData;
 
@@ -118,6 +119,7 @@ export const defaultSiteSettings: SiteSettings = {
   ],
   siteImages: defaultSiteImages,
   brandAssets: defaultBrandAssets,
+  navImageFade: defaultNavImageFade,
   homeHero: {
     eyebrow: "Unrelenting performance",
     headlinePrefix: "",
