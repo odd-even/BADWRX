@@ -7,11 +7,6 @@ const modeCopy: Record<
   Exclude<ContactInquiryMode, "platform">,
   { headline: string; intro: string }
 > = {
-  university: {
-    headline: "Register for class",
-    intro:
-      "Complete the form with your contact details and our team will follow up with availability, class details, and next steps. No payment required to register your interest.",
-  },
   merch: {
     headline: "Merch inquiry",
     intro:
@@ -21,7 +16,6 @@ const modeCopy: Record<
 
 const toggleOptions: { id: ContactInquiryMode; label: string }[] = [
   { id: "platform", label: "Platform" },
-  { id: "university", label: "University" },
   { id: "merch", label: "Merch" },
 ];
 
@@ -34,10 +28,8 @@ interface ContactPageContentProps {
     expectations: string;
   };
   buildFields: ContactField[];
-  courses: { slug: string; title: string }[];
   merchItems: { slug: string; title: string }[];
   initialMode?: ContactInquiryMode;
-  initialCourseSlug?: string;
   initialMerchSlug?: string;
 }
 
@@ -46,10 +38,8 @@ export function ContactPageContent({
   location,
   contactCopy,
   buildFields,
-  courses,
   merchItems,
   initialMode = "platform",
-  initialCourseSlug,
   initialMerchSlug,
 }: ContactPageContentProps) {
   const [mode, setMode] = useState<ContactInquiryMode>(initialMode);
@@ -63,12 +53,7 @@ export function ContactPageContent({
         }
       : { ...modeCopy[mode], showExpectations: false as const };
 
-  const submitLabel =
-    mode === "university"
-      ? "Register Now"
-      : mode === "merch"
-        ? "Send Inquiry"
-        : "Send";
+  const submitLabel = mode === "merch" ? "Send Inquiry" : "Send";
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -111,7 +96,7 @@ export function ContactPageContent({
         <div className="border border-white/10 bg-black-muted p-8">
           <fieldset className="mb-8">
             <legend className="sr-only">Inquiry type</legend>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {toggleOptions.map((option) => {
                 const active = mode === option.id;
                 return (
@@ -136,9 +121,7 @@ export function ContactPageContent({
             key={mode}
             mode={mode}
             buildFields={buildFields}
-            courses={courses}
             merchItems={merchItems}
-            initialCourseSlug={initialCourseSlug}
             initialMerchSlug={initialMerchSlug}
             submitLabel={submitLabel}
           />

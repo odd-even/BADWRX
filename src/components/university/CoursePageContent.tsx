@@ -1,17 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
+import { CourseRegisterActions } from "@/components/university/CourseRegisterActions";
 import { images } from "@/lib/images";
 import type { Course } from "@/lib/types";
 
 interface CoursePageContentProps {
   course: Course;
   showBackLink?: boolean;
+  openRegistration?: boolean;
 }
 
 export function CoursePageContent({
   course,
   showBackLink = false,
+  openRegistration = false,
 }: CoursePageContentProps) {
   const heroUrl = course.heroImage?.url ?? images.rifle.field;
   const heroAlt = course.heroImage?.alt ?? course.title;
@@ -134,12 +137,10 @@ export function CoursePageContent({
                   Submit your registration request — we&apos;ll confirm dates,
                   location, and class availability within 2 business days.
                 </p>
-                <Link
-                  href={`/contact?course=${course.slug}`}
-                  className="mt-6 block border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-                >
-                  Register Now
-                </Link>
+                <CourseRegisterActions
+                  course={{ slug: course.slug, title: course.title }}
+                  openOnMount={openRegistration}
+                />
               </div>
 
               {course.includes && course.includes.length > 0 && (
@@ -218,18 +219,10 @@ export function CoursePageContent({
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:flex-row md:justify-end">
-              <Link
-                href={`/contact?course=${course.slug}`}
-                className="border border-red bg-red px-10 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-              >
-                Register
-              </Link>
-              <Link
-                href="/contact"
-                className="border border-white/20 px-10 py-4 text-center text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"
-              >
-                Ask a question
-              </Link>
+              <CourseRegisterActions
+                course={{ slug: course.slug, title: course.title }}
+                variant="footer"
+              />
             </div>
           </div>
         </div>

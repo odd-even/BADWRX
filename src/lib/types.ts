@@ -36,13 +36,18 @@ export type PageKey =
   | "about"
   | "contact";
 
+export interface PageVisibilitySetting {
+  enabled: boolean;
+  redirectTo?: string;
+}
+
 export interface PageVisibility {
-  builds: boolean;
-  configure: boolean;
-  merch: boolean;
-  university: boolean;
-  about: boolean;
-  contact: boolean;
+  builds: PageVisibilitySetting;
+  configure: PageVisibilitySetting;
+  merch: PageVisibilitySetting;
+  university: PageVisibilitySetting;
+  about: PageVisibilitySetting;
+  contact: PageVisibilitySetting;
 }
 
 export interface Rifle {

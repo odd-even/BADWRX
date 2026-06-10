@@ -141,12 +141,12 @@ export const defaultSiteSettings: SiteSettings = {
     body: cleanDocxCopy(docxCopy.customQuoteCta),
   },
   pageVisibility: {
-    builds: true,
-    configure: true,
-    merch: true,
-    university: true,
-    about: true,
-    contact: true,
+    builds: { enabled: true },
+    configure: { enabled: true },
+    merch: { enabled: true },
+    university: { enabled: true },
+    about: { enabled: true },
+    contact: { enabled: true },
   },
   aboutPage: (() => {
     const copy = aboutPageCopy();

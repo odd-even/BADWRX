@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { pillarFields, sectionFields } from "./shared";
+import { pageToggleField, pillarFields, sectionFields } from "./shared";
 
 export const siteSettings = defineType({
   name: "siteSettings",
@@ -67,50 +67,39 @@ export const siteSettings = defineType({
       type: "object",
       group: "pages",
       description:
-        "Turn entire site sections on or off. Disabled pages return 404 and are removed from navigation.",
+        "Turn entire site sections on or off. Disabled pages are removed from navigation and redirect to the page you choose.",
       fields: [
-        defineField({
-          name: "builds",
-          title: "Builds",
-          type: "boolean",
-          description: "/builds and individual rifle pages",
-          initialValue: true,
-        }),
-        defineField({
-          name: "configure",
-          title: "Configure",
-          type: "boolean",
-          description: "/configure build configurator",
-          initialValue: true,
-        }),
-        defineField({
-          name: "merch",
-          title: "Merch",
-          type: "boolean",
-          description: "/merch, cart, and checkout",
-          initialValue: true,
-        }),
-        defineField({
-          name: "university",
-          title: "University",
-          type: "boolean",
-          description: "/university and course pages",
-          initialValue: true,
-        }),
-        defineField({
-          name: "about",
-          title: "About",
-          type: "boolean",
-          description: "/about",
-          initialValue: true,
-        }),
-        defineField({
-          name: "contact",
-          title: "Contact",
-          type: "boolean",
-          description: "/contact build quote form",
-          initialValue: true,
-        }),
+        pageToggleField(
+          "builds",
+          "Builds",
+          "/builds and individual rifle pages",
+          ["/builds"],
+        ),
+        pageToggleField(
+          "configure",
+          "Configure",
+          "/configure build configurator",
+          ["/configure"],
+        ),
+        pageToggleField(
+          "merch",
+          "Merch",
+          "/merch, cart, and checkout",
+          ["/merch"],
+        ),
+        pageToggleField(
+          "university",
+          "University",
+          "/university and course pages",
+          ["/university"],
+        ),
+        pageToggleField("about", "About", "/about", ["/about"]),
+        pageToggleField(
+          "contact",
+          "Contact",
+          "/contact build quote form",
+          ["/contact"],
+        ),
       ],
       options: { columns: 2 },
     }),

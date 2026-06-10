@@ -1,14 +1,38 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getSiteSettings } from "@/lib/content";
-import type { PageKey, PageVisibility } from "@/lib/types";
+import type {
+  PageKey,
+  PageVisibility,
+  PageVisibilitySetting,
+} from "@/lib/types";
+
+export const DEFAULT_PAGE_REDIRECT = "/";
+
+export const PAGE_PATH_PREFIXES: Record<PageKey, string[]> = {
+  builds: ["/builds"],
+  configure: ["/configure"],
+  merch: ["/merch"],
+  university: ["/university"],
+  about: ["/about"],
+  contact: ["/contact"],
+};
+
+const PAGE_KEYS: PageKey[] = [
+  "builds",
+  "configure",
+  "merch",
+  "university",
+  "about",
+  "contact",
+];
 
 export const DEFAULT_PAGE_VISIBILITY: PageVisibility = {
-  builds: true,
-  configure: true,
-  merch: true,
-  university: true,
-  about: true,
-  contact: true,
+  builds: { enabled: true },
+  configure: { enabled: true },
+  merch: { enabled: true },
+  university: { enabled: true },
+  about: { enabled: true },
+  contact: { enabled: true },
 };
 
 export const SITE_PAGES = [
@@ -52,25 +76,77 @@ export const SITE_PAGES = [
 
 export type NavLink = { href: string; label: string };
 
+type LegacyOrCurrentVisibility = Partial<
+  Record<
+    PageKey,
+    boolean | Partial<PageVisibilitySetting> | PageVisibilitySetting | null
+  >
+> | null;
+
+function normalizePageSetting(
+  raw: boolean | Partial<PageVisibilitySetting> | null | undefined,
+  fallback: PageVisibilitySetting = { enabled: true },
+): PageVisibilitySetting {
+  if (typeof raw === "boolean") {
+    return raw
+      ? { enabled: true }
+      : { enabled: false, redirectTo: DEFAULT_PAGE_REDIRECT };
+  }
+
+  if (raw && typeof raw === "object") {
+    const enabled = raw.enabled !== false;
+    const redirectTo = raw.redirectTo?.trim();
+
+    if (enabled) {
+      return { enabled: true };
+    }
+
+    return {
+      enabled: false,
+      redirectTo: redirectTo || DEFAULT_PAGE_REDIRECT,
+    };
+  }
+
+  return fallback;
+}
+
 export function normalizePageVisibility(
-  visibility?: Partial<PageVisibility> | null,
+  visibility?: LegacyOrCurrentVisibility,
 ): PageVisibility {
-  return {
-    ...DEFAULT_PAGE_VISIBILITY,
-    ...visibility,
-  };
+  return PAGE_KEYS.reduce((acc, key) => {
+    acc[key] = normalizePageSetting(
+      visibility?.[key],
+      DEFAULT_PAGE_VISIBILITY[key],
+    );
+    return acc;
+  }, {} as PageVisibility);
+}
+
+export function getPageSetting(
+  page: PageKey,
+  visibility?: LegacyOrCurrentVisibility,
+): PageVisibilitySetting {
+  return normalizePageVisibility(visibility)[page];
 }
 
 export function isPageEnabled(
   page: PageKey,
-  visibility?: Partial<PageVisibility> | null,
+  visibility?: LegacyOrCurrentVisibility,
 ): boolean {
-  const resolved = normalizePageVisibility(visibility);
-  return resolved[page] !== false;
+  return getPageSetting(page, visibility).enabled;
+}
+
+export function getPageRedirect(
+  page: PageKey,
+  visibility?: LegacyOrCurrentVisibility,
+): string | null {
+  const setting = getPageSetting(page, visibility);
+  if (setting.enabled) return null;
+  return setting.redirectTo?.trim() || DEFAULT_PAGE_REDIRECT;
 }
 
 export function headerNavLinks(
-  visibility?: Partial<PageVisibility> | null,
+  visibility?: LegacyOrCurrentVisibility,
 ): NavLink[] {
   return SITE_PAGES.filter((page) => isPageEnabled(page.key, visibility)).map(
     (page) => ({
@@ -81,7 +157,7 @@ export function headerNavLinks(
 }
 
 export function footerNavLinks(
-  visibility?: Partial<PageVisibility> | null,
+  visibility?: LegacyOrCurrentVisibility,
 ): NavLink[] {
   return SITE_PAGES.filter((page) => isPageEnabled(page.key, visibility)).map(
     (page) => ({
@@ -103,7 +179,22 @@ export function pageKeyForPath(pathname: string): PageKey | null {
 
 export async function assertPageEnabled(page: PageKey): Promise<void> {
   const settings = await getSiteSettings();
-  if (!isPageEnabled(page, settings.pageVisibility)) {
-    notFound();
+  const redirectTo = getPageRedirect(page, settings.pageVisibility);
+  if (redirectTo) {
+    redirect(redirectTo);
   }
+}
+
+/** Migrate legacy boolean page toggles to redirect-aware objects for Sanity. */
+export function pageVisibilityForSanity(
+  visibility?: LegacyOrCurrentVisibility,
+): PageVisibility {
+  return normalizePageVisibility(visibility);
+}
+
+export function pageVisibilityNeedsMigration(
+  visibility?: LegacyOrCurrentVisibility,
+): boolean {
+  if (!visibility) return false;
+  return PAGE_KEYS.some((key) => typeof visibility[key] === "boolean");
 }

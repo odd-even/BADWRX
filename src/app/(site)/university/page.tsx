@@ -11,11 +11,21 @@ export const metadata: Metadata = {
   description: `Professional long range shooting and ballistics training from ${brand.name}. One-on-one instruction from industry professionals.`,
 };
 
-export default async function UniversityPage() {
+interface UniversityPageProps {
+  searchParams: Promise<{ register?: string }>;
+}
+
+export default async function UniversityPage({ searchParams }: UniversityPageProps) {
+  const { register } = await searchParams;
   const courses = await getAllCourses();
   const course = courses.find((entry) => entry.featured) ?? courses[0];
 
   if (!course) notFound();
 
-  return <CoursePageContent course={course} />;
+  return (
+    <CoursePageContent
+      course={course}
+      openRegistration={register === "1"}
+    />
+  );
 }

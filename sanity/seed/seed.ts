@@ -23,6 +23,10 @@ import {
   stockPaintFilenames,
 } from "../../src/lib/images";
 import type { SiteSettings } from "../../src/lib/types";
+import {
+  pageVisibilityForSanity,
+  pageVisibilityNeedsMigration,
+} from "../../src/lib/pages";
 import { centsToSanityPrice } from "../../src/sanity/lib/price";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -144,9 +148,10 @@ function sanityHeadlines(headlines: SiteSettings["homeHero"]["headlines"]) {
 }
 
 function sanitySiteSettings() {
-  const { homeHero, ...rest } = defaultSiteSettings;
+  const { homeHero, pageVisibility, ...rest } = defaultSiteSettings;
   return {
     ...rest,
+    pageVisibility: pageVisibilityForSanity(pageVisibility),
     homeHero: {
       ...homeHero,
       headlines: sanityHeadlines(homeHero.headlines),
@@ -154,8 +159,26 @@ function sanitySiteSettings() {
   };
 }
 
+async function migratePageVisibilityIfNeeded() {
+  const doc = await client.fetch<{ pageVisibility?: SiteSettings["pageVisibility"] }>(
+    `*[_id == "siteSettings"][0]{ pageVisibility }`,
+  );
+
+  if (!doc?.pageVisibility || !pageVisibilityNeedsMigration(doc.pageVisibility)) {
+    return;
+  }
+
+  await client
+    .patch("siteSettings")
+    .set({ pageVisibility: pageVisibilityForSanity(doc.pageVisibility) })
+    .commit();
+
+  console.log("  ✓ Migrated page visibility toggles to redirect format");
+}
+
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
+  await migratePageVisibilityIfNeeded();
   await client.createOrReplace({
     _id: "siteSettings",
     _type: "siteSettings",

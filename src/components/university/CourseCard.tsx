@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { CourseRegistrationModal } from "@/components/university/CourseRegistrationModal";
 import type { Course } from "@/lib/types";
 import { TruncatedText } from "@/components/ui/TruncatedText";
 
@@ -7,6 +11,8 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course }: CourseCardProps) {
+  const [registerOpen, setRegisterOpen] = useState(false);
+
   return (
     <article className="flex flex-col border border-white/10 bg-black-muted">
       <div className="border-b border-white/10 p-6 md:p-8">
@@ -60,14 +66,20 @@ export function CourseCard({ course }: CourseCardProps) {
           >
             View course
           </Link>
-          <Link
-            href={`/contact?course=${course.slug}`}
+          <button
+            type="button"
+            onClick={() => setRegisterOpen(true)}
             className="flex-1 border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
           >
             Register Now
-          </Link>
+          </button>
         </div>
       </div>
+      <CourseRegistrationModal
+        course={{ slug: course.slug, title: course.title }}
+        open={registerOpen}
+        onClose={() => setRegisterOpen(false)}
+      />
     </article>
   );
 }

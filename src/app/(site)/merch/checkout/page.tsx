@@ -85,6 +85,7 @@ export default function MerchCheckoutPage() {
         orderId?: string;
         error?: string;
         totalCents?: number;
+        paymentUrl?: string;
       };
 
       if (!response.ok) {
@@ -109,6 +110,7 @@ export default function MerchCheckoutPage() {
         },
         shippingMethod,
         items,
+        paymentUrl: data.paymentUrl,
         ...totals,
       };
 
@@ -117,6 +119,12 @@ export default function MerchCheckoutPage() {
         JSON.stringify(orderPayload),
       );
       clearCart();
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+        return;
+      }
+
       router.push("/merch/order/success");
     } catch (submitError) {
       setError(
@@ -134,8 +142,8 @@ export default function MerchCheckoutPage() {
       <p className="text-xs uppercase tracking-widest text-red">Checkout</p>
       <h1 className="mt-2 text-5xl text-white">Shipping & payment</h1>
       <p className="mt-4 max-w-2xl text-white-muted">
-        Enter your shipping details. We&apos;ll email a secure payment link after
-        your order is confirmed.
+        Enter your shipping details. After you place your order, you&apos;ll be
+        redirected to Square to pay securely. We ship once payment clears.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
@@ -372,7 +380,7 @@ export default function MerchCheckoutPage() {
             disabled={submitting}
             className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark disabled:opacity-60"
           >
-            {submitting ? "Placing order…" : "Place order"}
+            {submitting ? "Creating payment link…" : "Place order & pay"}
           </button>
 
           <Link

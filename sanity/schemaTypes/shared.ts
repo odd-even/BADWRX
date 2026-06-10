@@ -51,3 +51,68 @@ export function pillarFields() {
     }),
   ];
 }
+
+const SITE_REDIRECT_OPTIONS = [
+  { title: "Home", value: "/" },
+  { title: "Builds", value: "/builds" },
+  { title: "Configure", value: "/configure" },
+  { title: "Merch", value: "/merch" },
+  { title: "University", value: "/university" },
+  { title: "About", value: "/about" },
+  { title: "Contact", value: "/contact" },
+] as const;
+
+/** Page on/off toggle with required redirect when disabled. */
+export function pageToggleField(
+  name: string,
+  title: string,
+  description: string,
+  disabledPathPrefixes: string[],
+) {
+  return defineField({
+    name,
+    title,
+    type: "object",
+    description,
+    fields: [
+      defineField({
+        name: "enabled",
+        title: "Page on",
+        type: "boolean",
+        initialValue: true,
+      }),
+      defineField({
+        name: "redirectTo",
+        title: "Redirect to",
+        type: "string",
+        description: "Required when the page is off — visitors are sent here instead of seeing a 404.",
+        options: {
+          list: [...SITE_REDIRECT_OPTIONS],
+          layout: "dropdown",
+        },
+        hidden: ({ parent }) => parent?.enabled !== false,
+        validation: (Rule) =>
+          Rule.custom((value, context) => {
+            const parent = context.parent as { enabled?: boolean };
+            if (parent?.enabled !== false) return true;
+
+            const redirectTo = typeof value === "string" ? value.trim() : "";
+            if (!redirectTo) {
+              return "Choose a redirect page when this section is off";
+            }
+            if (!redirectTo.startsWith("/")) {
+              return "Use a site path starting with /";
+            }
+
+            for (const prefix of disabledPathPrefixes) {
+              if (redirectTo === prefix || redirectTo.startsWith(`${prefix}/`)) {
+                return "Redirect cannot point to the disabled page";
+              }
+            }
+
+            return true;
+          }),
+      }),
+    ],
+  });
+}

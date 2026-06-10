@@ -8,14 +8,16 @@ import { shippingOptions } from "@/lib/merch/shipping";
 
 const STORAGE_KEY = "badwrx-last-merch-order";
 
+type StoredMerchOrder = MerchOrderPayload & { paymentUrl?: string };
+
 export default function MerchOrderSuccessPage() {
-  const [order, setOrder] = useState<MerchOrderPayload | null>(null);
+  const [order, setOrder] = useState<StoredMerchOrder | null>(null);
 
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      setOrder(JSON.parse(raw) as MerchOrderPayload);
+      setOrder(JSON.parse(raw) as StoredMerchOrder);
       sessionStorage.removeItem(STORAGE_KEY);
     } catch {
       setOrder(null);
@@ -50,9 +52,19 @@ export default function MerchOrderSuccessPage() {
       <h1 className="mt-2 text-5xl text-white">Thank you</h1>
       <p className="mt-4 text-white-muted">
         Order <span className="text-white">{order.orderId.slice(0, 8).toUpperCase()}</span>{" "}
-        is in. We&apos;ll email{" "}
-        <span className="text-white">{order.contact.email}</span> a payment link, then
-        ship via {shippingLabel.toLowerCase()} once payment clears.
+        is in.{" "}
+        {order.paymentUrl ? (
+          <>
+            Complete payment to confirm your order — we also emailed{" "}
+            <span className="text-white">{order.contact.email}</span> a link.
+          </>
+        ) : (
+          <>
+            We&apos;ll email{" "}
+            <span className="text-white">{order.contact.email}</span> a payment
+            link, then ship via {shippingLabel.toLowerCase()} once payment clears.
+          </>
+        )}
       </p>
 
       <div className="mt-10 border border-white/10 bg-black-muted p-6">
@@ -81,6 +93,14 @@ export default function MerchOrderSuccessPage() {
       </div>
 
       <div className="mt-8 flex flex-wrap gap-4">
+        {order.paymentUrl ? (
+          <a
+            href={order.paymentUrl}
+            className="border border-red bg-red px-8 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+          >
+            Pay now
+          </a>
+        ) : null}
         <Link
           href="/merch"
           className="border border-white/20 px-8 py-4 text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"

@@ -52,12 +52,12 @@ export function RifleCard({
 
           <div
             className={`flex min-h-0 flex-1 flex-col ${
-              compact ? "p-5 pb-3" : "p-6 pb-4"
+              compact ? "px-5 pt-7 pb-6" : "px-6 pt-8 pb-8"
             }`}
           >
             <h3
-              className={`shrink-0 text-xl text-white transition group-hover:text-red ${
-                compact ? "line-clamp-1" : ""
+              className={`shrink-0 text-white transition group-hover:text-red ${
+                compact ? "text-2xl line-clamp-1" : "text-2xl md:text-3xl"
               }`}
             >
               {rifle.title}
@@ -85,11 +85,13 @@ export function RifleCard({
         </span>
       </div>
 
-      <div
-        className={`grid shrink-0 gap-px border-t border-white/10 bg-white/10 ${
-          showConfigure ? "grid-cols-2" : "grid-cols-1"
-        }`}
-      >
+      <div className="shrink-0">
+        <div className="h-px bg-white/10" aria-hidden />
+        <div
+          className={`grid gap-px bg-white/10 ${
+            showConfigure ? "grid-cols-2" : "grid-cols-1"
+          }`}
+        >
         <Link
           href={`/builds/${rifle.slug}`}
           className="rifle-card-action flex min-h-11 items-center justify-center bg-black-muted text-center text-[10px] uppercase tracking-widest text-white-muted transition hover:bg-black-light hover:text-white"
@@ -104,6 +106,7 @@ export function RifleCard({
             Configure
           </Link>
         ) : null}
+        </div>
       </div>
     </article>
   );
