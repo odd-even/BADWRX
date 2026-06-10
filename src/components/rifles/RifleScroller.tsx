@@ -12,8 +12,16 @@ interface RifleScrollerProps {
 
 const DRAG_THRESHOLD_PX = 6;
 /** Higher = more vertical scroll needed to traverse the full card row. */
-const PAGE_SCROLL_HORIZONTAL_RATIO = 0.38;
+const DESKTOP_PAGE_SCROLL_HORIZONTAL_RATIO = 0.19;
+const MOBILE_PAGE_SCROLL_HORIZONTAL_RATIO = 0.095;
+const MOBILE_BREAKPOINT_PX = 767;
 const MANUAL_CONTROL_PAUSE_MS = 2500;
+
+function pageScrollHorizontalRatio() {
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`).matches
+    ? MOBILE_PAGE_SCROLL_HORIZONTAL_RATIO
+    : DESKTOP_PAGE_SCROLL_HORIZONTAL_RATIO;
+}
 
 function maxScrollLeft(scrollEl: HTMLDivElement) {
   return Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
@@ -96,7 +104,7 @@ export function RifleScroller({
     if (rect.bottom <= 0 || rect.top >= vh) return;
 
     const startY = vh * 0.82;
-    const verticalTravel = (vh * 0.55) / PAGE_SCROLL_HORIZONTAL_RATIO;
+    const verticalTravel = (vh * 0.55) / pageScrollHorizontalRatio();
     const progress = Math.min(1, Math.max(0, (startY - rect.top) / verticalTravel));
 
     scrollEl.scrollLeft = progress * max;
