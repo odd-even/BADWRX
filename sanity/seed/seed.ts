@@ -100,7 +100,7 @@ async function getMissingSeedDocumentIds(): Promise<string[]> {
 
 async function writeSeedDocument(
   id: string,
-  document: Record<string, unknown>,
+  document: { _type: string } & Record<string, unknown>,
   label: string,
 ): Promise<"created" | "overwritten" | "skipped"> {
   const exists = await documentExists(id);

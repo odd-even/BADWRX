@@ -132,7 +132,7 @@ export function mapSiteImages(
   };
 }
 
-interface SanitySiteSettingsDoc extends Partial<SiteSettings> {
+interface SanitySiteSettingsDoc extends Omit<Partial<SiteSettings>, "siteImages"> {
   siteImages?: Partial<Record<keyof SiteImages, SanityImageField>>;
 }
 
