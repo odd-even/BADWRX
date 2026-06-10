@@ -17,6 +17,7 @@ interface BirthDatePickerProps {
   onChange: (isoDate: string) => void;
   id?: string;
   label?: string;
+  compact?: boolean;
 }
 
 type Panel = "month" | "day" | "year" | null;
@@ -67,6 +68,7 @@ export function BirthDatePicker({
   onChange,
   id,
   label = "Date of birth",
+  compact = false,
 }: BirthDatePickerProps) {
   const fallbackId = useId();
   const fieldId = id ?? fallbackId;
@@ -150,6 +152,9 @@ export function BirthDatePicker({
     setOpenPanel((current) => (current === panel ? null : panel));
   }
 
+  const triggerClasses = compact
+    ? `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-base`
+    : triggerClassName;
   const monthLabel = parts.month ? MONTH_LABELS[parts.month - 1] : "Month";
   const dayLabel = parts.day ? String(parts.day) : "Day";
   const yearLabel = parts.year ? String(parts.year) : "Year";
@@ -169,7 +174,7 @@ export function BirthDatePicker({
             aria-haspopup="dialog"
             aria-controls={`${fieldId}-month-panel`}
             onClick={() => togglePanel("month")}
-            className={triggerClassName}
+            className={triggerClasses}
           >
             <span className={parts.month ? "text-white" : "text-white-muted"}>
               {monthLabel}
@@ -184,7 +189,7 @@ export function BirthDatePicker({
             aria-haspopup="dialog"
             aria-controls={`${fieldId}-day-panel`}
             onClick={() => togglePanel("day")}
-            className={triggerClassName}
+            className={triggerClasses}
           >
             <span className={parts.day ? "text-white" : "text-white-muted"}>
               {dayLabel}
@@ -199,7 +204,7 @@ export function BirthDatePicker({
             aria-haspopup="dialog"
             aria-controls={`${fieldId}-year-panel`}
             onClick={() => togglePanel("year")}
-            className={triggerClassName}
+            className={triggerClasses}
           >
             <span className={parts.year ? "text-white" : "text-white-muted"}>
               {yearLabel}
@@ -268,7 +273,9 @@ export function BirthDatePicker({
             aria-label="Choose year"
             className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
           >
-            <div className={`${gridPanelClassName} max-h-48 grid-cols-4 overflow-y-auto pr-1 [scrollbar-width:thin]`}>
+            <div
+              className={`${gridPanelClassName} ${compact ? "max-h-36" : "max-h-48"} grid-cols-4 overflow-y-auto pr-1 [scrollbar-width:thin]`}
+            >
               {years.map((year) => {
                 const selected = parts.year === year;
                 return (
@@ -290,10 +297,10 @@ export function BirthDatePicker({
       </div>
 
       {value ? (
-        <p className="mt-3 text-sm text-white" aria-live="polite">
+        <p className={`${compact ? "mt-2 text-sm" : "mt-3 text-sm"} text-white`} aria-live="polite">
           {formatBirthDateDisplay(value)}
         </p>
-      ) : (
+      ) : compact ? null : (
         <p className="mt-3 text-xs text-white-muted">
           Tap month, day, and year to choose from the grid.
         </p>

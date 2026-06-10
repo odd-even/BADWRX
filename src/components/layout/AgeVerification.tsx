@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { brand } from "@/lib/brand";
 import {
   AGE_VERIFICATION_STORAGE_KEY,
   isAgeGateForced,
   isAtLeast18,
   parseBirthDate,
 } from "@/lib/age-verification";
-import { images } from "@/lib/images";
+import { blurActiveElement } from "@/lib/modal-body-lock";
 import { BirthDatePicker } from "@/components/ui/BirthDatePicker";
+import { GateModal } from "@/components/layout/GateModal";
 
 export function AgeVerification() {
   const [checked, setChecked] = useState(false);
@@ -27,15 +26,6 @@ export function AgeVerification() {
     setVerified(localStorage.getItem(AGE_VERIFICATION_STORAGE_KEY) === "true");
     setChecked(true);
   }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = checked && !verified ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [checked, verified]);
-
-  if (!checked || verified) return null;
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -63,70 +53,46 @@ export function AgeVerification() {
     }
 
     localStorage.setItem(AGE_VERIFICATION_STORAGE_KEY, "true");
+    blurActiveElement();
     setVerified(true);
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 px-6 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="age-verification-title"
+    <GateModal
+      open={checked && !verified}
+      eyebrow="Age verification"
+      title="18 or older"
+      titleId="age-verification-title"
+      description="This site contains information about firearms. Enter your date of birth to continue."
     >
-      <div className="w-full max-w-md border border-white/10 bg-black-light p-8 shadow-2xl">
-        <div className="flex justify-center">
-          <Image
-            src={images.logos.badge}
-            alt={`${brand.short} logo`}
-            width={120}
-            height={113}
-            className="h-40 w-auto"
-            priority
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4 sm:mt-8">
+        <BirthDatePicker
+          value={birthDate}
+          compact
+          onChange={(value) => {
+            setBirthDate(value);
+            setError(null);
+          }}
+        />
 
-        <p className="mt-6 text-center text-xs uppercase tracking-widest text-red">
-          Age verification
-        </p>
-        <h1
-          id="age-verification-title"
-          className="mt-2 text-center text-3xl text-white"
+        {error && (
+          <p className="text-sm text-red" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full border border-red bg-red py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:py-4"
         >
-          18 or older
-        </h1>
-        <p className="mt-4 text-center text-sm leading-relaxed text-white-muted">
-          This site contains information about firearms. Enter your date of birth
-          to continue.
-        </p>
+          Enter site
+        </button>
+      </form>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <BirthDatePicker
-            value={birthDate}
-            onChange={(value) => {
-              setBirthDate(value);
-              setError(null);
-            }}
-          />
-
-          {error && (
-            <p className="text-sm text-red" role="alert">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="w-full border border-red bg-red py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
-          >
-            Enter site
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-xs leading-relaxed text-white-muted/70">
-          By entering, you confirm that you are at least 18 years of age and
-          legally permitted to view firearm-related content in your jurisdiction.
-        </p>
-      </div>
-    </div>
+      <p className="mt-4 text-center text-xs leading-relaxed text-white-muted/70 sm:mt-6">
+        By entering, you confirm that you are at least 18 years of age and
+        legally permitted to view firearm-related content in your jurisdiction.
+      </p>
+    </GateModal>
   );
 }
