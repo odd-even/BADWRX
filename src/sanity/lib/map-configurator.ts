@@ -205,7 +205,7 @@ export function mapConfiguratorData(
           rifle.configuratorImage ?? rifle.heroImage,
           platformImages[rifle.slug] ?? configuratorPlaceholder,
           `${rifle.title} platform`,
-          "configuratorOption",
+          "configurator",
         ),
       };
     });
@@ -258,7 +258,7 @@ export function mapConfiguratorData(
           optic.image,
           scopeImageForMagnification(optic.magnification ?? "", id),
           label,
-          "configuratorOption",
+          "configurator",
         ),
       };
     }),
@@ -295,7 +295,7 @@ export function mapConfiguratorData(
         rings.image,
         ringsImage,
         "Hawkins precision rings",
-        "configurator",
+        "configuratorFeature",
       ),
     },
     {
@@ -331,7 +331,7 @@ export function mapConfiguratorData(
         basecamp.image,
         basecampPackageImage,
         basecamp.label ?? fallback.basecampDetails.label,
-        "configurator",
+        "configuratorFeature",
       ),
     },
     {

@@ -52,7 +52,7 @@ export function BasecampPackageStep({
               alt={packageOption.image.alt}
               fill
               className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 640px"
+              sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 60vw, 768px"
             />
           </div>
         )}

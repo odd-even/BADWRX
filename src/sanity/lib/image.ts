@@ -16,12 +16,14 @@ export const imageWidths = {
   portrait: 960,
   /** Product / rifle cards — builds grid, merch */
   card: 800,
-  /** Configurator step previews — basecamp, rings */
-  configurator: 720,
-  /** Configurator option tiles — platforms, scopes */
-  configuratorOption: 480,
+  /** Full-width configurator package heroes — basecamp, rings */
+  configuratorFeature: 1920,
+  /** Configurator option banners — platform, optics grid tiles */
+  configurator: 1280,
+  /** Configurator option tiles — platforms, scopes (legacy alias) */
+  configuratorOption: 800,
   /** Finish / camo swatches */
-  swatch: 320,
+  swatch: 480,
   /** Decorative overlays — reticle */
   overlay: 1600,
   /** Open Graph / iMessage / social link previews (1200×630) */
@@ -56,6 +58,20 @@ export function imageUrl(
   if (!source) return undefined;
   const resolvedWidth = typeof width === "number" ? width : imageWidths[width];
   return urlFor(source).width(resolvedWidth).auto("format").quality(80).url();
+}
+
+/** Width descriptors for responsive srcSet (Sanity CDN). */
+export function imageSrcSet(
+  source: SanityImageSource | undefined,
+  widths: number[],
+): string | undefined {
+  if (!source || widths.length === 0) return undefined;
+  return widths
+    .map((width) => {
+      const url = urlFor(source).width(width).auto("format").quality(80).url();
+      return `${url} ${width}w`;
+    })
+    .join(", ");
 }
 
 /** OG cover and favicon — crop to exact dimensions (respects Sanity hotspot). */

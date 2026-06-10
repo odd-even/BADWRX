@@ -60,10 +60,10 @@ export function OptionImage({
         className="object-cover"
         sizes={
           isSwatchFill
-            ? "(max-width: 1024px) 30vw, 200px"
+            ? "(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 240px"
             : isSwatch
-              ? "72px"
-              : "(max-width: 640px) 100vw, 320px"
+              ? "96px"
+              : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
         }
         onError={() => setMissing(true)}
       />
