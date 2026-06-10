@@ -7,33 +7,20 @@ import type { Rifle } from "@/lib/types";
 interface RifleScrollerProps {
   rifles: Rifle[];
   showConfigure?: boolean;
+  showPricing?: boolean;
 }
 
-const SCROLL_SPEED_PX_PER_SEC = 32;
-const USER_SCROLL_PAUSE_MS = 2500;
 const DRAG_THRESHOLD_PX = 6;
-const HOVER_WHEEL_CARD_COUNT = 3;
+/** Higher = more vertical scroll needed to traverse the full card row. */
+const PAGE_SCROLL_HORIZONTAL_RATIO = 0.38;
+const MANUAL_CONTROL_PAUSE_MS = 2500;
 
 function maxScrollLeft(scrollEl: HTMLDivElement) {
   return Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
 }
 
-function clampScroll(scrollEl: HTMLDivElement) {
-  const max = maxScrollLeft(scrollEl);
-  scrollEl.scrollLeft = Math.min(Math.max(scrollEl.scrollLeft, 0), max);
-  return max;
-}
-
-function measureCardStep(scrollEl: HTMLDivElement) {
-  const card = scrollEl.querySelector("[data-rifle-card]");
-  if (!(card instanceof HTMLElement)) return 320;
-
-  const track = card.parentElement;
-  if (!track) return card.offsetWidth;
-
-  const gapValue = getComputedStyle(track).gap || "0";
-  const gap = Number.parseFloat(gapValue) || 0;
-  return card.offsetWidth + gap;
+function clampScrollLeft(scrollEl: HTMLDivElement, value: number) {
+  return Math.min(Math.max(value, 0), maxScrollLeft(scrollEl));
 }
 
 function isInteractivePointerTarget(target: EventTarget | null) {
@@ -42,17 +29,16 @@ function isInteractivePointerTarget(target: EventTarget | null) {
 }
 
 /**
- * Idle auto-scroll when the pointer is away; vertical page scroll over the
- * carousel moves ~3 cards horizontally, then releases back to the page.
- *
- * Expects to live inside `mx-auto max-w-7xl px-6`. The `-mx-6 pl-6` breakout
- * keeps the first card aligned with sibling page content on every breakpoint.
+ * Full viewport-width track; cards align to page margins at scroll ends.
+ * Vertical page scroll drives horizontal movement via viewport progress.
  */
 export function RifleScroller({
   rifles,
   showConfigure = true,
+  showPricing = true,
 }: RifleScrollerProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({
     active: false,
     moved: false,
@@ -60,45 +46,65 @@ export function RifleScroller({
     scrollLeft: 0,
     pointerId: -1,
   });
-  const userPausedRef = useRef(false);
-  const userPausedTimerRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
-  const hoveringScrollerRef = useRef(false);
   const draggingRef = useRef(false);
-  const autoDirectionRef = useRef(1);
-  const wheelBudgetRef = useRef({ downPx: 0, upPx: 0 });
+  const reducedMotionRef = useRef(false);
+  const manualControlUntilRef = useRef(0);
+  const pageLinkRafRef = useRef(0);
 
-  const [hoveringScroller, setHoveringScroller] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [ready, setReady] = useState(false);
   const [dragging, setDragging] = useState(false);
 
-  const autoScrollEnabled = ready && !reducedMotion;
-
-  hoveringScrollerRef.current = hoveringScroller;
   draggingRef.current = dragging;
 
-  const pauseForUser = useCallback(() => {
-    userPausedRef.current = true;
-    if (userPausedTimerRef.current !== null) {
-      window.clearTimeout(userPausedTimerRef.current);
-    }
-    userPausedTimerRef.current = window.setTimeout(() => {
-      userPausedRef.current = false;
-      userPausedTimerRef.current = null;
-    }, USER_SCROLL_PAUSE_MS);
+  const pausePageLinkage = useCallback((ms = MANUAL_CONTROL_PAUSE_MS) => {
+    manualControlUntilRef.current = Date.now() + ms;
   }, []);
 
-  const resetWheelBudget = useCallback(() => {
+  const applyMarginInsets = useCallback(() => {
     const scrollEl = scrollRef.current;
-    if (!scrollEl) return;
-    const budget = measureCardStep(scrollEl) * HOVER_WHEEL_CARD_COUNT;
-    wheelBudgetRef.current = { downPx: budget, upPx: budget };
+    const trackEl = trackRef.current;
+    if (!scrollEl || !trackEl) return;
+
+    const alignEl = scrollEl.closest("[data-rifle-scroller-align]");
+    if (!alignEl) return;
+
+    const rect = alignEl.getBoundingClientRect();
+    const left = Math.round(rect.left);
+    const right = Math.round(window.innerWidth - rect.right);
+
+    trackEl.style.paddingLeft = `${left}px`;
+    trackEl.style.paddingRight = `${right}px`;
   }, []);
+
+  const updatePageLinkedScroll = useCallback(() => {
+    const scrollEl = scrollRef.current;
+    if (!scrollEl || reducedMotionRef.current || draggingRef.current) return;
+    if (Date.now() < manualControlUntilRef.current) return;
+
+    const max = maxScrollLeft(scrollEl);
+    if (max <= 0) return;
+
+    const rect = scrollEl.getBoundingClientRect();
+    const vh = window.innerHeight;
+    if (rect.bottom <= 0 || rect.top >= vh) return;
+
+    const startY = vh * 0.82;
+    const verticalTravel = (vh * 0.55) / PAGE_SCROLL_HORIZONTAL_RATIO;
+    const progress = Math.min(1, Math.max(0, (startY - rect.top) / verticalTravel));
+
+    scrollEl.scrollLeft = progress * max;
+  }, []);
+
+  const schedulePageLinkedScroll = useCallback(() => {
+    cancelAnimationFrame(pageLinkRafRef.current);
+    pageLinkRafRef.current = requestAnimationFrame(updatePageLinkedScroll);
+  }, [updatePageLinkedScroll]);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(motionQuery.matches);
+    const sync = () => {
+      reducedMotionRef.current = motionQuery.matches;
+    };
     sync();
     motionQuery.addEventListener("change", sync);
     return () => motionQuery.removeEventListener("change", sync);
@@ -108,160 +114,71 @@ export function RifleScroller({
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
 
-    const update = () => {
-      setReady(scrollEl.scrollWidth > scrollEl.clientWidth);
-      if (hoveringScrollerRef.current) resetWheelBudget();
+    applyMarginInsets();
+    scrollEl.scrollLeft = 0;
+    schedulePageLinkedScroll();
+  }, [rifles.length, applyMarginInsets, schedulePageLinkedScroll]);
+
+  useLayoutEffect(() => {
+    const scrollEl = scrollRef.current;
+    const trackEl = trackRef.current;
+    const alignEl = scrollEl?.closest("[data-rifle-scroller-align]");
+    if (!scrollEl || !alignEl) return;
+
+    const onResize = () => {
+      applyMarginInsets();
+      scrollEl.scrollLeft = clampScrollLeft(scrollEl, scrollEl.scrollLeft);
+      schedulePageLinkedScroll();
     };
 
-    update();
-
-    const observer = new ResizeObserver(update);
-    observer.observe(scrollEl);
-    const track = scrollEl.firstElementChild;
-    if (track instanceof HTMLElement) {
-      observer.observe(track);
-      Array.from(track.children).forEach((child) => {
-        if (child instanceof HTMLElement) observer.observe(child);
-      });
-    }
-
-    document.fonts?.ready.then(update).catch(() => undefined);
-    const timers = [100, 500, 1500, 3000].map((delay) =>
-      window.setTimeout(update, delay),
-    );
+    const observer = new ResizeObserver(onResize);
+    observer.observe(alignEl);
+    if (trackEl) observer.observe(trackEl);
+    window.addEventListener("resize", onResize);
 
     return () => {
       observer.disconnect();
-      timers.forEach((timer) => window.clearTimeout(timer));
+      window.removeEventListener("resize", onResize);
     };
-  }, [resetWheelBudget, rifles.length]);
+  }, [applyMarginInsets, schedulePageLinkedScroll]);
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
     if (!scrollEl) return;
 
-    const onScroll = () => {
-      clampScroll(scrollEl);
+    const onWindowScroll = () => {
+      schedulePageLinkedScroll();
     };
+
+    window.addEventListener("scroll", onWindowScroll, { passive: true });
+    schedulePageLinkedScroll();
+
+    return () => {
+      window.removeEventListener("scroll", onWindowScroll);
+      cancelAnimationFrame(pageLinkRafRef.current);
+    };
+  }, [rifles.length, schedulePageLinkedScroll]);
+
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    if (!scrollEl) return;
 
     const onWheel = (event: WheelEvent) => {
       const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
       const shiftHorizontal = event.shiftKey && event.deltaY !== 0;
+      if (!horizontalIntent && !shiftHorizontal) return;
 
-      if (horizontalIntent || shiftHorizontal) {
-        if (!hoveringScrollerRef.current) return;
-
-        const delta = horizontalIntent ? event.deltaX : event.deltaY;
-        if (delta === 0) return;
-
-        event.preventDefault();
-        scrollEl.scrollLeft = Math.min(
-          Math.max(scrollEl.scrollLeft + delta, 0),
-          maxScrollLeft(scrollEl),
-        );
-        pauseForUser();
-        return;
-      }
-
-      if (!hoveringScrollerRef.current || event.deltaY === 0) return;
-
-      const max = maxScrollLeft(scrollEl);
-      const budget = wheelBudgetRef.current;
-
-      if (event.deltaY > 0) {
-        if (budget.downPx <= 0 || scrollEl.scrollLeft >= max - 1) return;
-
-        const room = max - scrollEl.scrollLeft;
-        const apply = Math.min(event.deltaY, budget.downPx, room);
-        if (apply <= 0) return;
-
-        event.preventDefault();
-        scrollEl.scrollLeft += apply;
-        budget.downPx -= apply;
-        pauseForUser();
-        return;
-      }
-
-      if (budget.upPx <= 0 || scrollEl.scrollLeft <= 0) return;
-
-      const apply = Math.min(Math.abs(event.deltaY), budget.upPx, scrollEl.scrollLeft);
-      if (apply <= 0) return;
+      const delta = horizontalIntent ? event.deltaX : event.deltaY;
+      if (delta === 0) return;
 
       event.preventDefault();
-      scrollEl.scrollLeft -= apply;
-      budget.upPx -= apply;
-      pauseForUser();
+      pausePageLinkage();
+      scrollEl.scrollLeft = clampScrollLeft(scrollEl, scrollEl.scrollLeft + delta);
     };
 
-    scrollEl.addEventListener("scroll", onScroll, { passive: true });
     scrollEl.addEventListener("wheel", onWheel, { passive: false });
-    scrollEl.addEventListener("touchstart", pauseForUser, { passive: true });
-
-    return () => {
-      scrollEl.removeEventListener("scroll", onScroll);
-      scrollEl.removeEventListener("wheel", onWheel);
-      scrollEl.removeEventListener("touchstart", pauseForUser);
-    };
-  }, [pauseForUser, rifles.length]);
-
-  useEffect(() => {
-    const scrollEl = scrollRef.current;
-    if (!scrollEl || !autoScrollEnabled) return;
-
-    let frame = 0;
-    let lastTime = performance.now();
-
-    const tick = (now: number) => {
-      const deltaSeconds = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
-
-      const shouldAutoScroll =
-        !hoveringScrollerRef.current &&
-        !draggingRef.current &&
-        !userPausedRef.current &&
-        scrollEl.scrollWidth > scrollEl.clientWidth;
-
-      if (shouldAutoScroll) {
-        const max = maxScrollLeft(scrollEl);
-        let next =
-          scrollEl.scrollLeft +
-          SCROLL_SPEED_PX_PER_SEC * deltaSeconds * autoDirectionRef.current;
-
-        if (next >= max) {
-          next = max;
-          autoDirectionRef.current = -1;
-        } else if (next <= 0) {
-          next = 0;
-          autoDirectionRef.current = 1;
-        }
-
-        scrollEl.scrollLeft = next;
-      }
-
-      frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      if (userPausedTimerRef.current !== null) {
-        window.clearTimeout(userPausedTimerRef.current);
-        userPausedTimerRef.current = null;
-      }
-    };
-  }, [autoScrollEnabled, rifles.length]);
-
-  function handleScrollerEnter() {
-    hoveringScrollerRef.current = true;
-    setHoveringScroller(true);
-    resetWheelBudget();
-  }
-
-  function handleScrollerLeave() {
-    hoveringScrollerRef.current = false;
-    setHoveringScroller(false);
-  }
+    return () => scrollEl.removeEventListener("wheel", onWheel);
+  }, [pausePageLinkage, rifles.length]);
 
   function finishDrag(pointerId: number) {
     const scrollEl = scrollRef.current;
@@ -278,14 +195,14 @@ export function RifleScroller({
       scrollEl.releasePointerCapture(pointerId);
     }
 
-    clampScroll(scrollEl);
+    scrollEl.scrollLeft = clampScrollLeft(scrollEl, scrollEl.scrollLeft);
 
     if (didDrag) {
+      pausePageLinkage();
       suppressClickRef.current = true;
       window.setTimeout(() => {
         suppressClickRef.current = false;
       }, 0);
-      pauseForUser();
     }
   }
 
@@ -328,13 +245,13 @@ export function RifleScroller({
     if (!drag.moved) {
       drag.moved = true;
       setDragging(true);
-      pauseForUser();
+      pausePageLinkage();
     }
 
     event.preventDefault();
-    scrollEl.scrollLeft = Math.min(
-      Math.max(drag.scrollLeft - deltaX, 0),
-      maxScrollLeft(scrollEl),
+    scrollEl.scrollLeft = clampScrollLeft(
+      scrollEl,
+      drag.scrollLeft - deltaX,
     );
   }
 
@@ -349,24 +266,25 @@ export function RifleScroller({
   }
 
   const cardWrapperClass =
-    "flex w-[min(82vw,320px)] shrink-0 max-md:snap-start md:w-[340px] lg:w-[360px]";
+    "flex w-[min(82vw,320px)] shrink-0 md:w-[340px] lg:w-[360px]";
 
   return (
-    <div className="relative -ml-6 mt-8 mr-[calc(50%-50vw)] w-[calc(100%+1.5rem+(50vw-50%))] max-w-[100vw] md:mt-10">
+    <div className="relative left-1/2 mt-8 w-screen max-w-[100vw] -translate-x-1/2 md:mt-10">
       <div
         ref={scrollRef}
-        className={`cursor-grab overscroll-x-contain pl-6 pr-6 scroll-ps-6 active:cursor-grabbing ${
+        className={`w-full cursor-grab overscroll-x-contain active:cursor-grabbing ${
           dragging ? "cursor-grabbing select-none" : ""
-        } overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] max-md:snap-x max-md:snap-mandatory md:snap-none [&::-webkit-scrollbar]:hidden`}
-        onMouseEnter={handleScrollerEnter}
-        onMouseLeave={handleScrollerLeave}
+        } overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden`}
         onPointerDownCapture={handlePointerDownCapture}
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onClickCapture={handleClickCapture}
       >
-        <div className="flex w-max items-stretch gap-5 md:gap-6">
+        <div
+          ref={trackRef}
+          className="flex w-max items-stretch gap-5 md:gap-6"
+        >
           {rifles.map((rifle, index) => (
             <div
               key={rifle.id}
@@ -378,6 +296,7 @@ export function RifleScroller({
                 priority={index < 4}
                 compact
                 showConfigure={showConfigure}
+                showPricing={showPricing}
               />
             </div>
           ))}

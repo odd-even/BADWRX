@@ -3,7 +3,9 @@ import Link from "next/link";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { TypewriterText } from "@/components/ui/TypewriterText";
+import { HomePillarsGrid } from "@/components/home/HomePillarsGrid";
 import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
 import { images, riflePlaceholderAlt } from "@/lib/images";
@@ -72,95 +74,89 @@ export default async function HomePage() {
       <TrustMarquee items={site.trustMarqueeItems} />
 
       {showBuilds ? (
-        <section className="pt-24 pb-12 md:pb-16">
-          <div className="mx-auto max-w-7xl px-6">
+        <section className="overflow-x-clip pt-24 pb-12 md:pb-16">
+          <div className="mx-auto max-w-7xl px-6" data-rifle-scroller-align>
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div className="max-w-2xl">
-                <p className="text-xs uppercase tracking-widest text-red">
-                  {site.homePlatforms.eyebrow}
-                </p>
-                <h2 className="mt-2 text-4xl text-white">
-                  {site.homePlatforms.title}
-                </h2>
-                <p className="mt-4 text-white-muted leading-relaxed">
-                  {site.homePlatforms.body}
-                </p>
+                <ScrollReveal>
+                  <p className="text-xs uppercase tracking-widest text-red">
+                    {site.homePlatforms.eyebrow}
+                  </p>
+                </ScrollReveal>
+                <ScrollReveal delay={70}>
+                  <h2 className="mt-2 text-4xl text-white">
+                    {site.homePlatforms.title}
+                  </h2>
+                </ScrollReveal>
+                <ScrollReveal delay={140}>
+                  <p className="mt-4 text-white-muted leading-relaxed">
+                    {site.homePlatforms.body}
+                  </p>
+                </ScrollReveal>
               </div>
-              <Link
-                href="/builds"
-                className="shrink-0 text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
-              >
-                View all platforms →
-              </Link>
+              <ScrollReveal delay={100}>
+                <Link
+                  href="/builds"
+                  className="shrink-0 text-xs uppercase tracking-widest text-white-muted transition hover:text-red"
+                >
+                  View all platforms →
+                </Link>
+              </ScrollReveal>
             </div>
 
-            <RifleScroller rifles={rifles} showConfigure={showConfigure} />
+            <RifleScroller
+              rifles={rifles}
+              showConfigure={showConfigure}
+              showPricing={false}
+            />
           </div>
 
           <div className="relative z-0 mx-auto max-w-7xl px-6 pt-12 md:pt-16">
-            <p className="text-xs uppercase tracking-widest text-red">
-              {site.homeIntro.eyebrow}
-            </p>
-            <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
-              {site.homeIntro.body}
-            </p>
+            <ScrollReveal>
+              <p className="text-xs uppercase tracking-widest text-red">
+                {site.homeIntro.eyebrow}
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={80}>
+              <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
+                {site.homeIntro.body}
+              </p>
+            </ScrollReveal>
 
-            <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
-              {site.homePillars.map((pillar) => (
-                <div
-                  key={pillar.title}
-                  className="border border-white/10 bg-black-light p-8"
-                >
-                  <h3 className="text-sm font-semibold uppercase tracking-widest text-red">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-4 text-sm text-white-muted leading-relaxed">
-                    {pillar.body}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <HomePillarsGrid pillars={site.homePillars} />
           </div>
         </section>
       ) : (
         <section className="mx-auto max-w-7xl px-6 pt-24 pb-12 md:pb-16">
-          <p className="text-xs uppercase tracking-widest text-red">
-            {site.homeIntro.eyebrow}
-          </p>
-          <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
-            {site.homeIntro.body}
-          </p>
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-widest text-red">
+              {site.homeIntro.eyebrow}
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={80}>
+            <p className="mt-4 max-w-3xl text-xl text-white leading-snug md:text-2xl">
+              {site.homeIntro.body}
+            </p>
+          </ScrollReveal>
 
-          <div className="mt-12 grid gap-8 md:mt-16 md:grid-cols-3">
-            {site.homePillars.map((pillar) => (
-              <div
-                key={pillar.title}
-                className="border border-white/10 bg-black-light p-8"
-              >
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-red">
-                  {pillar.title}
-                </h3>
-                <p className="mt-4 text-sm text-white-muted leading-relaxed">
-                  {pillar.body}
-                </p>
-              </div>
-            ))}
-          </div>
+          <HomePillarsGrid pillars={site.homePillars} />
         </section>
       )}
 
       <section className="border-b border-white/10">
         <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2">
-          <div className="relative aspect-[4/3] overflow-hidden border border-white/10 hover-zoom">
-            <Image
-              src={images.rifle.hunt}
-              alt="Hunter in Alaska mountain country"
-              fill
-              className="object-cover object-left"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
-          <div className="flex flex-col justify-center">
+          <ScrollReveal>
+            <div className="relative aspect-[4/3] overflow-hidden border border-white/10 hover-zoom">
+              <Image
+                src={images.rifle.hunt}
+                alt="Hunter in Alaska mountain country"
+                fill
+                className="object-cover object-left"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          </ScrollReveal>
+          <ScrollReveal className="flex flex-col justify-center" delay={100}>
             <p className="text-xs uppercase tracking-widest text-red">
               {site.fieldTested.eyebrow}
             </p>
@@ -168,7 +164,7 @@ export default async function HomePage() {
             <p className="mt-6 text-white-muted leading-relaxed">
               {site.fieldTested.body}
             </p>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -192,71 +188,83 @@ export default async function HomePage() {
 
         <div className="relative z-[3] mx-auto flex min-h-[70vh] w-full max-w-7xl flex-col justify-end px-6 pb-20 pt-32">
           <div className="max-w-2xl">
-            <p className="text-xs uppercase tracking-widest text-red">
-              {site.unrelenting.eyebrow}
-            </p>
-            <h2 className="mt-2 text-4xl text-white md:text-5xl">
-              {site.unrelenting.title}
-            </h2>
-            <p className="mt-6 text-white-muted leading-relaxed">
-              {site.unrelenting.body}
-            </p>
+            <ScrollReveal>
+              <p className="text-xs uppercase tracking-widest text-red">
+                {site.unrelenting.eyebrow}
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={70}>
+              <h2 className="mt-2 text-4xl text-white md:text-5xl">
+                {site.unrelenting.title}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal delay={140}>
+              <p className="mt-6 text-white-muted leading-relaxed">
+                {site.unrelenting.body}
+              </p>
+            </ScrollReveal>
             {showContact ? (
-              <Link
-                href="/contact"
-                className="mt-8 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
-              >
-                Ask about the Ballistic Package →
-              </Link>
+              <ScrollReveal delay={210}>
+                <Link
+                  href="/contact"
+                  className="mt-8 inline-block text-xs uppercase tracking-widest text-red transition hover:text-white"
+                >
+                  Ask about the Ballistic Package →
+                </Link>
+              </ScrollReveal>
             ) : null}
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/10 bg-black-light">
-        <TestimonialCarousel
-          items={
-            site.testimonials?.length
-              ? site.testimonials
-              : [site.testimonial]
-          }
-        />
+        <ScrollReveal>
+          <TestimonialCarousel
+            items={
+              site.testimonials?.length
+                ? site.testimonials
+                : [site.testimonial]
+            }
+          />
+        </ScrollReveal>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid gap-12 border border-white/10 bg-black-muted p-8 md:grid-cols-2 md:items-center md:p-12">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-red">Get in touch</p>
-            <h2 className="mt-2 text-4xl text-white">{site.contactSection.title}</h2>
-            <p className="mt-6 text-white-muted leading-relaxed">
-              {site.contactSection.body}
-            </p>
-            <a
-              href={`mailto:${site.email}`}
-              className="mt-6 inline-block text-lg text-white transition hover:text-red"
-            >
-              {site.email}
-            </a>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row md:flex-col lg:flex-row">
-            {showContact ? (
-              <Link
-                href="/contact"
-                className="flex-1 border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+        <ScrollReveal>
+          <div className="grid gap-12 border border-white/10 bg-black-muted p-8 md:grid-cols-2 md:items-center md:p-12">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-red">Get in touch</p>
+              <h2 className="mt-2 text-4xl text-white">{site.contactSection.title}</h2>
+              <p className="mt-6 text-white-muted leading-relaxed">
+                {site.contactSection.body}
+              </p>
+              <a
+                href={`mailto:${site.email}`}
+                className="mt-6 inline-block text-lg text-white transition hover:text-red"
               >
-                Contact Us
-              </Link>
-            ) : null}
-            {showConfigure ? (
-              <Link
-                href="/configure"
-                className="flex-1 border border-white/20 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:border-red hover:text-red"
-              >
-                Configure a Rifle
-              </Link>
-            ) : null}
+                {site.email}
+              </a>
+            </div>
+            <div className="flex flex-col gap-4 sm:flex-row md:flex-col lg:flex-row">
+              {showContact ? (
+                <Link
+                  href="/contact"
+                  className="flex-1 border border-red bg-red py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark"
+                >
+                  Contact Us
+                </Link>
+              ) : null}
+              {showConfigure ? (
+                <Link
+                  href="/configure"
+                  className="flex-1 border border-white/20 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition hover:border-red hover:text-red"
+                >
+                  Configure a Rifle
+                </Link>
+              ) : null}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
     </>
   );
