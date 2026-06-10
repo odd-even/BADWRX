@@ -44,14 +44,29 @@ export function observeScrollReveal(el: HTMLElement): () => void {
   }
 
   observer.observe(el);
+
+  // Some browsers defer the initial intersection callback — reveal if already on screen.
+  requestAnimationFrame(() => {
+    if (el.classList.contains(SCROLL_REVEAL_VISIBLE_CLASS)) return;
+    const rect = el.getBoundingClientRect();
+    const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+    if (rect.top < viewportHeight * 0.94 && rect.bottom > 0) {
+      el.classList.add(SCROLL_REVEAL_VISIBLE_CLASS);
+      observer.unobserve(el);
+    }
+  });
+
   return () => observer.unobserve(el);
 }
 
 function shouldSkipReveal(el: HTMLElement): boolean {
-  if (el.classList.contains(SCROLL_REVEAL_CLASS)) return true;
   if (el.hasAttribute("data-no-reveal")) return true;
   if (el.closest("[data-no-reveal]")) return true;
   if (el.closest("[data-configurator]")) return true;
+  // Skip blocks already handled by explicit <ScrollReveal> wrappers
+  if (el.classList.contains(SCROLL_REVEAL_CLASS)) return true;
+  if (el.closest(`.${SCROLL_REVEAL_CLASS}`)) return true;
   return false;
 }
 
@@ -109,11 +124,14 @@ export function initSiteScrollReveals(
     return () => {};
   }
 
-  const cleanups = collectSiteScrollRevealTargets(main).map((target) =>
-    observeScrollReveal(target),
-  );
+  const targets = collectSiteScrollRevealTargets(main);
+  const cleanups = targets.map((target) => observeScrollReveal(target));
 
   return () => {
     for (const cleanup of cleanups) cleanup();
+    for (const target of targets) {
+      target.classList.remove(SCROLL_REVEAL_CLASS, SCROLL_REVEAL_VISIBLE_CLASS);
+      target.style.removeProperty("--scroll-reveal-delay");
+    }
   };
 }

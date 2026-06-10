@@ -15,10 +15,10 @@ export function SiteScrollReveal() {
     const main = document.querySelector("main");
     if (!main) return;
 
-    let cleanup = initSiteScrollReveals(main, pathname);
+    let cleanup = () => {};
 
+    // Wait one frame so route content is painted before collecting targets.
     const frame = requestAnimationFrame(() => {
-      cleanup();
       cleanup = initSiteScrollReveals(main, pathname);
     });
 

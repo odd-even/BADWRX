@@ -33,7 +33,7 @@ export function RifleCard({
           className="rifle-card-main flex min-h-0 flex-1 flex-col"
         >
           <div
-            className={`relative shrink-0 overflow-hidden hover-zoom ${
+            className={`rifle-card-media relative shrink-0 overflow-hidden hover-zoom ${
               compact ? "aspect-[3/2]" : "aspect-[4/3]"
             }`}
           >
@@ -49,7 +49,13 @@ export function RifleCard({
               }
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black via-transparent to-transparent" />
+            <span
+              className="rifle-card-tag pointer-events-none absolute left-4 top-4 z-[2] bg-black-light/80 px-3 py-1 text-[10px] uppercase tracking-widest text-red"
+              aria-hidden
+            >
+              {categoryLabels[rifle.category]}
+            </span>
           </div>
 
           <div
@@ -79,12 +85,6 @@ export function RifleCard({
             ) : null}
           </div>
         </Link>
-        <span
-          className="rifle-card-tag pointer-events-none absolute left-4 top-4 z-10 bg-black-light/80 px-3 py-1 text-[10px] uppercase tracking-widest text-red"
-          aria-hidden
-        >
-          {categoryLabels[rifle.category]}
-        </span>
       </div>
 
       <div className="shrink-0">

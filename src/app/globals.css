@@ -277,11 +277,17 @@ a.tracking-widest:hover,
 .rifle-card .rifle-card-main,
 .rifle-card .rifle-card-main:hover {
   letter-spacing: normal;
+  transition-property: color, border-color, background-color;
+}
+
+.rifle-card-media {
+  isolation: isolate;
 }
 
 .rifle-card-tag {
   letter-spacing: 0.1em;
   transition: none;
+  transform: translateZ(0);
 }
 
 .home-pillar-card {
