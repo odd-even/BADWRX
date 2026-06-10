@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { UniversityRegistrationForm } from "@/components/university/UniversityRegistrationForm";
 
 interface CourseRegistrationModalProps {
@@ -14,6 +15,12 @@ export function CourseRegistrationModal({
   open,
   onClose,
 }: CourseRegistrationModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
 
@@ -29,18 +36,18 @@ export function CourseRegistrationModal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/80 p-4 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[200] flex items-end justify-center bg-black/80 p-4 sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="course-registration-title"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto border border-white/10 bg-black-muted p-6 shadow-xl sm:p-8"
+        className="max-h-[90vh] w-full max-w-xl overflow-y-auto border border-white/10 bg-black-muted p-6 shadow-xl sm:p-8 lg:max-w-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
@@ -72,6 +79,7 @@ export function CourseRegistrationModal({
           <UniversityRegistrationForm course={course} />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
