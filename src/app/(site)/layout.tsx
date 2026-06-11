@@ -3,14 +3,14 @@ import { Footer } from "@/components/layout/Footer";
 import { SiteScrollReveal } from "@/components/layout/SiteScrollReveal";
 import { SiteProviders } from "@/components/layout/SiteProviders";
 import { getSiteSettings } from "@/lib/content";
-import { CMS_PAGE_REVALIDATE_SECONDS } from "@/lib/cms-cache";
 import {
   footerNavLinks,
   headerNavLinks,
   isPageEnabled,
 } from "@/lib/pages";
 
-export const revalidate = CMS_PAGE_REVALIDATE_SECONDS;
+/** Must be a literal — Next.js does not allow imported segment config values. */
+export const revalidate = 60;
 
 export default async function SiteLayout({
   children,

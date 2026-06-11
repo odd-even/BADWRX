@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PreviewGate } from "@/components/layout/PreviewGate";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
-import { CMS_PAGE_REVALIDATE_SECONDS } from "@/lib/cms-cache";
 import { rootSiteMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -21,7 +20,8 @@ const neulisBold = localFont({
   weight: "700",
 });
 
-export const revalidate = CMS_PAGE_REVALIDATE_SECONDS;
+/** Must be a literal — Next.js does not allow imported segment config values. */
+export const revalidate = 60;
 
 export async function generateMetadata() {
   return rootSiteMetadata();
