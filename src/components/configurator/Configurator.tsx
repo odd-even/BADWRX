@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { stepKeys, type StepKey } from "@/lib/configurator/constants";
+import { CONFIGURATOR_STEP_NAV_CLEARANCE, stepKeys, type StepKey } from "@/lib/configurator/constants";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
@@ -132,7 +132,7 @@ function SpecSheetRow({ label, value }: { label: string; value: string }) {
       <dt className="text-xs uppercase tracking-widest text-white-muted">
         {label}
       </dt>
-      <dd className="mt-1.5 text-base leading-snug text-white sm:text-lg">{value}</dd>
+      <dd className="mt-1.5 text-sm leading-snug text-white sm:text-base">{value}</dd>
     </div>
   );
 }
@@ -507,7 +507,13 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
 
   return (
     <>
-    <div className={`grid gap-8 lg:grid-cols-5 ${showStepNav ? "pb-24" : ""}`}>
+    <div
+      className={`grid gap-8 lg:grid-cols-5${
+        showStepNav
+          ? " pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))]"
+          : ""
+      }`}
+    >
       <div className="lg:col-span-3">
         {navPosition === 0 && (
           <p className="mb-8 max-w-2xl text-white-muted">
@@ -756,6 +762,13 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
               All builds include accuracy verification and test targets.
             </p>
           </div>
+          {showStepNav ? (
+            <div
+              aria-hidden
+              className="-mx-6 -mb-6 mt-6 bg-black-muted"
+              style={{ minHeight: CONFIGURATOR_STEP_NAV_CLEARANCE }}
+            />
+          ) : null}
         </div>
       </aside>
     </div>

@@ -47,7 +47,7 @@ export function SpecPreviewGrid({
               ) : (
                 <div className="flex aspect-square w-full items-center justify-center bg-black-light p-2 sm:p-3">
                   <p
-                    className={`text-center font-medium leading-snug text-white ${compact ? "text-xs sm:text-sm" : "text-base leading-tight sm:text-lg"}`}
+                    className={`text-center font-medium leading-snug text-white ${compact ? "text-xs sm:text-sm" : "text-sm leading-tight sm:text-base"}`}
                   >
                     {option.label}
                   </p>

@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { CONFIGURATOR_STEP_NAV_CLEARANCE } from "@/lib/configurator/constants";
 
 const LINE_ONE = " for";
 const LINE_TWO = "the American patriot";
 const CHAR_MS = 42;
 
 export function FooterTagline() {
+  const pathname = usePathname();
+  const onConfigurePage = pathname === "/configure" || pathname.startsWith("/configure/");
   const ref = useRef<HTMLParagraphElement>(null);
   const [lineOne, setLineOne] = useState("");
   const [lineTwo, setLineTwo] = useState("");
@@ -71,20 +75,29 @@ export function FooterTagline() {
   const complete = lineOne === LINE_ONE && lineTwo === LINE_TWO;
 
   return (
-    <p
-      ref={ref}
-      className="font-display mx-auto max-w-7xl px-6 pb-12 pt-10 text-3xl uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
-      aria-label="Precision rifles for the American patriot"
-    >
-      <span className="text-red">Precision rifles</span>
-      <span className="text-white/30">{lineOne}</span>
-      <br />
-      <span className="text-white/30">
-        {lineTwo}
-        {!complete && active && (
-          <span className="ml-1 inline-block h-[0.85em] w-[0.08em] translate-y-[0.08em] animate-pulse bg-white/40" />
-        )}
-      </span>
-    </p>
+    <>
+      <p
+        ref={ref}
+        className="font-display mx-auto max-w-7xl px-6 pb-12 pt-10 text-3xl uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl"
+        aria-label="Precision rifles for the American patriot"
+      >
+        <span className="text-red">Precision rifles</span>
+        <span className="text-white/30">{lineOne}</span>
+        <br />
+        <span className="text-white/30">
+          {lineTwo}
+          {!complete && active && (
+            <span className="ml-1 inline-block h-[0.85em] w-[0.08em] translate-y-[0.08em] animate-pulse bg-white/40" />
+          )}
+        </span>
+      </p>
+      {onConfigurePage ? (
+        <div
+          aria-hidden
+          className="bg-black-light"
+          style={{ minHeight: CONFIGURATOR_STEP_NAV_CLEARANCE }}
+        />
+      ) : null}
+    </>
   );
 }
