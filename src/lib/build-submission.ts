@@ -1,5 +1,6 @@
 import { stepKeys, type StepKey } from "@/lib/configurator/constants";
 import { isBasecampNoneOption } from "@/lib/configurator/basecamp-items";
+import { actionEjectLabel } from "@/lib/configurator/action-eject";
 import type { ConfigStep } from "@/lib/types";
 import type { BuildConfiguration } from "@/lib/types";
 import type { ConfiguratorPricing } from "@/lib/configurator/types";
@@ -53,11 +54,18 @@ export function compileBuildSubmission(
 
     const option = config[key];
     if (!option) continue;
+
+    const specs = { ...(option.specs ?? {}) };
+    if (key === "platform") {
+      const eject = actionEjectLabel(config.actionEject);
+      if (eject) specs.ejection = eject;
+    }
+
     selections.push({
       stepKey: key,
       stepTitle: step.title,
       optionLabel: option.label,
-      specs: option.specs ?? {},
+      specs,
       priceCents: getOptionPrice(option.id, pricing),
     });
   }
@@ -70,7 +78,9 @@ export function compileBuildSubmission(
     lineItems,
     totalCents,
     totalFormatted: formatPrice(totalCents),
-    isComplete: stepKeys.every((key) => config[key] !== null),
+    isComplete:
+      stepKeys.every((key) => config[key] !== null) &&
+      config.actionEject !== null,
   };
 }
 

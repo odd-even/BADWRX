@@ -4,6 +4,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CONFIGURATOR_STEP_NAV_CLEARANCE, stepKeys, type StepKey } from "@/lib/configurator/constants";
+import { ACTION_EJECT_OPTIONS } from "@/lib/configurator/action-eject";
+import { ActionEjectIcon } from "@/components/configurator/ActionEjectIcon";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import type { BuildConfiguration, ConfigOption } from "@/lib/types";
 import { OptionImage } from "@/components/configurator/OptionImage";
@@ -41,6 +43,7 @@ import {
 
 const emptyConfig: BuildConfiguration = {
   platform: null,
+  actionEject: null,
   caliber: null,
   stockPaint: null,
   scope: null,
@@ -61,6 +64,7 @@ const hiddenStepKeys: StepKey[] = ["rings"];
 /** Platform fields shown in the live spec sheet (fixed order) */
 const PLATFORM_SPEC_KEYS = [
   "action",
+  "ejection",
   "barrel",
   "platform",
   "use",
@@ -78,6 +82,7 @@ function formatSpecLabel(key: string): string {
   const labels: Record<string, string> = {
     use: "Primary use",
     muzzleBrake: "Muzzle device",
+    ejection: "Action ejection",
   };
   return labels[key] ?? key.replace(/([A-Z])/g, " $1").trim();
 }
@@ -168,6 +173,12 @@ function configToSummary(
       summary[key] = value;
     }
   }
+  if (config.actionEject) {
+    const eject = ACTION_EJECT_OPTIONS.find(
+      (option) => option.id === config.actionEject,
+    )?.label;
+    if (eject) summary.ejection = eject;
+  }
   return summary;
 }
 
@@ -184,6 +195,7 @@ interface StepNavButtonsProps {
   onContinue: () => void;
   onReview: () => void;
   layout: "inline" | "sticky";
+  continueLabel?: string;
 }
 
 function stepNavPrimaryClassName(enabled: boolean, isSticky: boolean, extra = "") {
@@ -205,6 +217,7 @@ function StepNavButtons({
   onContinue,
   onReview,
   layout,
+  continueLabel = "Continue",
 }: StepNavButtonsProps) {
   const isSticky = layout === "sticky";
   const backClassName = `${
@@ -242,7 +255,7 @@ function StepNavButtons({
           onClick={onContinue}
           className={stepNavPrimaryClassName(canAdvance, isSticky)}
         >
-          Continue
+          {continueLabel}
         </button>
       )}
     </>
@@ -262,6 +275,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
 
   const searchParams = useSearchParams();
   const appliedInitialPlatform = useRef(false);
+  const actionEjectRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<ConfiguratorPhase>("configure");
   const [stepIndex, setStepIndex] = useState(0);
   const [config, setConfig] = useState<BuildConfiguration>(emptyConfig);
@@ -308,7 +322,17 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
     if (target === undefined) return;
     setStepIndex(target);
   };
-  const canAdvance = config[currentKey] !== null;
+  const canAdvance =
+    currentKey === "platform"
+      ? config.platform !== null && config.actionEject !== null
+      : config[currentKey] !== null;
+  const needsActionEject =
+    currentKey === "platform" &&
+    config.platform !== null &&
+    config.actionEject === null;
+  const stepContinueLabel = needsActionEject
+    ? "Select ejection to continue"
+    : "Continue";
   const isBuildComplete = submission.isComplete;
   const showStepNav =
     navPosition > 0 || !isLastStep || (isLastStep && isBuildComplete);
@@ -348,6 +372,19 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
   }, [config.platform, onPlatformChange]);
 
   useEffect(() => {
+    if (!needsActionEject) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      actionEjectRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [needsActionEject, config.platform?.id]);
+
+  useEffect(() => {
     if (appliedInitialPlatform.current) return;
 
     const slug = searchParams.get("platform");
@@ -360,7 +397,6 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
 
     appliedInitialPlatform.current = true;
     setConfig((prev) => ({ ...prev, platform }));
-    setStepIndex(1);
   }, [searchParams, configuratorSteps]);
 
   useLayoutEffect(() => {
@@ -406,6 +442,9 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
         if (!allowed.includes(prev.caliber.id)) {
           next.caliber = null;
         }
+      }
+      if (currentKey === "platform") {
+        next.actionEject = null;
       }
       return next;
     });
@@ -639,6 +678,70 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
         </div>
         )}
 
+        {currentKey === "platform" && config.platform ? (
+          <div
+            ref={actionEjectRef}
+            className={`mt-8 scroll-mt-28 border p-6 sm:p-8 ${
+              config.actionEject
+                ? "border-white/10 bg-black-muted"
+                : "border-red/40 bg-red/5"
+            }`}
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-red">
+              Action ejection
+            </p>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white">
+              Choose right or left ejection for the {config.platform.label} action
+              before continuing.
+            </p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {ACTION_EJECT_OPTIONS.map((option) => {
+                const selected = config.actionEject === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() =>
+                      setConfig((prev) => ({ ...prev, actionEject: option.id }))
+                    }
+                    className={`border px-3 py-2.5 text-left transition ${
+                      selected
+                        ? "border-red bg-red/5"
+                        : "border-white/10 bg-black-muted hover:border-white/30"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="flex min-w-0 flex-col gap-0.5">
+                        <span className="flex items-center gap-2">
+                          <ActionEjectIcon
+                            direction={option.id}
+                            className={selected ? "text-red" : "text-white-muted"}
+                          />
+                          <span className="text-sm font-medium text-white">
+                            {option.label}
+                          </span>
+                        </span>
+                        {option.id === "right" ? (
+                          <span className="pl-6 text-xs text-white-muted">Standard</span>
+                        ) : (
+                          <span className="pl-6 text-xs text-white-muted">
+                            Left-hand shooters
+                          </span>
+                        )}
+                      </span>
+                      <span
+                        className={`h-3.5 w-3.5 shrink-0 border ${
+                          selected ? "border-red bg-red" : "border-white/30"
+                        }`}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
         {isLastStep && isBuildComplete && (
           <div className="mt-10 border border-red/40 bg-red/5 p-6 sm:p-8">
             <p className="text-xs uppercase tracking-widest text-red">
@@ -665,6 +768,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
               onBack={() => goToStep(navPosition - 1)}
               onContinue={() => goToStep(navPosition + 1)}
               onReview={() => setPhase("review")}
+              continueLabel={stepContinueLabel}
             />
           </div>
         ) : null}
@@ -785,6 +889,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
             onBack={() => goToStep(navPosition - 1)}
             onContinue={() => goToStep(navPosition + 1)}
             onReview={() => setPhase("review")}
+            continueLabel={stepContinueLabel}
           />
         </div>
       </div>

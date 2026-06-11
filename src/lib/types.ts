@@ -252,8 +252,11 @@ export interface ConfigStep {
   options: ConfigOption[];
 }
 
+export type ActionEject = "right" | "left";
+
 export interface BuildConfiguration {
   platform: ConfigOption | null;
+  actionEject: ActionEject | null;
   caliber: ConfigOption | null;
   stockPaint: ConfigOption | null;
   scope: ConfigOption | null;
