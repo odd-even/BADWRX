@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ConfigurePageClient } from "@/components/configurator/ConfigurePageClient";
 import { configurePageTitle } from "@/lib/configurator/constants";
 import { getConfiguratorData } from "@/lib/content";
+import { buildPageMetadata } from "@/lib/page-seo";
 
 interface ConfigurePageProps {
   searchParams: Promise<{ platform?: string }>;
@@ -17,12 +18,13 @@ export async function generateMetadata({
   );
   const title = configurePageTitle(platformOption?.label);
 
-  return {
+  const metadata = await buildPageMetadata({
+    page: "configure",
     title,
-    description:
-      "Configure a BADWRX platform, caliber, finish, optics, and packages. Submit your build for a quote.",
-    alternates: { canonical: "/configure" },
-  };
+    canonical: "/configure",
+  });
+
+  return metadata;
 }
 
 export default async function ConfigurePage({ searchParams }: ConfigurePageProps) {

@@ -70,6 +70,25 @@ export function imageUrl(
   return urlFor(source).width(resolvedWidth).auto("format").quality(80).url();
 }
 
+/** CDN URL from Sanity image field — builder first, then dereferenced asset.url. */
+export function resolveSanityImageUrl(
+  source: SanityImageSource | undefined,
+  width: number | ImageWidthPreset = "default",
+): string | undefined {
+  if (!source) return undefined;
+  const directUrl =
+    typeof source === "object" &&
+    source !== null &&
+    "asset" in source &&
+    source.asset &&
+    typeof source.asset === "object" &&
+    "url" in source.asset &&
+    typeof source.asset.url === "string"
+      ? source.asset.url.trim()
+      : undefined;
+  return imageUrl(source, width) ?? (directUrl || undefined);
+}
+
 /** Width descriptors for responsive srcSet (Sanity CDN). */
 export function imageSrcSet(
   source: SanityImageSource | undefined,

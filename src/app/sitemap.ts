@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getAllMerch, getAllRifles } from "@/lib/content";
-import { getSiteUrl, isSitePublic } from "@/lib/site";
+import { getAllMerch, getAllRifles, getSiteSettings } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
+import { isSearchIndexingAllowed } from "@/lib/site-indexing";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  if (!isSitePublic()) return [];
+  const settings = await getSiteSettings();
+  if (!isSearchIndexingAllowed(settings)) return [];
 
   const base = getSiteUrl();
   const now = new Date();

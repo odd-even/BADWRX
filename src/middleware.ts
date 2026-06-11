@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { fetchAllowSearchIndexing } from "@/lib/site-indexing";
 
-/** Block search indexing until NEXT_PUBLIC_SITE_PUBLIC=true at launch. */
-export function middleware(request: NextRequest) {
+/** Block search indexing until deployment + Sanity allow it. */
+export async function middleware(_request: NextRequest) {
   const response = NextResponse.next();
 
-  if (process.env.NEXT_PUBLIC_SITE_PUBLIC !== "true") {
+  const allowIndexing = await fetchAllowSearchIndexing();
+  if (!allowIndexing) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   }
 

@@ -8,6 +8,7 @@ export const siteSettings = defineType({
   groups: [
     { name: "brand", title: "Brand", default: true },
     { name: "sharing", title: "Sharing & icons" },
+    { name: "seo", title: "SEO" },
     { name: "layout", title: "Layout" },
     { name: "photos", title: "Photos" },
     { name: "pages", title: "Pages" },
@@ -62,6 +63,69 @@ export const siteSettings = defineType({
       group: "brand",
       of: [{ type: "string" }],
       description: "Scrolling partner badges on the home page",
+    }),
+
+    defineField({
+      name: "pageSeo",
+      title: "Page SEO descriptions",
+      type: "object",
+      group: "seo",
+      description:
+        "Meta descriptions for search results and link previews. Aim for about 150 characters.",
+      fields: [
+        defineField({
+          name: "home",
+          title: "Home",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "about",
+          title: "About",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "builds",
+          title: "Builds",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "configure",
+          title: "Configure",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "contact",
+          title: "Contact",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "merch",
+          title: "Merch",
+          type: "text",
+          rows: 2,
+        }),
+        defineField({
+          name: "university",
+          title: "University",
+          type: "text",
+          rows: 2,
+        }),
+      ],
+    }),
+
+    defineField({
+      name: "allowSearchIndexing",
+      title: "Allow search engine indexing",
+      type: "boolean",
+      group: "sharing",
+      initialValue: false,
+      description:
+        "When off, the site sends noindex to search engines (preview/staging). Turn on at public launch. Requires NEXT_PUBLIC_SITE_PUBLIC=true on the deployment as well.",
     }),
 
     defineField({

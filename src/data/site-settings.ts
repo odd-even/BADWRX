@@ -3,6 +3,7 @@ import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 import { defaultNavImageFade } from "@/lib/nav-image-fade";
+import { defaultPageSeo } from "@/data/page-seo";
 import type { BrandAssets, NavImageFadeSettings, SiteImages, SiteSettings } from "@/lib/types";
 
 const { docxCopy } = sourceData;
@@ -193,6 +194,8 @@ export const defaultSiteSettings: SiteSettings = {
     title: "Request a build quote",
     body: cleanDocxCopy(docxCopy.customQuoteCta),
   },
+  allowSearchIndexing: false,
+  pageSeo: defaultPageSeo,
   pageVisibility: {
     builds: { enabled: true },
     configure: { enabled: true },

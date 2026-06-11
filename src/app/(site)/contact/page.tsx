@@ -5,13 +5,16 @@ import type { ContactInquiryMode } from "@/components/contact/ContactForm";
 import { getAllMerch, getBrandContent } from "@/lib/content";
 import { brand as siteBrand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
+import { buildPageMetadata } from "@/lib/page-seo";
 import { sourceData } from "@/lib/source-data";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Request a consultation or ask questions about a custom rifle build.",
-  alternates: { canonical: "/contact" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    page: "contact",
+    title: "Contact",
+    canonical: "/contact",
+  });
+}
 
 interface ContactPageProps {
   searchParams: Promise<{ course?: string; merch?: string }>;

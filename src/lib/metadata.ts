@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { brand, siteTitle } from "@/lib/brand";
 import { defaultBrandAssets } from "@/data/site-settings";
 import { getSiteSettings } from "@/lib/content";
-import { defaultSiteDescription, getSiteUrl, isSitePublic } from "@/lib/site";
+import { getPageSeoDescription } from "@/lib/page-seo";
+import { defaultSiteDescription, getSiteUrl } from "@/lib/site";
+import { isSearchIndexingAllowed } from "@/lib/site-indexing";
 import { brandAssetDimensions } from "@/sanity/lib/image";
 import type { BrandAssets, SiteSettings } from "@/lib/types";
 
@@ -13,8 +15,12 @@ function absoluteAssetUrl(url: string, siteUrl: string): string {
 
 export function buildSiteMetadata(
   brandAssets: BrandAssets = defaultBrandAssets,
+  settings?: Pick<SiteSettings, "allowSearchIndexing" | "pageSeo"> | null,
 ): Metadata {
   const siteUrl = getSiteUrl();
+  const description = settings
+    ? getPageSeoDescription(settings, "home")
+    : defaultSiteDescription;
   const shareUrl = absoluteAssetUrl(brandAssets.shareImage.url, siteUrl);
   const faviconUrl = absoluteAssetUrl(brandAssets.favicon.url, siteUrl);
   const shareAlt = brandAssets.shareImage.alt || `${brand.short} badge`;
@@ -25,8 +31,8 @@ export function buildSiteMetadata(
       default: siteTitle,
       template: `%s | ${brand.short}`,
     },
-    description: defaultSiteDescription,
-    robots: isSitePublic()
+    description,
+    robots: isSearchIndexingAllowed(settings)
       ? { index: true, follow: true }
       : {
           index: false,
@@ -39,7 +45,7 @@ export function buildSiteMetadata(
       url: siteUrl,
       siteName: brand.short,
       title: siteTitle,
-      description: defaultSiteDescription,
+      description,
       images: [
         {
           url: shareUrl,
@@ -52,7 +58,7 @@ export function buildSiteMetadata(
     twitter: {
       card: "summary_large_image",
       title: siteTitle,
-      description: defaultSiteDescription,
+      description,
       images: [shareUrl],
     },
     icons: {
@@ -67,9 +73,9 @@ export function buildSiteMetadata(
 export async function rootSiteMetadata(): Promise<Metadata> {
   try {
     const site = await getSiteSettings();
-    return buildSiteMetadata(site.brandAssets);
+    return buildSiteMetadata(site.brandAssets, site);
   } catch {
-    return buildSiteMetadata();
+    return buildSiteMetadata(undefined, null);
   }
 }
 

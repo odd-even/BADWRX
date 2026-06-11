@@ -1,6 +1,6 @@
 import type { MerchItem, RifleImage } from "@/lib/types";
 import { merchImage } from "@/lib/images";
-import { imageUrl } from "./image";
+import { resolveSanityImageUrl } from "./image";
 import { sanityPriceToCents } from "./price";
 
 interface SanityImageField {
@@ -74,7 +74,7 @@ function mapSanityImage(
   width: "card" | "content" = "card",
 ): RifleImage | null {
   if (!field) return null;
-  const url = imageUrl(field, width) ?? field.asset?.url;
+  const url = resolveSanityImageUrl(field, width);
   if (!url) return null;
   return { url, alt: field.alt ?? fallbackAlt };
 }

@@ -10,7 +10,7 @@ export function getSiteUrl(): string {
   return withProtocol.replace(/\/$/, "");
 }
 
-/** When true, search engines may index the site and the preview gate is off. */
+/** When true, the preview password gate is off. Indexing also requires Sanity allowSearchIndexing. */
 export function isSitePublic(): boolean {
   return process.env.NEXT_PUBLIC_SITE_PUBLIC === "true";
 }

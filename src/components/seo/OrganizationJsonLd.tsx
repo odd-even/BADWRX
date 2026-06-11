@@ -1,8 +1,11 @@
 import { brand } from "@/lib/brand";
-import { getSiteUrl, isSitePublic } from "@/lib/site";
+import { getSiteSettings } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
+import { isSearchIndexingAllowed } from "@/lib/site-indexing";
 
-export function OrganizationJsonLd() {
-  if (!isSitePublic()) return null;
+export async function OrganizationJsonLd() {
+  const settings = await getSiteSettings();
+  if (!isSearchIndexingAllowed(settings)) return null;
 
   const data = {
     "@context": "https://schema.org",

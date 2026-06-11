@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { PreviewGate } from "@/components/layout/PreviewGate";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
+import { CMS_PAGE_REVALIDATE_SECONDS } from "@/lib/cms-cache";
 import { rootSiteMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -20,7 +21,7 @@ const neulisBold = localFont({
   weight: "700",
 });
 
-export const revalidate = 60;
+export const revalidate = CMS_PAGE_REVALIDATE_SECONDS;
 
 export async function generateMetadata() {
   return rootSiteMetadata();

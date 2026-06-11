@@ -38,6 +38,18 @@ export type PageKey =
   | "about"
   | "contact";
 
+export type PageSeoKey = PageKey | "home";
+
+export interface PageSeoBlurbs {
+  home: string;
+  about: string;
+  builds: string;
+  configure: string;
+  contact: string;
+  merch: string;
+  university: string;
+}
+
 export interface PageVisibilitySetting {
   enabled: boolean;
   redirectTo?: string;
@@ -169,6 +181,10 @@ export interface SiteSettings {
   name: string;
   short: string;
   tagline: string;
+  /** When true (and deployment is public), search engines may index the site. */
+  allowSearchIndexing?: boolean;
+  /** Meta descriptions for main pages (search + link previews). */
+  pageSeo?: PageSeoBlurbs;
   email: string;
   partnerBarrels: string;
   partnerOptics: string;

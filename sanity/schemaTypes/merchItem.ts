@@ -79,7 +79,8 @@ export const merchItem = defineType({
         defineField({ name: "alt", title: "Alt text", type: "string" }),
       ],
       description: "Optional — first product image is used when this is empty.",
-      hidden: ({ document }) => Boolean(document?.images?.length),
+      hidden: ({ document }) =>
+        Array.isArray(document?.images) && document.images.length > 0,
     }),
     defineField({
       name: "sizes",

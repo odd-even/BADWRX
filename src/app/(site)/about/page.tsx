@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { SanityResponsiveImage } from "@/components/ui/SanityResponsiveImage";
-import { brand } from "@/lib/brand";
+import { buildPageMetadata } from "@/lib/page-seo";
 import { getSiteSettings } from "@/lib/content";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: `The story behind ${brand.name} (${brand.short}) and our build philosophy.`,
-  alternates: { canonical: "/about" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    page: "about",
+    title: "About",
+    canonical: "/about",
+  });
+}
 
 export default async function AboutPage() {
   const site = await getSiteSettings();
@@ -138,7 +140,7 @@ export default async function AboutPage() {
               <h2 className="mt-2 text-3xl text-white">
                 Built to order, tested before it ships
               </h2>
-              <p className="mt-6 text-white-muted leading-relaxed">{brand.buildPromise}</p>
+              <p className="mt-6 text-white-muted leading-relaxed">{site.buildPromise}</p>
             </div>
             <div className="border border-white/10 bg-black-light p-8 md:p-10">
               <p className="text-xs uppercase tracking-widest text-red">Ballistic package</p>

@@ -3,6 +3,7 @@ import { rifles as localRifles, getRifleBySlug as localGetRifleBySlug, getFeatur
 import { courses as localCourses, getCourseBySlug as localGetCourseBySlug } from "@/data/courses";
 import { merchItems as localMerchItems, getMerchBySlug as localGetMerchBySlug } from "@/data/merch";
 import { defaultSiteSettings } from "@/data/site-settings";
+import { mergePageSeo } from "@/lib/page-seo";
 import { normalizePageVisibility } from "@/lib/pages";
 import type { Course, MerchItem, Rifle, SiteSettings } from "@/lib/types";
 import { sanityFetchOptions } from "@/lib/cms-cache";
@@ -180,6 +181,7 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
     pageVisibility: normalizePageVisibility(
       settings.pageVisibility ?? defaultSiteSettings.pageVisibility,
     ),
+    pageSeo: mergePageSeo(settings.pageSeo),
     testimonials:
       testimonials && testimonials.length >= 2
         ? testimonials

@@ -1,8 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getSiteUrl, isSitePublic } from "@/lib/site";
+import { getSiteSettings } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
+import { isSearchIndexingAllowed } from "@/lib/site-indexing";
 
-export default function robots(): MetadataRoute.Robots {
-  if (!isSitePublic()) {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getSiteSettings();
+  if (!isSearchIndexingAllowed(settings)) {
     return {
       rules: {
         userAgent: "*",

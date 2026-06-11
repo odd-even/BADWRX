@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CoursePageContent } from "@/components/university/CoursePageContent";
-import { brand } from "@/lib/brand";
 import { getAllCourses, getSiteSettings } from "@/lib/content";
+import { buildPageMetadata } from "@/lib/page-seo";
 
-export const metadata: Metadata = {
-  title: "Long Range University",
-  description: `Professional long range shooting and ballistics training from ${brand.name}. One-on-one instruction from industry professionals.`,
-  alternates: { canonical: "/university" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    page: "university",
+    title: "Long Range University",
+    canonical: "/university",
+  });
+}
 
 interface UniversityPageProps {
   searchParams: Promise<{ register?: string }>;

@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MerchGallery } from "@/components/merch/MerchGallery";
 import { getAllMerch } from "@/lib/content";
+import { buildPageMetadata } from "@/lib/page-seo";
 
-export const metadata: Metadata = {
-  title: "Merch",
-  description:
-    "BADWRX caps, t-shirts, and sweaters. Rep the brand on the range and in the field.",
-  alternates: { canonical: "/merch" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    page: "merch",
+    title: "Merch",
+    canonical: "/merch",
+  });
+}
 
 export default async function MerchPage() {
   const merchItems = await getAllMerch();

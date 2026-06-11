@@ -1,3 +1,9 @@
+/** Preserve crop/hotspot/refs and dereference asset for image-url builder + direct URL fallback. */
+const sanityImage = `{
+  ...,
+  asset->{ _id, url }
+}`;
+
 export const riflesQuery = `*[_type == "rifle"] | order(title asc) {
   _id,
   title,
@@ -14,9 +20,9 @@ export const riflesQuery = `*[_type == "rifle"] | order(title asc) {
   configuratorPrice,
   configuratorPriceCents,
   showInConfigurator,
-  heroImage { asset->{ _id, url }, alt },
-  configuratorImage { asset->{ _id, url }, alt },
-  gallery[] { asset->{ _id, url }, alt, caption },
+  heroImage ${sanityImage},
+  configuratorImage ${sanityImage},
+  gallery[] ${sanityImage},
   specs,
   highlights
 }`;
@@ -37,9 +43,9 @@ export const rifleBySlugQuery = `*[_type == "rifle" && slug.current == $slug][0]
   configuratorPrice,
   configuratorPriceCents,
   showInConfigurator,
-  heroImage { asset->{ _id, url }, alt },
-  configuratorImage { asset->{ _id, url }, alt },
-  gallery[] { asset->{ _id, url }, alt, caption },
+  heroImage ${sanityImage},
+  configuratorImage ${sanityImage},
+  gallery[] ${sanityImage},
   specs,
   highlights
 }`;
@@ -59,7 +65,7 @@ export const coursesQuery = `*[_type == "course"] | order(title asc) {
   curriculum[]{ title, detail },
   audience,
   includes,
-  heroImage { asset->{ _id, url }, alt },
+  heroImage ${sanityImage},
   featured
 }`;
 
@@ -78,7 +84,7 @@ export const courseBySlugQuery = `*[_type == "course" && slug.current == $slug][
   curriculum[]{ title, detail },
   audience,
   includes,
-  heroImage { asset->{ _id, url }, alt },
+  heroImage ${sanityImage},
   featured
 }`;
 
@@ -93,8 +99,8 @@ export const merchQuery = `*[_type == "merchItem" && active != false] | order(ca
   longDescription,
   sizes,
   colors,
-  image { asset->{ _id, url }, alt },
-  images[] { asset->{ _id, url }, alt }
+  image ${sanityImage},
+  images[] ${sanityImage}
 }`;
 
 export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug && active != false][0] {
@@ -108,14 +114,24 @@ export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug
   longDescription,
   sizes,
   colors,
-  image { asset->{ _id, url }, alt },
-  images[] { asset->{ _id, url }, alt }
+  image ${sanityImage},
+  images[] ${sanityImage}
 }`;
 
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   name,
   short,
   tagline,
+  allowSearchIndexing,
+  pageSeo {
+    home,
+    about,
+    builds,
+    configure,
+    contact,
+    merch,
+    university
+  },
   email,
   partnerBarrels,
   partnerOptics,
@@ -140,16 +156,16 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
     default { topOpacity, midOpacityMobile, midOpacityDesktop }
   },
   brandAssets {
-    shareImage { asset->{ url }, alt },
-    favicon { asset->{ url }, alt }
+    shareImage ${sanityImage},
+    favicon ${sanityImage}
   },
   siteImages {
-    reticleOverlay { asset->{ url }, alt },
-    homeHeroBanner { asset->{ url }, alt },
-    homeFieldTested { asset->{ url }, alt },
-    homeBallisticSection { asset->{ url }, alt },
-    aboutHeroBanner { asset->{ url }, alt },
-    aboutStory { asset->{ url }, alt }
+    reticleOverlay ${sanityImage},
+    homeHeroBanner ${sanityImage},
+    homeFieldTested ${sanityImage},
+    homeBallisticSection ${sanityImage},
+    aboutHeroBanner ${sanityImage},
+    aboutStory ${sanityImage}
   }
 }`;
 
@@ -174,7 +190,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     bestFor,
     price,
     priceCents,
-    image { asset->{ _id, url }, alt }
+    image ${sanityImage}
   },
   optics[]{
     optionId,
@@ -188,7 +204,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     notes,
     price,
     priceCents,
-    image { asset->{ _id, url }, alt }
+    image ${sanityImage}
   },
   opticsConsult,
   opticsNone,
@@ -198,7 +214,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     description,
     price,
     priceCents,
-    image { asset->{ _id, url }, alt }
+    image ${sanityImage}
   },
   basecamp{
     optionId,
@@ -208,7 +224,7 @@ export const configuratorSettingsQuery = `*[_type == "configuratorSettings"][0] 
     items,
     price,
     priceCents,
-    image { asset->{ _id, url }, alt },
+    image ${sanityImage},
     noneLabel,
     noneDescription
   },

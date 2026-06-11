@@ -3,7 +3,14 @@ import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings }
 import { defaultBrandAssets, defaultSiteImages } from "@/data/site-settings";
 import { images } from "@/lib/images";
 import { configuratorPlaceholder, riflePlaceholderAlt } from "@/lib/images";
-import { imageUrl, brandAssetImageUrl, imageSrcSetForPreset, type ImageWidthPreset, type ResponsiveWidthPreset } from "./image";
+import {
+  brandAssetImageUrl,
+  imageSrcSetForPreset,
+  imageUrl,
+  resolveSanityImageUrl,
+  type ImageWidthPreset,
+  type ResponsiveWidthPreset,
+} from "./image";
 
 interface SanityImageField {
   asset?: { url?: string };
@@ -58,10 +65,7 @@ function mapImage(
   width: ImageWidthPreset = "default",
 ): RifleImage {
   const responsivePreset = widthToResponsive[width];
-  const url =
-    imageUrl(image, width) ??
-    image?.asset?.url ??
-    fallbackUrl;
+  const url = resolveSanityImageUrl(image, width) ?? fallbackUrl;
 
   const srcSet =
     responsivePreset && image
@@ -86,7 +90,7 @@ export function mapRifle(doc: SanityRifle): Rifle {
     featured: Boolean(doc.featured),
     startingAt: doc.startingAt,
     description: doc.description,
-    heroImage: mapImage(doc.configuratorImage ?? doc.heroImage, riflePlaceholderAlt, configuratorPlaceholder, "hero"),
+    heroImage: mapImage(doc.heroImage ?? doc.configuratorImage, riflePlaceholderAlt, configuratorPlaceholder, "hero"),
     gallery: (doc.gallery ?? []).map((item) => mapImage(item, riflePlaceholderAlt, configuratorPlaceholder, "content")),
     specs: doc.specs ?? {},
     highlights: doc.highlights ?? [],
@@ -135,7 +139,7 @@ function mapSiteImageField(
   fallback: RifleImage,
   width: ImageWidthPreset,
 ): RifleImage {
-  if (!image?.asset && !imageUrl(image, width)) return fallback;
+  if (!resolveSanityImageUrl(image, width)) return fallback;
   return mapImage(image, fallback.alt, fallback.url, width);
 }
 

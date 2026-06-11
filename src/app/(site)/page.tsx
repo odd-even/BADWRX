@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SanityResponsiveImage, SECTION_IMAGE_SIZES } from "@/components/ui/SanityResponsiveImage";
 import { siteTitle } from "@/lib/brand";
-import { defaultSiteDescription } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/page-seo";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
@@ -14,16 +14,13 @@ import { RifleScroller } from "@/components/rifles/RifleScroller";
 import { getAllRifles, getSiteSettings } from "@/lib/content";
 import { isPageEnabled } from "@/lib/pages";
 
-export const metadata: Metadata = {
-  title: siteTitle,
-  description: defaultSiteDescription,
-  alternates: { canonical: "/" },
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata({
+    page: "home",
     title: siteTitle,
-    description: defaultSiteDescription,
-    url: "/",
-  },
-};
+    canonical: "/",
+  });
+}
 
 export default async function HomePage() {
   const [rifles, site] = await Promise.all([

@@ -10,7 +10,7 @@ import {
 import type { ConfigOption, ConfigStep } from "@/lib/types";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
-import { imageUrl, type ImageWidthPreset } from "./image";
+import { resolveSanityImageUrl, type ImageWidthPreset } from "./image";
 import { sanityPriceToCents } from "./price";
 
 interface SanityImageField {
@@ -137,7 +137,7 @@ function mapImageOption(
   alt: string,
   width: ImageWidthPreset = "configuratorOption",
 ): { url: string; alt: string } {
-  const url = imageUrl(image, width) ?? image?.asset?.url ?? fallbackUrl;
+  const url = resolveSanityImageUrl(image, width) ?? fallbackUrl;
   return { url, alt: image?.alt ?? alt };
 }
 

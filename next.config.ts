@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ["sanity", "next-sanity"],
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 60 * 60 * 24 * 30,
+    minimumCacheTTL:
+      process.env.NODE_ENV === "development" ? 0 : 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: "https",

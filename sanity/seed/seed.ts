@@ -249,10 +249,42 @@ async function migrateNavImageFadeIfNeeded() {
   console.log("  ✓ Seeded nav image fade opacity defaults");
 }
 
+async function migratePageSeoIfNeeded() {
+  const doc = await client.fetch<{ pageSeo?: SiteSettings["pageSeo"] }>(
+    `*[_id == "siteSettings"][0]{ pageSeo }`,
+  );
+
+  if (doc?.pageSeo?.home?.trim()) return;
+
+  await client
+    .patch("siteSettings")
+    .set({ pageSeo: defaultSiteSettings.pageSeo })
+    .commit();
+
+  console.log("  ✓ Seeded page SEO descriptions");
+}
+
+async function migrateAllowSearchIndexingIfNeeded() {
+  const doc = await client.fetch<{ allowSearchIndexing?: boolean }>(
+    `*[_id == "siteSettings"][0]{ allowSearchIndexing }`,
+  );
+
+  if (doc?.allowSearchIndexing !== undefined) return;
+
+  await client
+    .patch("siteSettings")
+    .set({ allowSearchIndexing: false })
+    .commit();
+
+  console.log("  ✓ Seeded allowSearchIndexing default (off)");
+}
+
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
   await migratePageVisibilityIfNeeded();
   await migrateNavImageFadeIfNeeded();
+  await migrateAllowSearchIndexingIfNeeded();
+  await migratePageSeoIfNeeded();
   await migrateSiteImages();
   await writeSeedDocument(
     "siteSettings",
