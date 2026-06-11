@@ -1,4 +1,4 @@
-import raw from "@/data/generated/source-data.json";
+import { sourceDataJson } from "@/data/generated/source-data";
 
 export interface SourceRifle {
   id: string;
@@ -105,7 +105,7 @@ export interface SourceData {
   };
 }
 
-export const sourceData = raw as unknown as SourceData;
+export const sourceData = sourceDataJson as unknown as SourceData;
 
 export function getCopy(key: string, fallback = ""): string {
   return sourceData.website.copyBlocks[key] ?? fallback;
