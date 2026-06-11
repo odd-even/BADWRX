@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { blurActiveElement, useBodyScrollLock } from "@/lib/modal-body-lock";
 import type { RifleImage } from "@/lib/types";
@@ -61,8 +62,13 @@ function ImageLightbox({
   onClose: () => void;
   onChangeIndex: (index: number) => void;
 }) {
+  const [mounted, setMounted] = useState(false);
   const active = images[activeIndex];
   const hasMultiple = images.length > 1;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useBodyScrollLock(true);
 
@@ -90,18 +96,18 @@ function ImageLightbox({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [goNext, goPrev, hasMultiple, onClose]);
 
-  if (!active) return null;
+  if (!active || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[250] flex flex-col bg-black/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[300] flex flex-col bg-black/95 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={`${title} image viewer`}
       onClick={onClose}
     >
       <div
-        className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 px-4 py-3 sm:px-6"
+        className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="truncate text-xs uppercase tracking-widest text-white-muted">
@@ -123,17 +129,23 @@ function ImageLightbox({
       </div>
 
       <div
-        className="relative flex min-h-0 flex-1 items-center justify-center p-4 sm:p-8"
+        className="flex min-h-0 flex-1 items-center justify-center gap-3 overflow-y-auto overscroll-contain px-4 py-4 sm:gap-6 sm:px-6 sm:py-6"
         onClick={(event) => event.stopPropagation()}
       >
         {hasMultiple ? (
-          <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2 sm:left-6">
+          <div className="hidden shrink-0 sm:block">
             <LightboxArrow direction="prev" label="Previous image" onClick={goPrev} />
           </div>
         ) : null}
 
-        <figure className="flex max-h-full max-w-full flex-col items-center">
-          <div className="relative h-[min(72vh,900px)] w-[min(92vw,1200px)]">
+        <figure className="flex w-full min-w-0 max-w-[min(92vw,1200px)] flex-col items-center">
+          <div
+            className={`relative w-full max-w-[min(92vw,1200px)] ${
+              hasMultiple
+                ? "h-[min(calc(100dvh-14rem),70dvh)] sm:h-[min(calc(100dvh-10rem),min(75dvh,900px))]"
+                : "h-[min(calc(100dvh-11rem),75dvh)] sm:h-[min(calc(100dvh-10rem),min(75dvh,900px))]"
+            }`}
+          >
             <Image
               key={active.url}
               src={active.url}
@@ -152,12 +164,23 @@ function ImageLightbox({
         </figure>
 
         {hasMultiple ? (
-          <div className="absolute right-4 top-1/2 z-10 -translate-y-1/2 sm:right-6">
+          <div className="hidden shrink-0 sm:block">
             <LightboxArrow direction="next" label="Next image" onClick={goNext} />
           </div>
         ) : null}
       </div>
-    </div>
+
+      {hasMultiple ? (
+        <div
+          className="flex shrink-0 items-center justify-center gap-4 border-t border-white/10 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <LightboxArrow direction="prev" label="Previous image" onClick={goPrev} />
+          <LightboxArrow direction="next" label="Next image" onClick={goNext} />
+        </div>
+      ) : null}
+    </div>,
+    document.body,
   );
 }
 
