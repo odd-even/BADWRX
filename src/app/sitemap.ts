@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllRifles } from "@/lib/content";
+import { getAllMerch, getAllRifles } from "@/lib/content";
 import { getSiteUrl, isSitePublic } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const base = getSiteUrl();
   const now = new Date();
-  const rifles = await getAllRifles();
+  const [rifles, merch] = await Promise.all([getAllRifles(), getAllMerch()]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, lastModified: now, changeFrequency: "weekly", priority: 1 },
@@ -26,5 +26,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...rifleRoutes];
+  const merchRoutes: MetadataRoute.Sitemap = merch.map((item) => ({
+    url: `${base}/merch/${item.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...rifleRoutes, ...merchRoutes];
 }

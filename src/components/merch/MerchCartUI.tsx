@@ -76,17 +76,84 @@ interface MerchCardProps {
   item: MerchItem;
 }
 
-export function MerchCard({ item }: MerchCardProps) {
+function MerchCardNavArrow({
+  direction,
+  label,
+  onClick,
+}: {
+  direction: "prev" | "next";
+  label: string;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
   return (
-    <article className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
-      <div className="relative aspect-square overflow-hidden bg-black-light hover-zoom">
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/75 text-white opacity-0 backdrop-blur-sm transition hover:border-red hover:text-red group-hover/image:opacity-100 ${
+        direction === "prev" ? "left-2" : "right-2"
+      }`}
+    >
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        className="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {direction === "prev" ? (
+          <path d="m15 6-6 6 6 6" />
+        ) : (
+          <path d="m9 6 6 6-6 6" />
+        )}
+      </svg>
+    </button>
+  );
+}
+
+export function MerchCard({ item }: MerchCardProps) {
+  const images = item.images.length > 0 ? item.images : [item.image];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = images[activeIndex] ?? images[0];
+  const hasGallery = images.length > 1;
+
+  function stepImage(delta: number, event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setActiveIndex((current) => (current + delta + images.length) % images.length);
+  }
+
+  return (
+    <Link
+      href={`/merch/${item.slug}`}
+      className="group flex flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50"
+    >
+      <div className="group/image relative aspect-square overflow-hidden bg-black-light hover-zoom">
         <Image
-          src={item.image.url}
-          alt={item.image.alt}
+          key={active.url}
+          src={active.url}
+          alt={active.alt}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+        {hasGallery ? (
+          <>
+            <MerchCardNavArrow
+              direction="prev"
+              label={`Previous image for ${item.title}`}
+              onClick={(event) => stepImage(-1, event)}
+            />
+            <MerchCardNavArrow
+              direction="next"
+              label={`Next image for ${item.title}`}
+              onClick={(event) => stepImage(1, event)}
+            />
+          </>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-6">
@@ -94,10 +161,14 @@ export function MerchCard({ item }: MerchCardProps) {
         <h2 className="mt-2 text-xl text-white transition group-hover:text-red">
           {item.title}
         </h2>
-        <p className="mt-2 flex-1 text-sm text-white-muted">{item.description}</p>
-        <MerchAddToCart item={item} />
+        <p className="mt-2 flex-1 line-clamp-2 text-sm text-white-muted">
+          {item.description}
+        </p>
+        <span className="mt-4 text-xs uppercase tracking-widest text-red transition group-hover:text-white">
+          View product →
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 

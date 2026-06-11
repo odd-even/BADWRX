@@ -41,20 +41,45 @@ export const merchItem = defineType({
     }),
     defineField({
       name: "description",
-      title: "Description",
+      title: "Short description",
       type: "text",
       rows: 3,
+      description: "Shown on the merch listing grid.",
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "longDescription",
+      title: "Full description",
+      type: "text",
+      rows: 8,
+      description: "Shown on the product detail page. Falls back to the short description if empty.",
+    }),
+    defineField({
+      name: "images",
+      title: "Product images",
+      type: "array",
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({ name: "alt", title: "Alt text", type: "string" }),
+          ],
+        },
+      ],
+      description: "Gallery on the product detail page. First image is used on the listing grid.",
+      validation: (rule) => rule.min(1),
+    }),
+    defineField({
       name: "image",
-      title: "Product image",
+      title: "Listing thumbnail (legacy)",
       type: "image",
       options: { hotspot: true },
       fields: [
         defineField({ name: "alt", title: "Alt text", type: "string" }),
       ],
-      validation: (rule) => rule.required(),
+      description: "Optional — first product image is used when this is empty.",
+      hidden: ({ document }) => Boolean(document?.images?.length),
     }),
     defineField({
       name: "sizes",
@@ -93,7 +118,7 @@ export const merchItem = defineType({
       title: "title",
       subtitle: "category",
       price: "price",
-      media: "image",
+      media: "images.0",
     },
     prepare({ title, subtitle, price, media }) {
       const priceLabel =

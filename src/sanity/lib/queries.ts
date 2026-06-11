@@ -90,9 +90,11 @@ export const merchQuery = `*[_type == "merchItem" && active != false] | order(ca
   price,
   priceCents,
   description,
+  longDescription,
   sizes,
   colors,
-  image { asset->{ _id, url }, alt }
+  image { asset->{ _id, url }, alt },
+  images[] { asset->{ _id, url }, alt }
 }`;
 
 export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug && active != false][0] {
@@ -103,9 +105,11 @@ export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug
   price,
   priceCents,
   description,
+  longDescription,
   sizes,
   colors,
-  image { asset->{ _id, url }, alt }
+  image { asset->{ _id, url }, alt },
+  images[] { asset->{ _id, url }, alt }
 }`;
 
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {

@@ -101,7 +101,9 @@ export interface MerchItem {
   price: string;
   priceCents: number;
   description: string;
+  longDescription: string;
   image: RifleImage;
+  images: RifleImage[];
   sizes: string[];
   colors?: string[];
 }

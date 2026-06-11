@@ -323,13 +323,25 @@ async function seedMerch() {
       throw new Error(`Missing merch image source for slug: ${item.slug}`);
     }
 
-    const cacheKey = `${source.folder}/${source.filename}`;
-    let assetId = assetCache.get(cacheKey);
-    if (!assetId) {
-      const asset = await uploadMerchAsset(source.folder, source.filename);
-      assetId = asset._id;
-      assetCache.set(cacheKey, assetId);
-    }
+    const imageRefs = await Promise.all(
+      source.filenames.map(async (filename, index) => {
+        const cacheKey = `${source.folder}/${filename}`;
+        let assetId = assetCache.get(cacheKey);
+        if (!assetId) {
+          const asset = await uploadMerchAsset(source.folder, filename);
+          assetId = asset._id;
+          assetCache.set(cacheKey, assetId);
+        }
+
+        const alt =
+          item.images[index]?.alt ??
+          (index === 0
+            ? item.image.alt
+            : `${item.title} — alternate view`);
+
+        return imageRef(assetId, alt);
+      }),
+    );
 
     await writeSeedDocument(
       `merch-${item.slug}`,
@@ -340,10 +352,12 @@ async function seedMerch() {
         category: item.category,
         price: centsToSanityPrice(item.priceCents),
         description: item.description,
+        longDescription: item.longDescription,
         sizes: item.sizes,
         ...(item.colors?.length ? { colors: item.colors } : {}),
         active: true,
-        image: imageRef(assetId, item.image.alt),
+        images: imageRefs,
+        image: imageRefs[0],
       },
       item.title,
     );
