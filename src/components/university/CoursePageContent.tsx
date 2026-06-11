@@ -134,7 +134,7 @@ export function CoursePageContent({
 
           <aside className="lg:col-span-2">
             <div className="sticky top-24 space-y-6">
-              <div className="border border-red/30 bg-red/5 p-6">
+              <div className="red-tint-panel border border-red/30 p-6">
                 <p className="text-xs uppercase tracking-widest text-red">
                   Register
                 </p>

@@ -38,7 +38,7 @@ export function MerchImageGallery({ images, title }: MerchImageGalleryProps) {
                 key={`${image.url}-${index}`}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className={`relative aspect-square overflow-hidden border transition ${
+                className={`relative aspect-square overflow-hidden border bg-black-light transition ${
                   selected
                     ? "border-red"
                     : "border-white/10 hover:border-white/30"
@@ -50,7 +50,7 @@ export function MerchImageGallery({ images, title }: MerchImageGalleryProps) {
                   src={image.url}
                   alt={image.alt}
                   fill
-                  className="object-cover"
+                  className="object-contain object-center p-1"
                   sizes="96px"
                 />
               </button>

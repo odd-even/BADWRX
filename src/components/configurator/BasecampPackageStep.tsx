@@ -79,9 +79,9 @@ export function BasecampPackageStep({
                   key={item.option.id}
                   type="button"
                   onClick={() => onToggleItem(item.option)}
-                  className={`flex h-full flex-col border p-5 text-left transition ${
+                  className={`radius-ui flex h-full flex-col border p-5 text-left transition ${
                     selected
-                      ? "border-red bg-red/5"
+                      ? "red-tint-panel border-red"
                       : "border-white/10 bg-black-light hover:border-white/30"
                   }`}
                 >
@@ -122,9 +122,9 @@ export function BasecampPackageStep({
       <button
         type="button"
         onClick={onSelectNone}
-        className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+        className={`radius-ui flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
           noneSelected
-            ? "border-red bg-red/5"
+            ? "red-tint-panel border-red"
             : "border-white/10 bg-black-muted hover:border-white/30"
         }`}
       >

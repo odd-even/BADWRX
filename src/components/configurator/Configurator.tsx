@@ -626,11 +626,11 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
                 key={option.id}
                 type="button"
                 onClick={() => selectOption(option)}
-                className={`w-full border text-left transition group ${
+                className={`radius-ui w-full border text-left transition group ${
                   isImageGridStep ? "overflow-hidden p-0" : "p-5"
                 } ${isSwatchStep ? "flex items-start gap-4" : ""} ${
                   selected
-                    ? "border-red bg-red/5"
+                    ? "red-tint-panel border-red"
                     : "border-white/10 bg-black-muted hover:border-white/30"
                 }`}
               >
@@ -684,7 +684,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
             className={`mt-8 scroll-mt-28 border p-6 sm:p-8 ${
               config.actionEject
                 ? "border-white/10 bg-black-muted"
-                : "border-red/40 bg-red/5"
+                : "red-tint-panel border-red/40"
             }`}
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-red">
@@ -704,9 +704,9 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
                     onClick={() =>
                       setConfig((prev) => ({ ...prev, actionEject: option.id }))
                     }
-                    className={`border px-3 py-2.5 text-left transition ${
+                    className={`radius-ui border px-3 py-2.5 text-left transition ${
                       selected
-                        ? "border-red bg-red/5"
+                        ? "red-tint-panel border-red"
                         : "border-white/10 bg-black-muted hover:border-white/30"
                     }`}
                   >
@@ -743,7 +743,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
         ) : null}
 
         {isLastStep && isBuildComplete && (
-          <div className="mt-10 border border-red/40 bg-red/5 p-6 sm:p-8">
+          <div className="red-tint-panel mt-10 border border-red/40 p-6 sm:p-8">
             <p className="text-xs uppercase tracking-widest text-red">
               Ready for review
             </p>

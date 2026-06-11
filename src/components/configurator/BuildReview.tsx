@@ -41,7 +41,7 @@ export function BuildReview({
 }: BuildReviewProps) {
   return (
     <div className="space-y-10">
-      <div className="border border-red/30 bg-red/5 p-6 sm:p-8">
+      <div className="red-tint-panel border border-red/30 p-6 sm:p-8">
         <p className="text-xs uppercase tracking-widest text-red">
           Configuration complete
         </p>

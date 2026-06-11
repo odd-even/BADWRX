@@ -396,7 +396,7 @@ export default function MerchCheckoutPage() {
                     key={option.id}
                     className={`flex cursor-pointer items-start justify-between gap-4 border p-4 transition ${
                       selected
-                        ? "border-red bg-red/5"
+                        ? "red-tint-panel border-red"
                         : "border-white/10 hover:border-white/30"
                     }`}
                   >

@@ -58,6 +58,14 @@ const widthToResponsive: Partial<Record<ImageWidthPreset, ResponsiveWidthPreset>
   section: "section",
 };
 
+function mapGalleryImage(
+  image: SanityImageField | undefined,
+  fallbackAlt = riflePlaceholderAlt,
+): RifleImage | null {
+  if (!resolveSanityImageUrl(image, "content")) return null;
+  return mapImage(image, fallbackAlt, configuratorPlaceholder, "content");
+}
+
 function mapImage(
   image: SanityImageField | undefined,
   fallbackAlt = riflePlaceholderAlt,
@@ -91,7 +99,9 @@ export function mapRifle(doc: SanityRifle): Rifle {
     startingAt: doc.startingAt,
     description: doc.description,
     heroImage: mapImage(doc.heroImage ?? doc.configuratorImage, riflePlaceholderAlt, configuratorPlaceholder, "hero"),
-    gallery: (doc.gallery ?? []).map((item) => mapImage(item, riflePlaceholderAlt, configuratorPlaceholder, "content")),
+    gallery: (doc.gallery ?? [])
+      .map((item) => mapGalleryImage(item, riflePlaceholderAlt))
+      .filter((item): item is RifleImage => item !== null),
     specs: doc.specs ?? {},
     highlights: doc.highlights ?? [],
   };

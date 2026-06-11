@@ -7,6 +7,7 @@ export const rifle = defineType({
   type: "document",
   groups: [
     { name: "content", title: "Content", default: true },
+    { name: "photos", title: "Photos" },
     { name: "configurator", title: "Configurator" },
   ],
   fields: [
@@ -72,18 +73,20 @@ export const rifle = defineType({
       name: "heroImage",
       title: "Hero image",
       type: "image",
-      group: "content",
+      group: "photos",
       options: { hotspot: true },
       fields: [
         defineField({ name: "alt", title: "Alt text", type: "string" }),
       ],
+      description: "Full-width banner at the top of the build detail page.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "gallery",
-      title: "Gallery",
+      title: "Image gallery",
       type: "array",
-      group: "content",
+      group: "photos",
+      options: { layout: "grid" },
       of: [
         {
           type: "image",
@@ -92,8 +95,11 @@ export const rifle = defineType({
             defineField({ name: "alt", title: "Alt text", type: "string" }),
             defineField({ name: "caption", title: "Caption", type: "string" }),
           ],
+          validation: (rule) => rule.required(),
         },
       ],
+      description:
+        "Additional photos on the build detail page (below the hero). Upload one or more images — only one is required if you add any. Thumbnails appear when there are multiple images. Leave empty to hide the gallery section.",
     }),
     defineField({
       name: "specs",

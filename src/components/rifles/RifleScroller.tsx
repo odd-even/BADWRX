@@ -298,7 +298,7 @@ export function RifleScroller({
       >
         <div
           ref={trackRef}
-          className="flex w-max items-stretch gap-5 md:gap-6"
+          className="flex w-max items-stretch gap-3 md:gap-4"
         >
           {rifles.map((rifle, index) => (
             <div

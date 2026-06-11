@@ -10,6 +10,8 @@
   --color-red: #d22026;
   --color-red-dark: #a9181e;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --radius-button: 5px;
+  --radius-ui: 10px;
 }
 
 html {
@@ -26,6 +28,39 @@ body {
   background-color: var(--color-black);
   color: var(--color-white);
   font-family: var(--font-sans);
+}
+
+/* Buttons vs cards, inputs, and bordered panels */
+button,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+a[class~="border"] {
+  border-radius: var(--radius-button);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+select,
+textarea {
+  border-radius: var(--radius-ui);
+}
+
+[class~="border"]:not(button):not(a) {
+  border-radius: var(--radius-ui);
+}
+
+/* Card-style controls (e.g. configurator platform/options) — not compact CTAs */
+button.radius-ui {
+  border-radius: var(--radius-ui);
+}
+
+/* Callout panels — dark red tint fading to transparent */
+.red-tint-panel {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-red) 22%, transparent) 0%,
+    transparent 100%
+  );
 }
 
 h1,
@@ -81,7 +116,7 @@ h3 {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  border-radius: 0;
+  border-radius: var(--radius-ui);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;

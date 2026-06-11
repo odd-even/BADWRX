@@ -54,6 +54,27 @@ export function TestimonialCarousel({
   const arrowClass =
     "absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center border border-white/20 bg-black/80 text-white opacity-100 pointer-events-auto transition hover:border-red hover:text-red md:opacity-0 md:pointer-events-none md:group-hover:opacity-100 md:group-hover:pointer-events-auto";
 
+  function CarouselChevron({ direction }: { direction: "prev" | "next" }) {
+    return (
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        className="h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {direction === "prev" ? (
+          <path d="m15 6-6 6 6 6" />
+        ) : (
+          <path d="m9 6 6 6-6 6" />
+        )}
+      </svg>
+    );
+  }
+
   return (
     <div
       className="group relative mx-auto max-w-7xl px-6 py-24"
@@ -73,9 +94,7 @@ export function TestimonialCarousel({
               aria-label="Previous testimonial"
               className={`${arrowClass} left-0`}
             >
-              <span aria-hidden className="text-sm leading-none">
-                ←
-              </span>
+              <CarouselChevron direction="prev" />
             </button>
             <button
               type="button"
@@ -83,9 +102,7 @@ export function TestimonialCarousel({
               aria-label="Next testimonial"
               className={`${arrowClass} right-0`}
             >
-              <span aria-hidden className="text-sm leading-none">
-                →
-              </span>
+              <CarouselChevron direction="next" />
             </button>
           </>
         )}

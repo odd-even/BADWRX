@@ -117,9 +117,9 @@ export function BallisticPackageStep({
         <button
           type="button"
           onClick={() => onSelect(packageOption)}
-          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+          className={`radius-ui flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
             packageSelected
-              ? "border-red bg-red/5"
+              ? "red-tint-panel border-red"
               : "border-white/10 bg-black-muted hover:border-white/30"
           }`}
         >
@@ -143,9 +143,9 @@ export function BallisticPackageStep({
         <button
           type="button"
           onClick={() => onSelect(noneOption)}
-          className={`flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
+          className={`radius-ui flex w-full items-center justify-between gap-4 border p-5 text-left transition ${
             noneSelected
-              ? "border-red bg-red/5"
+              ? "red-tint-panel border-red"
               : "border-white/10 bg-black-muted hover:border-white/30"
           }`}
         >

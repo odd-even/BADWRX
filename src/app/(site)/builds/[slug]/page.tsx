@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { DetailImageGallery } from "@/components/ui/DetailImageGallery";
 import { SanityResponsiveImage } from "@/components/ui/SanityResponsiveImage";
 import { notFound } from "next/navigation";
 import { SpecTable } from "@/components/rifles/SpecTable";
@@ -85,6 +85,19 @@ export default async function BuildDetailPage({ params }: PageProps) {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-16 lg:grid-cols-5">
           <div className="lg:col-span-3">
+            {rifle.gallery.length > 0 ? (
+              <div className="mb-12">
+                <h2 className="text-xs uppercase tracking-widest text-red">Gallery</h2>
+                <div className="mt-6">
+                  <DetailImageGallery
+                    images={rifle.gallery}
+                    title={rifle.title}
+                    aspect="landscape"
+                  />
+                </div>
+              </div>
+            ) : null}
+
             <h2 className="text-xs uppercase tracking-widest text-red">Overview</h2>
             <p className="mt-4 text-white-muted leading-relaxed">
               {rifle.description}
@@ -102,36 +115,6 @@ export default async function BuildDetailPage({ params }: PageProps) {
               ))}
             </ul>
 
-            {rifle.gallery.length > 0 && (
-              <>
-                <h2 className="mt-12 text-xs uppercase tracking-widest text-red">
-                  Gallery
-                </h2>
-                <div className="mt-6 space-y-6">
-                  {rifle.gallery.map((image, index) => (
-                    <figure
-                      key={`${image.url}-${index}`}
-                      className="group overflow-hidden border border-white/10"
-                    >
-                      <div className="relative aspect-[16/9] hover-zoom">
-                        <Image
-                          src={image.url}
-                          alt={image.alt}
-                          fill
-                          className="object-contain bg-black-light"
-                          sizes="(max-width: 1024px) 100vw, 60vw"
-                        />
-                      </div>
-                      {image.caption && (
-                        <figcaption className="bg-black-muted px-4 py-3 text-sm text-white-muted">
-                          {image.caption}
-                        </figcaption>
-                      )}
-                    </figure>
-                  ))}
-                </div>
-              </>
-            )}
           </div>
 
           <aside className="lg:col-span-2">
