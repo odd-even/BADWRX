@@ -571,7 +571,7 @@ export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
                 key={step.id}
                 type="button"
                 onClick={() => position <= navPosition && goToStep(position)}
-                className={`h-1 flex-1 transition ${
+                className={`h-1 flex-1 rounded-none transition ${
                   position <= navPosition ? "bg-red" : "bg-white/10"
                 }`}
                 aria-label={`Step ${position + 1}: ${step.title}`}
