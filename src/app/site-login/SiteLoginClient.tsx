@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { brand } from "@/lib/brand";
+import { formInputClassName } from "@/lib/form-styles";
 import { images } from "@/lib/images";
 
 export function SiteLoginClient() {
@@ -76,7 +77,7 @@ export function SiteLoginClient() {
                 setPassword(event.target.value);
                 setError(null);
               }}
-              className="mt-1 w-full border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className={formInputClassName}
             />
           </label>
 

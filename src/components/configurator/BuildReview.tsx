@@ -3,6 +3,7 @@ import type { BuildContactDetails, BuildSubmission } from "@/lib/build-submissio
 import type { BuildContactFieldErrors } from "@/lib/contact-validation";
 import { SpecPreviewGrid } from "@/components/configurator/SpecPreviewGrid";
 import { formatPrice, formatLineItemPrice } from "@/lib/pricing";
+import { formInputClassName } from "@/lib/form-styles";
 
 interface BuildReviewProps {
   config: BuildConfiguration;
@@ -18,9 +19,7 @@ interface BuildReviewProps {
 }
 
 function inputClassName(hasError: boolean) {
-  return `autofill-target mt-1 w-full border bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red ${
-    hasError ? "border-red" : "border-white/10"
-  }`;
+  return `${formInputClassName} ${hasError ? "border-red" : ""}`.trim();
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -225,7 +224,7 @@ export function BuildReview({
               onChange={(e) =>
                 onFormChange({ ...form, addressLine2: e.target.value })
               }
-              className="autofill-target mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className={formInputClassName}
             />
           </label>
           <label className="block">
@@ -298,7 +297,7 @@ export function BuildReview({
               rows={3}
               value={form.notes}
               onChange={(e) => onFormChange({ ...form, notes: e.target.value })}
-              className="mt-1 w-full border border-white/10 bg-black-light px-4 py-3 text-sm text-white outline-none focus:border-red"
+              className={formInputClassName}
             />
           </label>
         </div>

@@ -98,6 +98,15 @@ h3 {
   color: #fafafa;
 }
 
+/* iOS Safari zooms the page when focusing inputs below 16px (including autofill). */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
+
 /* Keep Safari/Chrome autofill readable on dark inputs */
 .autofill-target:-webkit-autofill,
 .autofill-target:-webkit-autofill:hover,

@@ -153,7 +153,7 @@ export function BirthDatePicker({
   }
 
   const triggerClasses = compact
-    ? `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-base`
+    ? `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left`
     : triggerClassName;
   const monthLabel = parts.month ? MONTH_LABELS[parts.month - 1] : "Month";
   const dayLabel = parts.day ? String(parts.day) : "Day";
