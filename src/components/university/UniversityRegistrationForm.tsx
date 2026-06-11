@@ -75,6 +75,7 @@ export function UniversityRegistrationForm({
           postalCode: values["postal-code"] ?? "",
           email: values.email ?? "",
           phone: values.phone ?? "",
+          classGoals: values.classGoals ?? "",
           message: values.message ?? "",
         }),
       });
@@ -268,6 +269,19 @@ export function UniversityRegistrationForm({
           className={inputClass(Boolean(fieldErrors.email))}
         />
         <FieldError message={fieldErrors.email} />
+      </label>
+      <label className="block">
+        <span className="text-xs uppercase tracking-widest text-white-muted">
+          What would you like to get out of this class?
+        </span>
+        <textarea
+          rows={4}
+          name="classGoals"
+          placeholder="Skills you want to build, problems you're trying to solve, or outcomes you're hoping for..."
+          value={values.classGoals ?? ""}
+          onChange={(event) => setValue("classGoals", event.target.value)}
+          className={`${formInputClassName} placeholder:text-white-muted/40`}
+        />
       </label>
       <label className="block">
         <span className="text-xs uppercase tracking-widest text-white-muted">

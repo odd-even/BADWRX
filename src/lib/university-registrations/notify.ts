@@ -38,6 +38,11 @@ function buildHtml(payload: UniversityRegistrationPayload): string {
       ${escapeHtml(address).replace(/\n/g, "<br/>")}
     </p>
     ${
+      payload.classGoals
+        ? `<p style="margin:12px 0 0;"><strong>What they want from the class:</strong><br/>${escapeHtml(payload.classGoals).replace(/\n/g, "<br/>")}</p>`
+        : ""
+    }
+    ${
       payload.message
         ? `<p style="margin:12px 0 0;"><strong>Additional details:</strong><br/>${escapeHtml(payload.message).replace(/\n/g, "<br/>")}</p>`
         : ""
@@ -59,6 +64,9 @@ function buildText(payload: UniversityRegistrationPayload): string {
     `Email: ${payload.email}`,
     `Phone: ${payload.phone}`,
     `Address:\n${address}`,
+    payload.classGoals
+      ? `What they want from the class: ${payload.classGoals}`
+      : null,
     payload.message ? `Additional details: ${payload.message}` : null,
   ]
     .filter((value): value is string => value !== null)

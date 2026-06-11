@@ -69,6 +69,7 @@ export function validateUniversityRegistrationBody(body: unknown):
   const postalCode = readString(raw.postalCode);
   const email = readString(raw.email);
   const phone = readString(raw.phone);
+  const classGoals = readString(raw.classGoals);
   const message = readString(raw.message);
 
   if (!name) {
@@ -139,6 +140,7 @@ export function validateUniversityRegistrationBody(body: unknown):
       postalCode,
       email,
       phone,
+      classGoals,
       message,
     },
   };
@@ -160,6 +162,7 @@ export function createUniversityRegistrationPayload(
     postalCode: input.postalCode,
     email: input.email,
     phone: input.phone,
+    classGoals: input.classGoals?.trim() ?? "",
     message: input.message?.trim() ?? "",
   };
 }

@@ -13,6 +13,7 @@ export interface UniversityRegistrationPayload {
   postalCode: string;
   email: string;
   phone: string;
+  classGoals: string;
   message: string;
 }
 
@@ -29,5 +30,6 @@ export interface UniversityRegistrationInput {
   postalCode: string;
   email: string;
   phone: string;
+  classGoals?: string;
   message?: string;
 }
