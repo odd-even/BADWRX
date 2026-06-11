@@ -17,3 +17,7 @@ export function configureHref(platformSlug?: string): string {
     ? `/configure?platform=${encodeURIComponent(platformSlug)}`
     : "/configure";
 }
+
+export function configurePageTitle(platformLabel?: string | null): string {
+  return platformLabel ? `Configure ${platformLabel}` : "Configure Your Rifle";
+}

@@ -141,6 +141,7 @@ type ConfiguratorPhase = "configure" | "review" | "submitted";
 
 interface ConfiguratorProps {
   data: ConfiguratorData;
+  onPlatformChange?: (platform: ConfigOption | null) => void;
 }
 
 function configToSummary(
@@ -248,7 +249,7 @@ function StepNavButtons({
   );
 }
 
-export function Configurator({ data }: ConfiguratorProps) {
+export function Configurator({ data, onPlatformChange }: ConfiguratorProps) {
   const configuratorSteps = data.steps;
   const pricing = data.pricing;
   const navigableStepIndices = useMemo(
@@ -341,6 +342,10 @@ export function Configurator({ data }: ConfiguratorProps) {
       }),
     [currentKey, currentStep.options, config, data.caliberAvailability, data.rings],
   );
+
+  useEffect(() => {
+    onPlatformChange?.(config.platform);
+  }, [config.platform, onPlatformChange]);
 
   useEffect(() => {
     if (appliedInitialPlatform.current) return;
