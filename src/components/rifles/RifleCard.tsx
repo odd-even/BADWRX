@@ -21,9 +21,7 @@ export function RifleCard({
   showPricing = true,
   titleAs: TitleTag = "h3",
 }: RifleCardProps) {
-  const isTightHero =
-    rifle.heroImage.url.includes("cropped") ||
-    rifle.heroImage.url.includes("copy.webp");
+  const cardImage = compact ? rifle.compactCardImage : rifle.cardImage;
 
   return (
     <article className="rifle-card group flex h-full w-full flex-col overflow-hidden border border-white/10 bg-black-muted transition hover:border-red/50">
@@ -38,15 +36,11 @@ export function RifleCard({
             }`}
           >
             <Image
-              src={rifle.heroImage.url}
-              alt={rifle.heroImage.alt}
+              src={cardImage.url}
+              alt={cardImage.alt}
               fill
               priority={priority}
-              className={
-                isTightHero
-                  ? "object-contain bg-black-light p-2"
-                  : "object-contain bg-black-light p-4"
-              }
+              className="object-cover bg-black-light object-center"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black via-transparent to-transparent" />

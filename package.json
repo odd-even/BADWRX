@@ -13,12 +13,15 @@
     "dev:stop": "node scripts/stop-dev.mjs",
     "build": "node scripts/sync-source-data.mjs && node scripts/sync-public-images.mjs && next build",
     "sync:source": "node scripts/sync-source-data.mjs",
+    "sync:images": "node scripts/sync-public-images.mjs",
+    "optimize:gallery": "node scripts/optimize-gallery.mjs",
     "start": "next start",
     "lint": "next lint",
     "seed:sanity": "tsx --env-file=.env.local sanity/seed/seed.ts",
     "seed:sanity:force": "tsx --env-file=.env.local sanity/seed/seed.ts --force",
     "seed:sanity:images": "tsx --env-file=.env.local sanity/seed/migrate-site-images.ts",
-    "seed:sanity:nav-fade": "tsx --env-file=.env.local sanity/seed/migrate-nav-image-fade.ts"
+    "seed:sanity:nav-fade": "tsx --env-file=.env.local sanity/seed/migrate-nav-image-fade.ts",
+    "seed:sanity:field-gallery": "tsx --env-file=.env.local sanity/seed/migrate-field-gallery.ts"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",
@@ -41,6 +44,7 @@
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.27.0",
     "eslint-config-next": "^15.3.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.8",
     "tsx": "^4.22.4",
     "typescript": "^5.8.3",

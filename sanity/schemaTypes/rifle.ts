@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
-import { usdPriceField } from "./shared";
+import {
+  configuratorPlatformHotspotOptions,
+  rifleCardHotspotOptions,
+  riflePhotoField,
+  usdPriceField,
+} from "./shared";
 
 export const rifle = defineType({
   name: "rifle",
@@ -70,15 +75,13 @@ export const rifle = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "heroImage",
-      title: "Hero image",
-      type: "image",
+      ...riflePhotoField(
+        "heroImage",
+        "Hero image",
+        "Used on build cards, the home page scroll, and as the full-width banner on the build detail page.",
+        rifleCardHotspotOptions(),
+      ),
       group: "photos",
-      options: { hotspot: true },
-      fields: [
-        defineField({ name: "alt", title: "Alt text", type: "string" }),
-      ],
-      description: "Full-width banner at the top of the build detail page.",
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -90,7 +93,7 @@ export const rifle = defineType({
       of: [
         {
           type: "image",
-          options: { hotspot: true },
+          options: rifleCardHotspotOptions(),
           fields: [
             defineField({ name: "alt", title: "Alt text", type: "string" }),
             defineField({ name: "caption", title: "Caption", type: "string" }),
@@ -177,15 +180,13 @@ export const rifle = defineType({
       initialValue: true,
     }),
     defineField({
-      name: "configuratorImage",
-      title: "Configurator card image",
-      type: "image",
+      ...riflePhotoField(
+        "configuratorImage",
+        "Configurator card image",
+        "Optional override for the configurator platform picker; defaults to the hero image.",
+        configuratorPlatformHotspotOptions(),
+      ),
       group: "configurator",
-      options: { hotspot: true },
-      fields: [
-        defineField({ name: "alt", title: "Alt text", type: "string" }),
-      ],
-      description: "Optional override; defaults to hero image",
     }),
   ],
   preview: {

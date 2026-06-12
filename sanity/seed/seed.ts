@@ -20,6 +20,10 @@ import { fileURLToPath } from "node:url";
 import { courses } from "../../src/data/courses";
 import { merchImageSources, merchItems } from "../../src/data/merch";
 import { rifles } from "../../src/data/rifles";
+import {
+  buildFieldGalleryFileList,
+  fieldGallerySeedFiles,
+} from "../../src/data/field-gallery";
 import { defaultSiteSettings } from "../../src/data/site-settings";
 import { defaultNavImageFade } from "../../src/lib/nav-image-fade";
 import { sourceData } from "../../src/lib/source-data";
@@ -39,6 +43,7 @@ import { centsToSanityPrice } from "../../src/sanity/lib/price";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "../..");
 const photosDir = path.join(root, "_assets/photos");
+const galleryWebpDir = path.join(root, "public", "images", "gallery");
 const configuratorAssetsDir = path.join(root, "_assets/configurator");
 const merchAssetsDir = path.join(root, "_assets/merch");
 const configuratorPlatformDir = path.join(configuratorAssetsDir, "platform");
@@ -200,7 +205,7 @@ function sanityHeadlines(headlines: SiteSettings["homeHero"]["headlines"]) {
 }
 
 function sanitySiteSettings() {
-  const { homeHero, pageVisibility, ...rest } = defaultSiteSettings;
+  const { homeHero, pageVisibility, fieldGallery, ...rest } = defaultSiteSettings;
   return {
     ...rest,
     pageVisibility: pageVisibilityForSanity(pageVisibility),
@@ -209,6 +214,56 @@ function sanitySiteSettings() {
       headlines: sanityHeadlines(homeHero.headlines),
     },
   };
+}
+
+async function uploadGalleryWebp(webpFilename: string) {
+  const filePath = path.join(galleryWebpDir, webpFilename);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(
+      `Optimized gallery WebP not found: ${filePath}. Run npm run sync:images first.`,
+    );
+  }
+  const buffer = fs.readFileSync(filePath);
+  console.log(`  Uploading gallery WebP ${webpFilename}...`);
+  return client.assets.upload("image", buffer, {
+    filename: webpFilename,
+    contentType: "image/webp",
+  });
+}
+
+async function migrateFieldGalleryIfNeeded() {
+  const doc = await client.fetch<{ fieldGallery?: unknown[] }>(
+    `*[_id == "siteSettings"][0]{ fieldGallery }`,
+  );
+
+  const existingCount = doc?.fieldGallery?.length ?? 0;
+  const targetCount = buildFieldGalleryFileList().length;
+  if (existingCount >= targetCount) return;
+
+  const seedFiles = fieldGallerySeedFiles();
+  const assetBySource = new Map<string, string>();
+
+  for (const item of seedFiles) {
+    const asset = await uploadGalleryWebp(item.file);
+    assetBySource.set(item.sourceFile, asset._id);
+  }
+
+  const gallery = buildFieldGalleryFileList().map((item, index) => ({
+    ...imageRef(assetBySource.get(item.file)!, item.alt),
+    _key: `field-gallery-${index}`,
+  }));
+
+  await client
+    .patch("siteSettings")
+    .set({
+      fieldGallerySection: defaultSiteSettings.fieldGallerySection,
+      fieldGallery: gallery,
+    })
+    .commit();
+
+  console.log(
+    `  ✓ Seeded From the Field gallery (${gallery.length} WebP photos)`,
+  );
 }
 
 async function migratePageVisibilityIfNeeded() {
@@ -285,6 +340,7 @@ async function seedSiteSettings() {
   await migrateNavImageFadeIfNeeded();
   await migrateAllowSearchIndexingIfNeeded();
   await migratePageSeoIfNeeded();
+  await migrateFieldGalleryIfNeeded();
   await migrateSiteImages();
   await writeSeedDocument(
     "siteSettings",

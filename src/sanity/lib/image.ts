@@ -32,6 +32,10 @@ export const imageWidths = {
   icon: 512,
   /** Apple touch icon (home screen) */
   appleIcon: 180,
+  /** Masonry field gallery — thumbnail in masonry grid */
+  galleryThumb: 640,
+  /** Masonry field gallery — lightbox / full view */
+  galleryFull: 1920,
   /** Default when no specific context applies */
   default: 1280,
 } as const;
@@ -42,6 +46,8 @@ export const responsiveWidths = {
   hero: [640, 750, 828, 1080, 1200, 1536, 1920, 2560, 3200, 3840],
   /** Full-width section backgrounds */
   section: [640, 828, 1080, 1280, 1536, 1920, 2560],
+  /** Home field masonry grid — 2–4 columns */
+  gallery: [320, 480, 640, 800, 960],
 } as const;
 
 export type ResponsiveWidthPreset = keyof typeof responsiveWidths;
@@ -57,6 +63,28 @@ export type BrandAssetPreset = keyof typeof brandAssetDimensions;
 
 export type ImageWidthPreset = keyof typeof imageWidths;
 
+export type SanityImageFormat = "webp" | "auto";
+
+function applySanityFormat(
+  chain: ReturnType<typeof urlFor>,
+  format: SanityImageFormat = "auto",
+) {
+  return format === "webp" ? chain.format("webp") : chain.auto("format");
+}
+
+export function sanityImageUrl(
+  source: SanityImageSource | undefined,
+  width: number | ImageWidthPreset = "default",
+  options?: { format?: SanityImageFormat; quality?: number },
+): string | undefined {
+  if (!source) return undefined;
+  const resolvedWidth = typeof width === "number" ? width : imageWidths[width];
+  return applySanityFormat(urlFor(source), options?.format ?? "webp")
+    .width(resolvedWidth)
+    .quality(options?.quality ?? 80)
+    .url();
+}
+
 export function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
@@ -65,9 +93,7 @@ export function imageUrl(
   source: SanityImageSource | undefined,
   width: number | ImageWidthPreset = "default",
 ): string | undefined {
-  if (!source) return undefined;
-  const resolvedWidth = typeof width === "number" ? width : imageWidths[width];
-  return urlFor(source).width(resolvedWidth).auto("format").quality(80).url();
+  return sanityImageUrl(source, width, { format: "auto" });
 }
 
 /** CDN URL from Sanity image field — builder first, then dereferenced asset.url. */
@@ -93,11 +119,17 @@ export function resolveSanityImageUrl(
 export function imageSrcSet(
   source: SanityImageSource | undefined,
   widths: readonly number[],
+  options?: { format?: SanityImageFormat; quality?: number },
 ): string | undefined {
   if (!source || widths.length === 0) return undefined;
+  const format = options?.format ?? "webp";
+  const quality = options?.quality ?? 80;
   return widths
     .map((width) => {
-      const url = urlFor(source).width(width).auto("format").quality(80).url();
+      const url = applySanityFormat(urlFor(source), format)
+        .width(width)
+        .quality(quality)
+        .url();
       return `${url} ${width}w`;
     })
     .join(", ");
@@ -106,8 +138,40 @@ export function imageSrcSet(
 export function imageSrcSetForPreset(
   source: SanityImageSource | undefined,
   preset: ResponsiveWidthPreset,
+  options?: { format?: SanityImageFormat; quality?: number },
 ): string | undefined {
-  return imageSrcSet(source, responsiveWidths[preset]);
+  return imageSrcSet(source, responsiveWidths[preset], options);
+}
+
+/** Cropped output sizes for rifle cards and configurator tiles (respects Sanity crop + hotspot). */
+export const aspectCropDimensions = {
+  rifleCard: { width: imageWidths.card, height: Math.round(imageWidths.card / (4 / 3)) },
+  rifleCardCompact: {
+    width: imageWidths.card,
+    height: Math.round(imageWidths.card / (3 / 2)),
+  },
+  configuratorPlatform: {
+    width: imageWidths.configuratorOption,
+    height: Math.round(imageWidths.configuratorOption / 2),
+  },
+} as const;
+
+export type AspectCropPreset = keyof typeof aspectCropDimensions;
+
+/** CDN URL cropped to exact width × height; applies editor crop and hotspot focal point. */
+export function aspectCropImageUrl(
+  source: SanityImageSource | undefined,
+  preset: AspectCropPreset,
+  options?: { format?: SanityImageFormat; quality?: number },
+): string | undefined {
+  if (!source) return undefined;
+  const { width, height } = aspectCropDimensions[preset];
+  return applySanityFormat(urlFor(source), options?.format ?? "auto")
+    .width(width)
+    .height(height)
+    .fit("crop")
+    .quality(options?.quality ?? 80)
+    .url();
 }
 
 /** OG cover and favicon — crop to exact dimensions (respects Sanity hotspot). */

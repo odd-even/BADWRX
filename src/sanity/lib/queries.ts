@@ -1,7 +1,7 @@
 /** Preserve crop/hotspot/refs and dereference asset for image-url builder + direct URL fallback. */
 const sanityImage = `{
   ...,
-  asset->{ _id, url }
+  asset->{ _id, url, metadata { dimensions { width, height } } }
 }`;
 
 export const riflesQuery = `*[_type == "rifle"] | order(title asc) {
@@ -144,7 +144,10 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   homeIntro,
   homePillars,
   fieldTested,
+  fieldGallerySection,
+  fieldGallery[] ${sanityImage},
   unrelenting,
+  testimonialSection,
   testimonial,
   testimonials,
   contactSection,

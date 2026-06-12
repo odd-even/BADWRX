@@ -8,6 +8,7 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { optimizeGallery } from "./optimize-gallery.mjs";
 
 const DISPLAY_FONT_NAME = "display-bold.otf";
 const FONT_EXTENSIONS = /\.(otf|ttf|woff2?)$/i;
@@ -82,3 +83,10 @@ for (const { name, src } of mappings) {
 
   console.log(`Synced public/images/${name}`);
 }
+
+await optimizeGallery({
+  srcDir: join(root, "gallery"),
+  destDir: join(imagesDir, "gallery"),
+  logPrefix: "",
+});
+console.log("Synced public/images/gallery (WebP)");

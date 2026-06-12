@@ -4,6 +4,10 @@ export interface RifleImage {
   caption?: string;
   /** Sanity CDN srcSet — used for full-bleed heroes and section backgrounds */
   srcSet?: string;
+  /** Larger WebP URL for lightbox views (Sanity field gallery) */
+  lightboxUrl?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface RifleSpecs {
@@ -74,6 +78,10 @@ export interface Rifle {
   startingAt?: string;
   description: string;
   heroImage: RifleImage;
+  /** 4:3 crop for builds grid cards */
+  cardImage: RifleImage;
+  /** 3:2 crop for home page featured scroll */
+  compactCardImage: RifleImage;
   gallery: RifleImage[];
   specs: RifleSpecs;
   highlights: string[];
@@ -219,10 +227,19 @@ export interface SiteSettings {
     title: string;
     body: string;
   };
+  fieldGallerySection: {
+    eyebrow: string;
+    title: string;
+    body?: string;
+  };
+  fieldGallery: RifleImage[];
   unrelenting: {
     eyebrow: string;
     title: string;
     body: string;
+  };
+  testimonialSection: {
+    eyebrow: string;
   };
   testimonial: {
     quote: string;

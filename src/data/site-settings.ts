@@ -1,6 +1,7 @@
 import { brand } from "@/lib/brand";
 import { cleanDocxCopy } from "@/lib/copy-utils";
 import { getCopy, sourceData } from "@/lib/source-data";
+import { buildFieldGalleryFileList } from "@/data/field-gallery";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 import { defaultNavImageFade } from "@/lib/nav-image-fade";
 import { defaultPageSeo } from "@/data/page-seo";
@@ -98,6 +99,24 @@ export const defaultSiteImageFiles: Record<keyof SiteImages, string> = {
   aboutStory: "IMG_1192 copy.webp",
 };
 
+export {
+  buildFieldGalleryFileList,
+  FIELD_GALLERY_ALT,
+  FIELD_GALLERY_SOURCE_FILES,
+  FIELD_GALLERY_TARGET_COUNT,
+} from "@/data/field-gallery";
+
+const defaultFieldGalleryFiles = buildFieldGalleryFileList();
+
+export const defaultFieldGallery = defaultFieldGalleryFiles.map(
+  ({ url, srcSet, lightboxUrl, alt }) => ({
+    url,
+    srcSet,
+    lightboxUrl,
+    alt,
+  }),
+);
+
 export const defaultSiteSettings: SiteSettings = {
   name: brand.name,
   short: brand.short,
@@ -153,6 +172,12 @@ export const defaultSiteSettings: SiteSettings = {
     title: "Built for hard country",
     body: pillarParts("durability").body,
   },
+  fieldGallerySection: {
+    eyebrow: "Photo gallery",
+    title: "From the Field",
+    body: "The rifles we make and the country they see.",
+  },
+  fieldGallery: defaultFieldGallery,
   unrelenting: {
     eyebrow: "Ballistic package",
     title: getCopy(
@@ -162,6 +187,9 @@ export const defaultSiteSettings: SiteSettings = {
     body:
       getCopy("BALLISTIC PACKAGE — Body") ||
       "The BADWRX Ballistic Package takes your rifle to 1,000 meters with real data and laser-engraved turrets.",
+  },
+  testimonialSection: {
+    eyebrow: "BADWRX client reviews",
   },
   testimonial: {
     quote:

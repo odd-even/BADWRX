@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SanityResponsiveImage, SECTION_IMAGE_SIZES } from "@/components/ui/SanityResponsiveImage";
 import { siteTitle } from "@/lib/brand";
 import { buildPageMetadata } from "@/lib/page-seo";
+import { FieldMasonryGallery } from "@/components/home/FieldMasonryGallery";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { TrustMarquee } from "@/components/layout/TrustMarquee";
 import { ReticleMouseFollow } from "@/components/ui/ReticleMouseFollow";
@@ -229,6 +230,7 @@ export default async function HomePage() {
       <section className="border-y border-white/10 bg-black-light">
         <ScrollReveal>
           <TestimonialCarousel
+            eyebrow={site.testimonialSection.eyebrow}
             items={
               site.testimonials?.length
                 ? site.testimonials
@@ -237,6 +239,15 @@ export default async function HomePage() {
           />
         </ScrollReveal>
       </section>
+
+      {site.fieldGallery.length > 0 ? (
+        <section className="border-b border-white/10 bg-black-light">
+          <FieldMasonryGallery
+            section={site.fieldGallerySection}
+            images={site.fieldGallery}
+          />
+        </section>
+      ) : null}
 
       <section className="mx-auto max-w-7xl px-6 py-24">
         <ScrollReveal>

@@ -186,6 +186,14 @@ function normalizeSiteSettings(settings: SiteSettings): SiteSettings {
       testimonials && testimonials.length >= 2
         ? testimonials
         : defaultSiteSettings.testimonials,
+    fieldGallery:
+      settings.fieldGallery?.length
+        ? settings.fieldGallery
+        : defaultSiteSettings.fieldGallery,
+    fieldGallerySection:
+      settings.fieldGallerySection ?? defaultSiteSettings.fieldGallerySection,
+    testimonialSection:
+      settings.testimonialSection ?? defaultSiteSettings.testimonialSection,
   };
 }
 

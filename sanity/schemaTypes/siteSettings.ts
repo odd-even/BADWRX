@@ -369,11 +369,51 @@ export const siteSettings = defineType({
       fields: sectionFields(),
     }),
     defineField({
+      name: "fieldGallerySection",
+      title: "Photo gallery",
+      type: "object",
+      group: "home",
+      fields: sectionFields(),
+    }),
+    defineField({
+      name: "fieldGallery",
+      title: "Photo gallery images",
+      type: "array",
+      group: "home",
+      description:
+        "Masonry photo gallery on the home page (up to 30 images). Images are served as WebP from Sanity CDN at responsive sizes.",
+      validation: (rule) => rule.max(30),
+      of: [
+        defineArrayMember({
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({ name: "alt", title: "Alt text", type: "string" }),
+            defineField({ name: "caption", title: "Caption", type: "string" }),
+          ],
+        }),
+      ],
+    }),
+    defineField({
       name: "unrelenting",
       title: "Ballistic package section",
       type: "object",
       group: "home",
       fields: sectionFields(),
+    }),
+    defineField({
+      name: "testimonialSection",
+      title: "Testimonials section",
+      type: "object",
+      group: "home",
+      fields: [
+        defineField({
+          name: "eyebrow",
+          title: "Section label",
+          type: "string",
+          description: "Red uppercase label above the testimonial carousel.",
+        }),
+      ],
     }),
     defineField({
       name: "testimonial",

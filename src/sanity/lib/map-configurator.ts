@@ -10,7 +10,7 @@ import {
 import type { ConfigOption, ConfigStep } from "@/lib/types";
 import type { ConfiguratorData } from "@/lib/configurator/types";
 import { buildConfiguratorDataFromSource } from "@/lib/configurator/build-from-source";
-import { resolveSanityImageUrl, type ImageWidthPreset } from "./image";
+import { resolveSanityImageUrl, aspectCropImageUrl, type ImageWidthPreset } from "./image";
 import { sanityPriceToCents } from "./price";
 
 interface SanityImageField {
@@ -136,8 +136,12 @@ function mapImageOption(
   fallbackUrl: string,
   alt: string,
   width: ImageWidthPreset = "configuratorOption",
+  cropPreset?: "configuratorPlatform",
 ): { url: string; alt: string } {
-  const url = resolveSanityImageUrl(image, width) ?? fallbackUrl;
+  const url =
+    (cropPreset ? aspectCropImageUrl(image, cropPreset) : undefined) ??
+    resolveSanityImageUrl(image, width) ??
+    fallbackUrl;
   return { url, alt: image?.alt ?? alt };
 }
 
@@ -206,6 +210,7 @@ export function mapConfiguratorData(
           platformImages[rifle.slug] ?? configuratorPlaceholder,
           `${rifle.title} platform`,
           "configurator",
+          "configuratorPlatform",
         ),
       };
     });

@@ -39,6 +39,9 @@ const heroImage = {
   alt: riflePlaceholderAlt,
 };
 
+const cardImage = heroImage;
+const compactCardImage = heroImage;
+
 export const rifles: Rifle[] = sourceData.website.rifles.map((r, index) => {
   const spec = sourceData.website.rifleSpecs[r.slug] ?? { specs: {} };
   const description =
@@ -57,6 +60,8 @@ export const rifles: Rifle[] = sourceData.website.rifles.map((r, index) => {
     startingAt: formatStartingAt(r.slug),
     description,
     heroImage,
+    cardImage,
+    compactCardImage,
     gallery: [
       rifleImage(r.primaryUse),
       rifleImage(`${r.action} · ${r.barrel}`),

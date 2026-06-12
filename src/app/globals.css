@@ -383,6 +383,30 @@ a.tracking-widest:hover,
   transform: translate3d(0, 0, 0);
 }
 
+.gallery-tile-image {
+  transform: scale(1.04);
+  transition: transform 0.65s ease-out;
+}
+
+.scroll-reveal.is-visible .gallery-tile-image {
+  transform: scale(1);
+}
+
+button.group:hover .gallery-tile-image {
+  transform: scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-tile-image {
+    transform: none;
+    transition: none;
+  }
+
+  button.group:hover .gallery-tile-image {
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-reveal {
     opacity: 1;

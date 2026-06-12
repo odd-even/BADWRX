@@ -1,9 +1,11 @@
 /** Local images from `_assets/photos` (served via public/images/assets symlink) */
 
 const assetBase = "/images/assets";
+const galleryBase = "/images/gallery";
 const logoBase = "/images/logos";
 
 export const images = {
+  gallery: galleryBase,
   rifle: {
     studio: `${assetBase}/IMG_0058.jpg`,
     studioCropped: `${assetBase}/IMG_0058-cropped.jpg`,

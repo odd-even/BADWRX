@@ -9,11 +9,13 @@ export interface Testimonial {
 
 interface TestimonialCarouselProps {
   items: Testimonial[];
+  eyebrow?: string;
   intervalMs?: number;
 }
 
 export function TestimonialCarousel({
   items,
+  eyebrow = "BADWRX client reviews",
   intervalMs = 6000,
 }: TestimonialCarouselProps) {
   const [index, setIndex] = useState(0);
@@ -82,7 +84,7 @@ export function TestimonialCarousel({
       onMouseLeave={() => setHovered(false)}
     >
       <p className="text-center text-xs uppercase tracking-widest text-red">
-        From the field
+        {eyebrow}
       </p>
 
       <div className="relative mt-8 flex items-center">

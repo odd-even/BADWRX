@@ -67,6 +67,60 @@ export function sectionFields() {
   ];
 }
 
+/** Build grid cards — RifleCard default */
+export const RIFLE_CARD_ASPECT = 4 / 3;
+
+/** Home page featured scroll — RifleCard compact */
+export const RIFLE_CARD_COMPACT_ASPECT = 3 / 2;
+
+/** Configurator platform picker tiles */
+export const CONFIGURATOR_PLATFORM_ASPECT = 2 / 1;
+
+/** Hotspot crop previews shown in Studio after upload (Sanity v3.86+). */
+export function rifleCardHotspotOptions() {
+  return {
+    hotspot: {
+      previews: [
+        { title: "Build card (4:3)", aspectRatio: RIFLE_CARD_ASPECT },
+        { title: "Home scroll (3:2)", aspectRatio: RIFLE_CARD_COMPACT_ASPECT },
+      ],
+    },
+  } as const;
+}
+
+export function configuratorPlatformHotspotOptions() {
+  return {
+    hotspot: {
+      previews: [
+        { title: "Build card (4:3)", aspectRatio: RIFLE_CARD_ASPECT },
+        { title: "Configurator (2:1)", aspectRatio: CONFIGURATOR_PLATFORM_ASPECT },
+      ],
+    },
+  } as const;
+}
+
+const RIFLE_CROP_GUIDE =
+  "After upload, open the crop tool (hotspot icon). Frame the full rifle with ~10% breathing room on every side so it is not clipped on cards. Check the aspect previews below before saving.";
+
+/** Hero / card image field with crop guides for rifle builds */
+export function riflePhotoField(
+  name: string,
+  title: string,
+  description: string,
+  hotspotOptions: ReturnType<typeof rifleCardHotspotOptions>,
+): FieldDefinition {
+  return defineField({
+    name,
+    title,
+    type: "image",
+    description: `${description} ${RIFLE_CROP_GUIDE}`,
+    options: hotspotOptions,
+    fields: [
+      defineField({ name: "alt", title: "Alt text", type: "string" }),
+    ],
+  });
+}
+
 /** CMS image with optional alt text */
 export function cmsImageField(
   name: string,
