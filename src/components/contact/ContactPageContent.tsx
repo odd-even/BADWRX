@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { ContactForm, type ContactField, type ContactInquiryMode } from "@/components/contact/ContactForm";
 
@@ -12,11 +13,17 @@ const modeCopy: Record<
     intro:
       "Tell us what you want — size, color, and quantity — and we'll confirm availability and shipping.",
   },
+  university: {
+    headline: "University inquiry",
+    intro:
+      "Questions about Long Range University — class format, dates, prerequisites, or whether a course is right for you? Send a note and we'll reply within 2 business days.",
+  },
 };
 
 const toggleOptions: { id: ContactInquiryMode; label: string }[] = [
   { id: "platform", label: "Platform" },
   { id: "merch", label: "Merch" },
+  { id: "university", label: "University" },
 ];
 
 interface ContactPageContentProps {
@@ -29,8 +36,10 @@ interface ContactPageContentProps {
   };
   buildFields: ContactField[];
   merchItems: { slug: string; title: string }[];
+  courseItems: { slug: string; title: string }[];
   initialMode?: ContactInquiryMode;
   initialMerchSlug?: string;
+  initialCourseSlug?: string;
 }
 
 export function ContactPageContent({
@@ -39,8 +48,10 @@ export function ContactPageContent({
   contactCopy,
   buildFields,
   merchItems,
+  courseItems,
   initialMode = "platform",
   initialMerchSlug,
+  initialCourseSlug,
 }: ContactPageContentProps) {
   const [mode, setMode] = useState<ContactInquiryMode>(initialMode);
 
@@ -53,7 +64,8 @@ export function ContactPageContent({
         }
       : { ...modeCopy[mode], showExpectations: false as const };
 
-  const submitLabel = mode === "merch" ? "Send Inquiry" : "Send";
+  const submitLabel =
+    mode === "merch" || mode === "university" ? "Send Inquiry" : "Send";
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -66,6 +78,25 @@ export function ContactPageContent({
             <p className="mt-6 text-sm text-white-muted/80 leading-relaxed">
               {contactCopy.expectations}
             </p>
+          )}
+          {mode === "university" && (
+            <div className="mt-8 border border-white/10 bg-black-muted p-6">
+              <p className="text-xs uppercase tracking-widest text-red">
+                Long Range University
+              </p>
+              <p className="mt-3 text-sm text-white-muted leading-relaxed">
+                Professional ballistics and long-range coaching in small classes
+                with real field applications. Use this form for general questions
+                only — class registration is handled separately on the university
+                page.
+              </p>
+              <Link
+                href="/university"
+                className="mt-4 inline-block text-xs uppercase tracking-widest text-white transition hover:text-red"
+              >
+                View courses &amp; register →
+              </Link>
+            </div>
           )}
 
           <div className="mt-10 space-y-6 border-t border-white/10 pt-10">
@@ -96,7 +127,7 @@ export function ContactPageContent({
         <div className="border border-white/10 bg-black-muted p-8">
           <fieldset className="mb-8">
             <legend className="sr-only">Inquiry type</legend>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {toggleOptions.map((option) => {
                 const active = mode === option.id;
                 return (
@@ -122,7 +153,9 @@ export function ContactPageContent({
             mode={mode}
             buildFields={buildFields}
             merchItems={merchItems}
+            courseItems={courseItems}
             initialMerchSlug={initialMerchSlug}
+            initialCourseSlug={initialCourseSlug}
             submitLabel={submitLabel}
           />
         </div>

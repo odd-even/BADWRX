@@ -31,7 +31,7 @@ type DateParts = {
 const triggerClassName = `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 text-left`;
 
 const cellClassName =
-  "bg-black-light px-0.5 py-2 text-center text-xs text-white transition hover:bg-red/10 hover:text-red sm:px-1 sm:text-sm";
+  "rounded-none bg-black-light px-0.5 py-2 text-center text-xs text-white transition hover:bg-red/10 hover:text-red sm:px-1 sm:text-sm";
 
 const cellSelectedClassName = "bg-red/10 text-white ring-1 ring-inset ring-red";
 
@@ -218,7 +218,7 @@ export function BirthDatePicker({
             id={`${fieldId}-month-panel`}
             role="dialog"
             aria-label="Choose month"
-            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 rounded-none border border-white/10 bg-black-light p-2 shadow-2xl"
           >
             <div className={`${gridPanelClassName} grid-cols-4`}>
               {MONTH_SHORT.map((name, index) => {
@@ -245,7 +245,7 @@ export function BirthDatePicker({
             id={`${fieldId}-day-panel`}
             role="dialog"
             aria-label="Choose day"
-            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 rounded-none border border-white/10 bg-black-light p-2 shadow-2xl"
           >
             <div className={`${gridPanelClassName} grid-cols-7`}>
               {dayOptions.map((day) => {
@@ -271,7 +271,7 @@ export function BirthDatePicker({
             id={`${fieldId}-year-panel`}
             role="dialog"
             aria-label="Choose year"
-            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 border border-white/10 bg-black-light p-2 shadow-2xl"
+            className="absolute left-0 right-0 top-[calc(100%+0.25rem)] z-20 rounded-none border border-white/10 bg-black-light p-2 shadow-2xl"
           >
             <div
               className={`${gridPanelClassName} ${compact ? "max-h-36" : "max-h-48"} grid-cols-4 overflow-y-auto pr-1 [scrollbar-width:thin]`}

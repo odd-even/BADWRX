@@ -356,11 +356,27 @@ async function migrateAllowSearchIndexingIfNeeded() {
   console.log("  ✓ Seeded allowSearchIndexing default (off)");
 }
 
+async function migrateSiteAccessIfNeeded() {
+  const doc = await client.fetch<{ siteAccess?: SiteSettings["siteAccess"] }>(
+    `*[_id == "siteSettings"][0]{ siteAccess }`,
+  );
+
+  if (doc?.siteAccess?.previewPassword !== undefined) return;
+
+  await client
+    .patch("siteSettings")
+    .set({ siteAccess: defaultSiteSettings.siteAccess })
+    .commit();
+
+  console.log("  ✓ Seeded access gate settings (password + age verification)");
+}
+
 async function seedSiteSettings() {
   console.log("\n→ Site settings");
   await migratePageVisibilityIfNeeded();
   await migrateNavImageFadeIfNeeded();
   await migrateAllowSearchIndexingIfNeeded();
+  await migrateSiteAccessIfNeeded();
   await migratePageSeoIfNeeded();
   await migrateFieldGalleryIfNeeded();
   await migrateSiteImages();

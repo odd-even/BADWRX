@@ -3,10 +3,18 @@
 import { AgeVerification } from "@/components/layout/AgeVerification";
 import { MerchCartProvider } from "@/components/merch/CartProvider";
 
-export function SiteProviders({ children }: { children: React.ReactNode }) {
+interface SiteProvidersProps {
+  children: React.ReactNode;
+  ageVerificationEnabled?: boolean;
+}
+
+export function SiteProviders({
+  children,
+  ageVerificationEnabled = true,
+}: SiteProvidersProps) {
   return (
     <MerchCartProvider>
-      <AgeVerification />
+      <AgeVerification enabled={ageVerificationEnabled} />
       {children}
     </MerchCartProvider>
   );

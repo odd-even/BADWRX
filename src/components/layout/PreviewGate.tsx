@@ -1,11 +1,18 @@
 "use client";
 
 import { SitePasswordOverlay } from "@/components/layout/SitePasswordOverlay";
+import { isSitePublic } from "@/lib/site";
 
-const isSitePublic = process.env.NEXT_PUBLIC_SITE_PUBLIC === "true";
+interface PreviewGateProps {
+  children: React.ReactNode;
+  passwordProtectionEnabled?: boolean;
+}
 
-export function PreviewGate({ children }: { children: React.ReactNode }) {
-  if (isSitePublic) return <>{children}</>;
+export function PreviewGate({
+  children,
+  passwordProtectionEnabled = true,
+}: PreviewGateProps) {
+  if (isSitePublic() || !passwordProtectionEnabled) return <>{children}</>;
 
   return (
     <>

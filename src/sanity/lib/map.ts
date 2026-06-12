@@ -1,4 +1,5 @@
 import { normalizeNavImageFade } from "@/lib/nav-image-fade";
+import { normalizeSiteAccess } from "@/lib/site-access";
 import type { BrandAssets, Course, Rifle, RifleImage, SiteImages, SiteSettings } from "@/lib/types";
 import { defaultBrandAssets, defaultFieldGallery, defaultSiteImages, defaultSiteSettings } from "@/data/site-settings";
 import { images } from "@/lib/images";
@@ -361,6 +362,7 @@ export function mapSiteSettings(
     siteImages: mapSiteImages(rawImages),
     brandAssets: mapBrandAssets(rawBrandAssets),
     navImageFade: normalizeNavImageFade(navImageFade),
+    siteAccess: normalizeSiteAccess(rest.siteAccess),
     ...fieldGalleryFields,
     testimonialSection:
       rest.testimonialSection ?? defaultSiteSettings.testimonialSection,

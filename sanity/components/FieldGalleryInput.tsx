@@ -1,4 +1,4 @@
-import { UploadIcon } from "@sanity/icons";
+import { TrashIcon, UploadIcon } from "@sanity/icons";
 import { Box, Button, Card, Flex, Spinner, Stack, Text } from "@sanity/ui";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -122,6 +122,19 @@ export function FieldGalleryInput(props: InputProps) {
     if (event.dataTransfer.files?.length) void uploadFiles(event.dataTransfer.files);
   };
 
+  function deleteAll() {
+    if (readOnly || uploading || current.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Remove all ${current.length} gallery photo${current.length === 1 ? "" : "s"}? This cannot be undone until you publish.`,
+    );
+    if (!confirmed) return;
+
+    onChange(PatchEvent.from(set([])));
+    setError(null);
+    setStatus(`Removed ${current.length} photo${current.length === 1 ? "" : "s"} from the gallery.`);
+  }
+
   return (
     <Stack space={4}>
       <Card padding={4} radius={2} shadow={1} tone="transparent" border>
@@ -174,16 +187,28 @@ export function FieldGalleryInput(props: InputProps) {
             onChange={onInputChange}
           />
 
-          {!readOnly && remaining > 0 ? (
-            <Box>
-              <Button
-                icon={UploadIcon}
-                text="Choose images"
-                mode="ghost"
-                disabled={uploading}
-                onClick={() => inputRef.current?.click()}
-              />
-            </Box>
+          {!readOnly ? (
+            <Flex align="center" gap={3} wrap="wrap">
+              {remaining > 0 ? (
+                <Button
+                  icon={UploadIcon}
+                  text="Choose images"
+                  mode="ghost"
+                  disabled={uploading}
+                  onClick={() => inputRef.current?.click()}
+                />
+              ) : null}
+              {current.length > 0 ? (
+                <Button
+                  icon={TrashIcon}
+                  text="Delete all"
+                  mode="ghost"
+                  tone="critical"
+                  disabled={uploading}
+                  onClick={deleteAll}
+                />
+              ) : null}
+            </Flex>
           ) : null}
 
           {status ? (

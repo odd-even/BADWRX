@@ -4,6 +4,7 @@ import { getCopy, sourceData } from "@/lib/source-data";
 import { buildFieldGalleryFileList } from "@/data/field-gallery";
 import { images, riflePlaceholderAlt } from "@/lib/images";
 import { defaultNavImageFade } from "@/lib/nav-image-fade";
+import { defaultSiteAccess } from "@/lib/site-access";
 import { defaultPageSeo } from "@/data/page-seo";
 import type { BrandAssets, NavImageFadeSettings, SiteImages, SiteSettings } from "@/lib/types";
 
@@ -140,6 +141,7 @@ export const defaultSiteSettings: SiteSettings = {
   siteImages: defaultSiteImages,
   brandAssets: defaultBrandAssets,
   navImageFade: defaultNavImageFade,
+  siteAccess: defaultSiteAccess,
   homeHero: {
     eyebrow: "Unrelenting performance",
     headlinePrefix: "",

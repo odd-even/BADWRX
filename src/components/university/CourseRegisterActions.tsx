@@ -32,7 +32,7 @@ export function CourseRegisterActions({
           Register
         </button>
         <Link
-          href="/contact"
+          href={`/contact?university=1&course=${course.slug}`}
           className="border border-white/20 px-10 py-4 text-center text-xs uppercase tracking-widest text-white transition hover:border-red hover:text-red"
         >
           Ask a question

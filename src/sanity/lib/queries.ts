@@ -128,6 +128,11 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   short,
   tagline,
   allowSearchIndexing,
+  siteAccess {
+    passwordProtectionEnabled,
+    ageVerificationEnabled,
+    previewPassword
+  },
   pageSeo {
     home,
     about,

@@ -11,13 +11,23 @@ import { blurActiveElement } from "@/lib/modal-body-lock";
 import { BirthDatePicker } from "@/components/ui/BirthDatePicker";
 import { GateModal } from "@/components/layout/GateModal";
 
-export function AgeVerification() {
+interface AgeVerificationProps {
+  enabled?: boolean;
+}
+
+export function AgeVerification({ enabled = true }: AgeVerificationProps) {
   const [checked, setChecked] = useState(false);
   const [verified, setVerified] = useState(false);
   const [birthDate, setBirthDate] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const gateActive = enabled || isAgeGateForced();
 
   useEffect(() => {
+    if (!gateActive) {
+      setVerified(true);
+      setChecked(true);
+      return;
+    }
     if (isAgeGateForced()) {
       setVerified(false);
       setChecked(true);
@@ -25,7 +35,7 @@ export function AgeVerification() {
     }
     setVerified(localStorage.getItem(AGE_VERIFICATION_STORAGE_KEY) === "true");
     setChecked(true);
-  }, []);
+  }, [gateActive]);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -56,6 +66,8 @@ export function AgeVerification() {
     blurActiveElement();
     setVerified(true);
   }
+
+  if (!gateActive) return null;
 
   return (
     <GateModal

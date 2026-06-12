@@ -21,7 +21,9 @@ export default async function SiteLayout({
   const visibility = settings.pageVisibility;
 
   return (
-    <SiteProviders>
+    <SiteProviders
+      ageVerificationEnabled={settings.siteAccess.ageVerificationEnabled}
+    >
       <Header
         navLinks={headerNavLinks(visibility)}
         showConfigureCta={isPageEnabled("configure", visibility)}

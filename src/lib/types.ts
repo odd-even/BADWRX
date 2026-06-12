@@ -182,8 +182,10 @@ export interface BrandAssets {
 }
 
 import type { NavImageFadeSettings } from "./nav-image-fade";
+import type { SiteAccessSettings } from "./site-access";
 
 export type { NavImageFadeOpacity, NavImageFadeSettings } from "./nav-image-fade";
+export type { SiteAccessSettings } from "./site-access";
 
 export interface SiteSettings {
   name: string;
@@ -191,6 +193,8 @@ export interface SiteSettings {
   tagline: string;
   /** When true (and deployment is public), search engines may index the site. */
   allowSearchIndexing?: boolean;
+  /** Preview password gate and age verification toggles. */
+  siteAccess: SiteAccessSettings;
   /** Meta descriptions for main pages (search + link previews). */
   pageSeo?: PageSeoBlurbs;
   email: string;

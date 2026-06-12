@@ -9,6 +9,7 @@ export const siteSettings = defineType({
     { name: "brand", title: "Brand", default: true },
     { name: "sharing", title: "Sharing & icons" },
     { name: "seo", title: "SEO" },
+    { name: "access", title: "Access" },
     { name: "layout", title: "Layout" },
     { name: "photos", title: "Photos" },
     { name: "pages", title: "Pages" },
@@ -78,42 +79,49 @@ export const siteSettings = defineType({
           title: "Home",
           type: "text",
           rows: 2,
+          description: "Meta description for the home page (~150 characters).",
         }),
         defineField({
           name: "about",
           title: "About",
           type: "text",
           rows: 2,
+          description: "Meta description for /about.",
         }),
         defineField({
           name: "builds",
           title: "Builds",
           type: "text",
           rows: 2,
+          description: "Meta description for /builds and rifle detail pages.",
         }),
         defineField({
           name: "configure",
           title: "Configure",
           type: "text",
           rows: 2,
+          description: "Meta description for the build configurator.",
         }),
         defineField({
           name: "contact",
           title: "Contact",
           type: "text",
           rows: 2,
+          description: "Meta description for /contact.",
         }),
         defineField({
           name: "merch",
           title: "Merch",
           type: "text",
           rows: 2,
+          description: "Meta description for /merch.",
         }),
         defineField({
           name: "university",
           title: "University",
           type: "text",
           rows: 2,
+          description: "Meta description for /university and course pages.",
         }),
       ],
     }),
@@ -126,6 +134,41 @@ export const siteSettings = defineType({
       initialValue: false,
       description:
         "When off, the site sends noindex to search engines (preview/staging). Turn on at public launch. Requires NEXT_PUBLIC_SITE_PUBLIC=true on the deployment as well.",
+    }),
+
+    defineField({
+      name: "siteAccess",
+      title: "Access gates",
+      type: "object",
+      group: "access",
+      description:
+        "Control the preview password modal and age verification overlay. Password is checked server-side.",
+      fields: [
+        defineField({
+          name: "passwordProtectionEnabled",
+          title: "Password protection",
+          type: "boolean",
+          initialValue: true,
+          description:
+            "Show the preview password modal before visitors can browse the site. Disabled automatically when the deployment is marked public (NEXT_PUBLIC_SITE_PUBLIC).",
+        }),
+        defineField({
+          name: "previewPassword",
+          title: "Preview password",
+          type: "string",
+          description:
+            "Password visitors enter to unlock the site. Leave blank to use the default (badwrx).",
+          hidden: ({ parent }) => parent?.passwordProtectionEnabled === false,
+        }),
+        defineField({
+          name: "ageVerificationEnabled",
+          title: "Age verification",
+          type: "boolean",
+          initialValue: true,
+          description:
+            "Require visitors to confirm they are 18+ with a date of birth before browsing.",
+        }),
+      ],
     }),
 
     defineField({

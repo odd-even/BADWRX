@@ -4,11 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { blurActiveElement } from "@/lib/modal-body-lock";
 import { gateInputClassName } from "@/lib/form-styles";
-import {
-  isPreviewExcludedPath,
-  SITE_PREVIEW_PASSWORD,
-  SITE_PREVIEW_STORAGE_KEY,
-} from "@/lib/site-preview";
+import { isPreviewExcludedPath, SITE_PREVIEW_STORAGE_KEY } from "@/lib/site-preview";
 import { GateModal } from "@/components/layout/GateModal";
 
 export function SitePasswordOverlay() {
@@ -17,6 +13,7 @@ export function SitePasswordOverlay() {
   const [unlocked, setUnlocked] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const excluded = isPreviewExcludedPath(pathname);
   const open = hydrated && !unlocked && !excluded;
@@ -26,16 +23,34 @@ export function SitePasswordOverlay() {
     setHydrated(true);
   }, []);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (password !== SITE_PREVIEW_PASSWORD) {
-      setError("Incorrect password.");
-      return;
-    }
-    sessionStorage.setItem(SITE_PREVIEW_STORAGE_KEY, "1");
-    blurActiveElement();
-    setUnlocked(true);
+    setSubmitting(true);
     setError(null);
+
+    try {
+      const response = await fetch("/api/preview-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(data?.error ?? "Incorrect password.");
+        return;
+      }
+
+      sessionStorage.setItem(SITE_PREVIEW_STORAGE_KEY, "1");
+      blurActiveElement();
+      setUnlocked(true);
+    } catch {
+      setError("Could not verify password. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -73,9 +88,10 @@ export function SitePasswordOverlay() {
 
         <button
           type="submit"
-          className="w-full border border-red bg-red py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:py-4"
+          disabled={submitting}
+          className="w-full border border-red bg-red py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark disabled:opacity-60 sm:py-4"
         >
-          Continue
+          {submitting ? "Checking…" : "Continue"}
         </button>
       </form>
     </GateModal>

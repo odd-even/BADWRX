@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { formInputClassName, formSelectClassName } from "@/lib/form-styles";
 
-export type ContactInquiryMode = "platform" | "merch";
+export type ContactInquiryMode = "platform" | "merch" | "university";
 
 export interface ContactField {
   id: string;
@@ -22,6 +22,8 @@ interface ContactFormProps {
   buildFields?: ContactField[];
   merchItems?: { slug: string; title: string }[];
   initialMerchSlug?: string;
+  courseItems?: { slug: string; title: string }[];
+  initialCourseSlug?: string;
 }
 
 function isRadioField(field: ContactField) {
@@ -36,7 +38,7 @@ function isTextAreaField(field: ContactField) {
 }
 
 function successCopy(mode: ContactInquiryMode) {
-  if (mode === "merch") {
+  if (mode === "merch" || mode === "university") {
     return { eyebrow: "Inquiry received", body: "Thank you. We'll respond within 2 business days." };
   }
   return { eyebrow: "Build request received", body: "Thank you. We'll respond within 2 business days." };
@@ -48,13 +50,17 @@ export function ContactForm({
   buildFields,
   merchItems = [],
   initialMerchSlug,
+  courseItems = [],
+  initialCourseSlug,
 }: ContactFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [values, setValues] = useState<Record<string, string>>(() => ({
     merch: initialMerchSlug ?? "",
+    course: initialCourseSlug ?? "",
   }));
 
   const selectedMerch = merchItems.find((item) => item.slug === values.merch);
+  const selectedCourse = courseItems.find((item) => item.slug === values.course);
 
   function setValue(id: string, value: string) {
     setValues((current) => ({ ...current, [id]: value }));
@@ -183,6 +189,75 @@ export function ContactForm({
             />
           </label>
         ))}
+
+        <SubmitButton label={submitLabel} />
+      </form>
+    );
+  }
+
+  if (mode === "university") {
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">
+            Topic
+          </span>
+          <select
+            value={values.course ?? ""}
+            onChange={(event) => setValue("course", event.target.value)}
+            className={selectClassName}
+          >
+            <option value="">General university inquiry</option>
+            {courseItems.map((item) => (
+              <option key={item.slug} value={item.slug}>
+                {item.title}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {selectedCourse && (
+          <div className="border border-red/30 bg-black-light px-4 py-3">
+            <p className="text-xs uppercase tracking-widest text-red">Asking about</p>
+            <p className="mt-1 text-sm text-white">{selectedCourse.title}</p>
+          </div>
+        )}
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">Name</span>
+          <input
+            required
+            type="text"
+            name="name"
+            autoComplete="name"
+            value={values.name ?? ""}
+            onChange={(event) => setValue("name", event.target.value)}
+            className={inputClassName}
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">Email</span>
+          <input
+            required
+            type="email"
+            name="email"
+            autoComplete="email"
+            value={values.email ?? ""}
+            onChange={(event) => setValue("email", event.target.value)}
+            className={inputClassName}
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-widest text-white-muted">Message</span>
+          <textarea
+            required
+            rows={5}
+            placeholder="Ask about class dates, prerequisites, format, travel, or anything else before you register..."
+            value={values.message ?? ""}
+            onChange={(event) => setValue("message", event.target.value)}
+            className={`${inputClassName} placeholder:text-white-muted/40`}
+          />
+        </label>
 
         <SubmitButton label={submitLabel} />
       </form>

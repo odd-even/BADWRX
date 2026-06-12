@@ -1,18 +1,28 @@
 import { brand } from "@/lib/brand";
 import type { PageSeoBlurbs } from "@/lib/types";
 
-/** Default meta descriptions — editable in Sanity → Site Settings → SEO. */
+/**
+ * Default meta descriptions — editable in Sanity → Site Settings → SEO.
+ * Aim for ~150–160 characters (search snippet length).
+ */
 export const defaultPageSeo: PageSeoBlurbs = {
-  home: `Precision rifles built to order by ${brand.name} (${brand.short}). Hand test-fired before delivery with a ballistics table and rifle-specific ammunition data.`,
-  about: `How ${brand.short} builds precision rifles in Diamondhead, Mississippi — engineered without compromise, tested before delivery, and built to order.`,
+  home:
+    "BADWRX builds custom precision rifles to order in Diamondhead, Mississippi. Every gun is hand test-fired and ships with trued ballistic data, NightForce-ready specs, and builder support.",
+  about:
+    "BADWRX (Badger Gunworks) engineers precision rifles without compromise in Diamondhead, MS. Built to order, tested before delivery, and designed for hard country.",
   builds:
-    "Six BADWRX platforms built to order. View specs, calibers, and configuration options for Specter, Reaper, Imperium, Invictus, Sentinel, and G.O.A.T.",
+    "Browse six BADWRX rifle builds — Specter, Reaper, Imperium, Invictus, Sentinel, and G.O.A.T. Compare specs, calibers, chassis options, and starting prices.",
   configure:
-    "Configure your BADWRX rifle — platform, caliber, finish, optics, and packages. Submit your build for a builder review and quote.",
+    "Configure your BADWRX rifle — platform, caliber, finish, optics, rings, and Basecamp or Ballistic packages. Submit your build for a personal quote from our team.",
   contact:
-    "Start a custom BADWRX rifle build. Share your configuration and our team will respond with timeline, pricing, and next steps.",
+    "Reach BADWRX to start a custom rifle build or ask a question. Our builders review every inquiry personally and respond with configuration, timeline, and pricing.",
   merch:
-    "BADWRX field caps, tees, and hoodies. Range-ready apparel with free standard shipping on orders over $100.",
+    "Shop BADWRX field caps, tees, and hoodies. Range-ready apparel for hunters and precision shooters. Free standard shipping on U.S. merch orders over $100.",
   university:
-    "Long Range University from BADWRX — professional ballistics and long-range shooting coaching in small classes with real field applications.",
+    "BADWRX Long Range University offers small-class ballistics and long-range shooting instruction. Professional coaches, real DOPE validation, and field-ready skills.",
 };
+
+/** Character counts for Studio validation hints. */
+export const pageSeoCharCounts = Object.fromEntries(
+  Object.entries(defaultPageSeo).map(([key, text]) => [key, text.length]),
+) as Record<keyof PageSeoBlurbs, number>;
