@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { GalleryLightbox } from "@/components/ui/GalleryLightbox";
 import { observeScrollReveal, prefersReducedMotion } from "@/lib/scroll-reveal";
@@ -18,11 +18,33 @@ interface FieldMasonryGalleryProps {
 }
 
 const masonrySizes =
-  "(max-width: 500px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw";
+  "(max-width: 500px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw";
 
-const MOBILE_GALLERY_MAX_WIDTH = 500;
-const MOBILE_GALLERY_INITIAL = 5;
-const MOBILE_GALLERY_BATCH = 5;
+const SINGLE_COLUMN_MAX_WIDTH = 500;
+const TWO_COLUMN_MAX_WIDTH = 767;
+
+const GALLERY_INITIAL = {
+  single: 5,
+  twoColumn: 10,
+} as const;
+
+const GALLERY_BATCH = {
+  single: 5,
+  twoColumn: 10,
+} as const;
+
+type GalleryLayout = "single" | "twoColumn" | "multi";
+
+function resolveGalleryLayout(width: number): GalleryLayout {
+  if (width <= SINGLE_COLUMN_MAX_WIDTH) return "single";
+  if (width <= TWO_COLUMN_MAX_WIDTH) return "twoColumn";
+  return "multi";
+}
+
+function initialVisibleCount(layout: GalleryLayout, total: number): number {
+  if (layout === "multi") return total;
+  return Math.min(GALLERY_INITIAL[layout], total);
+}
 
 const REVEAL_ROOT_MARGIN = "0px 0px -8% 0px";
 const REVEAL_THRESHOLD = 0.12;
@@ -174,35 +196,50 @@ function GalleryIntro({ section }: { section: FieldGallerySection }) {
 
 export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileVisibleCount, setMobileVisibleCount] = useState(MOBILE_GALLERY_INITIAL);
+  const [layout, setLayout] = useState<GalleryLayout>("single");
+  const [visibleCount, setVisibleCount] = useState(() =>
+    initialVisibleCount("single", images.length),
+  );
+  const layoutRef = useRef<GalleryLayout>("single");
   const galleryLabel = section.title || section.eyebrow || "Photo gallery";
 
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${MOBILE_GALLERY_MAX_WIDTH}px)`);
+  useLayoutEffect(() => {
     const update = () => {
-      setIsMobile(mq.matches);
-      if (!mq.matches) {
-        setMobileVisibleCount(MOBILE_GALLERY_INITIAL);
-      }
+      const nextLayout = resolveGalleryLayout(window.innerWidth);
+      const prevLayout = layoutRef.current;
+
+      setLayout(nextLayout);
+      setVisibleCount((count) => {
+        const nextInitial = initialVisibleCount(nextLayout, images.length);
+        if (nextLayout === "multi") return images.length;
+        if (prevLayout === nextLayout && count > nextInitial) {
+          return Math.min(count, images.length);
+        }
+        return nextInitial;
+      });
+
+      layoutRef.current = nextLayout;
     };
+
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [images.length]);
 
   if (!images.length) return null;
 
-  const visibleImages = isMobile ? images.slice(0, mobileVisibleCount) : images;
-  const showLoadMore = isMobile && mobileVisibleCount < images.length;
-  const remainingCount = images.length - mobileVisibleCount;
+  const visibleImages =
+    layout === "multi" ? images : images.slice(0, visibleCount);
+  const showLoadMore = layout !== "multi" && visibleCount < images.length;
+  const batchSize = layout === "multi" ? 0 : GALLERY_BATCH[layout];
+  const remainingCount = images.length - visibleCount;
 
   return (
     <>
       <div className="mx-auto max-w-7xl px-6 py-24">
         <GalleryIntro section={section} />
 
-        <div className="mt-10 columns-1 gap-3 min-[501px]:columns-2 min-[1024px]:columns-3 min-[1024px]:gap-4 lg:columns-4">
+        <div className="mt-10 columns-1 gap-3 min-[501px]:columns-2 min-[768px]:columns-3 min-[768px]:gap-4 min-[1280px]:columns-4">
           {visibleImages.map((image, index) => (
             <GalleryTile
               key={`${image.url}-${index}`}
@@ -215,12 +252,12 @@ export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProp
         </div>
 
         {showLoadMore ? (
-          <div className="mt-8 flex justify-center min-[501px]:hidden">
+          <div className="mt-8 flex justify-center min-[768px]:hidden">
             <button
               type="button"
               onClick={() =>
-                setMobileVisibleCount((count) =>
-                  Math.min(count + MOBILE_GALLERY_BATCH, images.length),
+                setVisibleCount((count) =>
+                  Math.min(count + batchSize, images.length),
                 )
               }
               className="border border-white/20 px-8 py-3 text-xs uppercase tracking-widest text-white-muted transition hover:border-red hover:text-red"
@@ -228,7 +265,7 @@ export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProp
               Load more
               <span className="sr-only">
                 {" "}
-                — {Math.min(MOBILE_GALLERY_BATCH, remainingCount)} more photos
+                — {Math.min(batchSize, remainingCount)} more photos
               </span>
             </button>
           </div>

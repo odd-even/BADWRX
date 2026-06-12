@@ -3,6 +3,7 @@ import { images } from "@/lib/images";
 /** Original uploads in repo `/gallery` — optimized to WebP at build. */
 export const FIELD_GALLERY_SOURCE_FILES = [
   "IMG_0261.jpeg",
+  "IMG_4159.jpeg",
   "IMG_4265.jpeg",
   "IMG_4217.jpeg",
   "IMG_4569.jpeg",
@@ -21,6 +22,7 @@ export const FIELD_GALLERY_DIMENSIONS: Record<
   { width: number; height: number }
 > = {
   "IMG_0261.jpeg": { width: 4032, height: 3024 },
+  "IMG_4159.jpeg": { width: 4032, height: 3024 },
   "IMG_4265.jpeg": { width: 4032, height: 3024 },
   "IMG_4217.jpeg": { width: 4032, height: 3024 },
   "IMG_4569.jpeg": { width: 4032, height: 3024 },
@@ -68,12 +70,49 @@ export function fieldGalleryLocalImage(sourceFile: string) {
   };
 }
 
+const FIELD_GALLERY_PORTRAIT = "IMG_5717.jpeg";
+
+/**
+ * Masonry-friendly order: spread the portrait tile through the list so mobile
+ * and multi-column layouts get mixed heights instead of uniform 4:3 bands.
+ * Stable across builds — not random per request.
+ */
+export function buildFieldGallerySourceOrder(
+  count = FIELD_GALLERY_TARGET_COUNT,
+): (typeof FIELD_GALLERY_SOURCE_FILES)[number][] {
+  const landscapes = FIELD_GALLERY_SOURCE_FILES.filter(
+    (file) => file !== FIELD_GALLERY_PORTRAIT,
+  );
+  const order: (typeof FIELD_GALLERY_SOURCE_FILES)[number][] = [];
+  let landscapeIndex = 0;
+
+  for (let i = 0; i < count; i += 1) {
+    // Portrait every 5th slot (0, 5, 10, …) rotates across columns on desktop.
+    if (i % 5 === 0) {
+      order.push(FIELD_GALLERY_PORTRAIT);
+      continue;
+    }
+
+    let file = landscapes[landscapeIndex % landscapes.length];
+    landscapeIndex += 1;
+
+    // Avoid back-to-back duplicates when the cycle wraps.
+    const previous = order[order.length - 1];
+    if (file === previous) {
+      file = landscapes[landscapeIndex % landscapes.length];
+      landscapeIndex += 1;
+    }
+
+    order.push(file);
+  }
+
+  return order;
+}
+
 export function buildFieldGalleryFileList(count = FIELD_GALLERY_TARGET_COUNT) {
-  return Array.from({ length: count }, (_, index) => {
-    const sourceFile =
-      FIELD_GALLERY_SOURCE_FILES[index % FIELD_GALLERY_SOURCE_FILES.length];
-    return fieldGalleryLocalImage(sourceFile);
-  });
+  return buildFieldGallerySourceOrder(count).map((sourceFile) =>
+    fieldGalleryLocalImage(sourceFile),
+  );
 }
 
 /** Sanity seed uploads the full-size WebP variant for each unique source photo. */
