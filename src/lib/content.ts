@@ -20,6 +20,7 @@ import {
   coursesQuery,
   merchBySlugQuery,
   merchQuery,
+  fieldGallerySettingsQuery,
   rifleBySlugQuery,
   riflesQuery,
   siteSettingsQuery,
@@ -133,8 +134,13 @@ function normalizeHomeHero(
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   if (!isSanityConfigured()) return defaultSiteSettings;
   try {
-    const doc = await client.fetch(siteSettingsQuery, {}, sanityFetchOptions);
-    const settings = normalizeSiteSettings(mapSiteSettings(doc) ?? defaultSiteSettings);
+    const [doc, galleryDoc] = await Promise.all([
+      client.fetch(siteSettingsQuery, {}, sanityFetchOptions),
+      client.fetch(fieldGallerySettingsQuery, {}, sanityFetchOptions),
+    ]);
+    const settings = normalizeSiteSettings(
+      mapSiteSettings(doc, galleryDoc) ?? defaultSiteSettings,
+    );
     const hero = settings.homeHero as SiteSettings["homeHero"] & { headline?: string };
     if (!hero.headlines?.length) {
       const legacy = hero.headline?.replace(/^(Engineered|Crafted)\s+/i, "") ?? "";

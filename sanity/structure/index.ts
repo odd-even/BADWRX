@@ -1,4 +1,6 @@
 import type { StructureResolver } from "sanity/structure";
+import { ImagesIcon } from "@sanity/icons";
+import { FIELD_GALLERY_SETTINGS_DOCUMENT_ID } from "../schemaTypes/fieldGallerySettings";
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -11,6 +13,15 @@ export const structure: StructureResolver = (S) =>
             .schemaType("siteSettings")
             .documentId("siteSettings")
             .title("Site Settings"),
+        ),
+      S.listItem()
+        .title("From the Field Gallery")
+        .icon(ImagesIcon)
+        .child(
+          S.document()
+            .schemaType("fieldGallerySettings")
+            .documentId(FIELD_GALLERY_SETTINGS_DOCUMENT_ID)
+            .title("From the Field Gallery"),
         ),
       S.divider(),
       S.documentTypeListItem("rifle")

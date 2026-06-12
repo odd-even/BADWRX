@@ -76,8 +76,14 @@ export const RIFLE_CARD_COMPACT_ASPECT = 3 / 2;
 /** Configurator platform picker tiles */
 export const CONFIGURATOR_PLATFORM_ASPECT = 2 / 1;
 
+type ImageHotspotOptions = {
+  hotspot: {
+    previews: { title: string; aspectRatio: number }[];
+  };
+};
+
 /** Hotspot crop previews shown in Studio after upload (Sanity v3.86+). */
-export function rifleCardHotspotOptions() {
+export function rifleCardHotspotOptions(): ImageHotspotOptions {
   return {
     hotspot: {
       previews: [
@@ -85,10 +91,10 @@ export function rifleCardHotspotOptions() {
         { title: "Home scroll (3:2)", aspectRatio: RIFLE_CARD_COMPACT_ASPECT },
       ],
     },
-  } as const;
+  };
 }
 
-export function configuratorPlatformHotspotOptions() {
+export function configuratorPlatformHotspotOptions(): ImageHotspotOptions {
   return {
     hotspot: {
       previews: [
@@ -96,7 +102,7 @@ export function configuratorPlatformHotspotOptions() {
         { title: "Configurator (2:1)", aspectRatio: CONFIGURATOR_PLATFORM_ASPECT },
       ],
     },
-  } as const;
+  };
 }
 
 const RIFLE_CROP_GUIDE =
@@ -107,7 +113,7 @@ export function riflePhotoField(
   name: string,
   title: string,
   description: string,
-  hotspotOptions: ReturnType<typeof rifleCardHotspotOptions>,
+  hotspotOptions: ImageHotspotOptions,
 ): FieldDefinition {
   return defineField({
     name,

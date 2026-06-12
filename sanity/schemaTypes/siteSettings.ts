@@ -370,19 +370,18 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: "fieldGallerySection",
-      title: "Photo gallery",
+      title: "Photo gallery (legacy)",
       type: "object",
       group: "home",
+      hidden: true,
       fields: sectionFields(),
     }),
     defineField({
       name: "fieldGallery",
-      title: "Photo gallery images",
+      title: "Photo gallery images (legacy)",
       type: "array",
       group: "home",
-      description:
-        "Masonry photo gallery on the home page (up to 30 images). Images are served as WebP from Sanity CDN at responsive sizes.",
-      validation: (rule) => rule.max(30),
+      hidden: true,
       of: [
         defineArrayMember({
           type: "image",

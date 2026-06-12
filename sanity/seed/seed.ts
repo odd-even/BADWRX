@@ -232,11 +232,34 @@ async function uploadGalleryWebp(webpFilename: string) {
 }
 
 async function migrateFieldGalleryIfNeeded() {
-  const doc = await client.fetch<{ fieldGallery?: unknown[] }>(
-    `*[_id == "siteSettings"][0]{ fieldGallery }`,
-  );
+  const FIELD_GALLERY_DOC_ID = "fieldGallerySettings";
 
-  const existingCount = doc?.fieldGallery?.length ?? 0;
+  const [legacy, galleryDoc] = await Promise.all([
+    client.fetch<{
+      fieldGallerySection?: (typeof defaultSiteSettings)["fieldGallerySection"];
+      fieldGallery?: unknown[];
+    }>(`*[_id == "siteSettings"][0]{ fieldGallerySection, fieldGallery }`),
+    client.fetch<{ images?: unknown[] }>(
+      `*[_id == "${FIELD_GALLERY_DOC_ID}"][0]{ images }`,
+    ),
+  ]);
+
+  const existingCount = galleryDoc?.images?.length ?? 0;
+
+  if (existingCount === 0 && legacy?.fieldGallery?.length) {
+    await client.createOrReplace({
+      _id: FIELD_GALLERY_DOC_ID,
+      _type: "fieldGallerySettings",
+      section:
+        legacy.fieldGallerySection ?? defaultSiteSettings.fieldGallerySection,
+      images: legacy.fieldGallery,
+    });
+    console.log(
+      "  ✓ Migrated From the Field gallery from Site Settings to dedicated module",
+    );
+    return;
+  }
+
   const targetCount = buildFieldGalleryFileList().length;
   if (existingCount >= targetCount) return;
 
@@ -253,13 +276,12 @@ async function migrateFieldGalleryIfNeeded() {
     _key: `field-gallery-${index}`,
   }));
 
-  await client
-    .patch("siteSettings")
-    .set({
-      fieldGallerySection: defaultSiteSettings.fieldGallerySection,
-      fieldGallery: gallery,
-    })
-    .commit();
+  await client.createOrReplace({
+    _id: FIELD_GALLERY_DOC_ID,
+    _type: "fieldGallerySettings",
+    section: defaultSiteSettings.fieldGallerySection,
+    images: gallery,
+  });
 
   console.log(
     `  ✓ Seeded From the Field gallery (${gallery.length} WebP photos)`,

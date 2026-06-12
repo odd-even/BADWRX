@@ -15,6 +15,7 @@ import {
   fieldGallerySeedFiles,
 } from "../../src/data/field-gallery";
 import { defaultSiteSettings } from "../../src/data/site-settings";
+import { FIELD_GALLERY_SETTINGS_DOCUMENT_ID } from "../schemaTypes/fieldGallerySettings";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "../..");
@@ -66,17 +67,6 @@ async function uploadGalleryWebp(webpFilename: string) {
 }
 
 async function main() {
-  const doc = await client.fetch<{ _id?: string } | null>(
-    `*[_id == "siteSettings"][0]{ _id }`,
-  );
-
-  if (!doc?._id) {
-    console.error(
-      "siteSettings document not found. Run npm run seed:sanity first to create it.",
-    );
-    process.exit(1);
-  }
-
   console.log("→ Optimizing gallery sources to WebP...");
   execSync("node scripts/optimize-gallery.mjs", { cwd: root, stdio: "inherit" });
 
@@ -91,15 +81,16 @@ async function main() {
     _key: `field-gallery-${index}`,
   }));
 
-  await client
-    .patch("siteSettings")
-    .set({
-      fieldGallerySection: defaultSiteSettings.fieldGallerySection,
-      fieldGallery: gallery,
-    })
-    .commit();
+  await client.createOrReplace({
+    _id: FIELD_GALLERY_SETTINGS_DOCUMENT_ID,
+    _type: "fieldGallerySettings",
+    section: defaultSiteSettings.fieldGallerySection,
+    images: gallery,
+  });
 
-  console.log(`✓ Reprocessed From the Field gallery (${gallery.length} WebP photos in Sanity)`);
+  console.log(
+    `✓ Reprocessed From the Field gallery (${gallery.length} WebP photos in Sanity)`,
+  );
 }
 
 main().catch((error) => {

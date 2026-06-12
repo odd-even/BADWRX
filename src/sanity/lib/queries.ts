@@ -118,6 +118,11 @@ export const merchBySlugQuery = `*[_type == "merchItem" && slug.current == $slug
   images[] ${sanityImage}
 }`;
 
+export const fieldGallerySettingsQuery = `*[_type == "fieldGallerySettings" && _id == "fieldGallerySettings"][0] {
+  section,
+  images[] ${sanityImage}
+}`;
+
 export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   name,
   short,

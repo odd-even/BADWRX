@@ -259,6 +259,11 @@ function mapBrandAssetImage(
   };
 }
 
+interface SanityFieldGallerySettingsDoc {
+  section?: SiteSettings["fieldGallerySection"];
+  images?: SanityImageField[];
+}
+
 interface SanitySiteSettingsDoc extends Omit<
   Partial<SiteSettings>,
   "siteImages" | "brandAssets" | "navImageFade" | "fieldGallery"
@@ -308,23 +313,55 @@ export function mapFieldGallery(
   return mapped.length ? mapped : defaults;
 }
 
-export function mapSiteSettings(doc: SanitySiteSettingsDoc | null): SiteSettings | null {
+function resolveFieldGalleryFromSanity(
+  galleryDoc: SanityFieldGallerySettingsDoc | null | undefined,
+  legacyDoc: Pick<SanitySiteSettingsDoc, "fieldGallery" | "fieldGallerySection"> | null | undefined,
+): Pick<SiteSettings, "fieldGallery" | "fieldGallerySection"> {
+  if (galleryDoc?.images?.length) {
+    return {
+      fieldGallery: mapFieldGallery(galleryDoc.images),
+      fieldGallerySection:
+        galleryDoc.section ?? defaultSiteSettings.fieldGallerySection,
+    };
+  }
+
+  if (legacyDoc?.fieldGallery?.length) {
+    return {
+      fieldGallery: mapFieldGallery(legacyDoc.fieldGallery),
+      fieldGallerySection:
+        legacyDoc.fieldGallerySection ?? defaultSiteSettings.fieldGallerySection,
+    };
+  }
+
+  return {
+    fieldGallery: defaultFieldGallery,
+    fieldGallerySection: defaultSiteSettings.fieldGallerySection,
+  };
+}
+
+export function mapSiteSettings(
+  doc: SanitySiteSettingsDoc | null,
+  galleryDoc?: SanityFieldGallerySettingsDoc | null,
+): SiteSettings | null {
   if (!doc?.name) return null;
   const {
     siteImages: rawImages,
     brandAssets: rawBrandAssets,
     navImageFade,
-    fieldGallery: rawFieldGallery,
+    fieldGallery: legacyFieldGallery,
+    fieldGallerySection: legacyFieldGallerySection,
     ...rest
   } = doc;
+  const fieldGalleryFields = resolveFieldGalleryFromSanity(galleryDoc, {
+    fieldGallery: legacyFieldGallery,
+    fieldGallerySection: legacyFieldGallerySection,
+  });
   return {
     ...rest,
     siteImages: mapSiteImages(rawImages),
     brandAssets: mapBrandAssets(rawBrandAssets),
     navImageFade: normalizeNavImageFade(navImageFade),
-    fieldGallery: mapFieldGallery(rawFieldGallery),
-    fieldGallerySection:
-      rest.fieldGallerySection ?? defaultSiteSettings.fieldGallerySection,
+    ...fieldGalleryFields,
     testimonialSection:
       rest.testimonialSection ?? defaultSiteSettings.testimonialSection,
   } as SiteSettings;
