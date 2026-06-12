@@ -10,7 +10,7 @@ import {
 } from "sanity";
 import {
   FIELD_GALLERY_ALT,
-  FIELD_GALLERY_TARGET_COUNT,
+  FIELD_GALLERY_MAX_COUNT,
 } from "../../src/data/field-gallery";
 import {
   fileToGalleryWebpBlob,
@@ -42,7 +42,7 @@ export function FieldGalleryInput(props: InputProps) {
   const [error, setError] = useState<string | null>(null);
 
   const current = (Array.isArray(value) ? value : []) as GalleryImageValue[];
-  const remaining = Math.max(0, FIELD_GALLERY_TARGET_COUNT - current.length);
+  const remaining = Math.max(0, FIELD_GALLERY_MAX_COUNT - current.length);
 
   const uploadFiles = useCallback(
     async (files: FileList | File[]) => {
@@ -56,7 +56,7 @@ export function FieldGalleryInput(props: InputProps) {
 
       const batch = candidates.slice(0, remaining);
       if (!batch.length) {
-        setError(`Gallery is full — maximum ${FIELD_GALLERY_TARGET_COUNT} photos.`);
+        setError(`Gallery is full — maximum ${FIELD_GALLERY_MAX_COUNT} photos.`);
         return;
       }
 
@@ -133,7 +133,7 @@ export function FieldGalleryInput(props: InputProps) {
             <Text size={1} muted>
               Drop photos here or choose files. Each image is resized to 1920px wide,
               converted to WebP, and added to the masonry gallery. Up to{" "}
-              {FIELD_GALLERY_TARGET_COUNT} photos total ({remaining} remaining).
+              {FIELD_GALLERY_MAX_COUNT} photos total ({remaining} remaining).
             </Text>
           </Stack>
 

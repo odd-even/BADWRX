@@ -12,7 +12,21 @@ export const FIELD_GALLERY_SOURCE_FILES = [
   "IMG_1096.jpeg",
 ] as const;
 
-export const FIELD_GALLERY_TARGET_COUNT = 30;
+/** Max photos in Sanity gallery uploader */
+export const FIELD_GALLERY_MAX_COUNT = 100;
+
+/** Built-in local fallback list size (repo `/gallery` sources cycled) */
+export const FIELD_GALLERY_LOCAL_COUNT = 30;
+
+/** @deprecated use FIELD_GALLERY_LOCAL_COUNT or FIELD_GALLERY_MAX_COUNT */
+export const FIELD_GALLERY_TARGET_COUNT = FIELD_GALLERY_LOCAL_COUNT;
+
+/** Show Load more on the site when gallery exceeds this count */
+export const FIELD_GALLERY_PAGINATION_THRESHOLD = 35;
+
+export const FIELD_GALLERY_PAGINATION_INITIAL = 35;
+
+export const FIELD_GALLERY_PAGINATION_BATCH = 15;
 
 export const FIELD_GALLERY_ALT = "BADWRX field photography";
 
@@ -78,7 +92,7 @@ const FIELD_GALLERY_PORTRAIT = "IMG_5717.jpeg";
  * Stable across builds — not random per request.
  */
 export function buildFieldGallerySourceOrder(
-  count = FIELD_GALLERY_TARGET_COUNT,
+  count = FIELD_GALLERY_LOCAL_COUNT,
 ): (typeof FIELD_GALLERY_SOURCE_FILES)[number][] {
   const landscapes = FIELD_GALLERY_SOURCE_FILES.filter(
     (file) => file !== FIELD_GALLERY_PORTRAIT,
@@ -109,7 +123,7 @@ export function buildFieldGallerySourceOrder(
   return order;
 }
 
-export function buildFieldGalleryFileList(count = FIELD_GALLERY_TARGET_COUNT) {
+export function buildFieldGalleryFileList(count = FIELD_GALLERY_LOCAL_COUNT) {
   return buildFieldGallerySourceOrder(count).map((sourceFile) =>
     fieldGalleryLocalImage(sourceFile),
   );

@@ -27,7 +27,7 @@ export const fieldGallerySettings = defineType({
       type: "array",
       description:
         "Home page masonry gallery. Use bulk upload below — photos are auto-converted to WebP and served at responsive sizes from Sanity CDN.",
-      validation: (rule) => rule.max(30),
+      validation: (rule) => rule.max(100),
       options: { layout: "grid" },
       components: {
         input: FieldGalleryInput,

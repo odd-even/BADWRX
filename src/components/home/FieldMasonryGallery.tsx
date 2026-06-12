@@ -3,6 +3,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { GalleryLightbox } from "@/components/ui/GalleryLightbox";
+import {
+  FIELD_GALLERY_PAGINATION_BATCH,
+  FIELD_GALLERY_PAGINATION_INITIAL,
+  FIELD_GALLERY_PAGINATION_THRESHOLD,
+} from "@/data/field-gallery";
 import { observeScrollReveal, prefersReducedMotion } from "@/lib/scroll-reveal";
 import type { RifleImage } from "@/lib/types";
 
@@ -42,8 +47,17 @@ function resolveGalleryLayout(width: number): GalleryLayout {
 }
 
 function initialVisibleCount(layout: GalleryLayout, total: number): number {
-  if (layout === "multi") return total;
-  return Math.min(GALLERY_INITIAL[layout], total);
+  if (layout === "single") return Math.min(GALLERY_INITIAL.single, total);
+  if (layout === "twoColumn") return Math.min(GALLERY_INITIAL.twoColumn, total);
+  if (total <= FIELD_GALLERY_PAGINATION_THRESHOLD) return total;
+  return Math.min(FIELD_GALLERY_PAGINATION_INITIAL, total);
+}
+
+function galleryBatchSize(layout: GalleryLayout, total: number): number {
+  if (layout === "single") return GALLERY_BATCH.single;
+  if (layout === "twoColumn") return GALLERY_BATCH.twoColumn;
+  if (total <= FIELD_GALLERY_PAGINATION_THRESHOLD) return 0;
+  return FIELD_GALLERY_PAGINATION_BATCH;
 }
 
 const REVEAL_ROOT_MARGIN = "0px 0px -8% 0px";
@@ -211,7 +225,6 @@ export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProp
       setLayout(nextLayout);
       setVisibleCount((count) => {
         const nextInitial = initialVisibleCount(nextLayout, images.length);
-        if (nextLayout === "multi") return images.length;
         if (prevLayout === nextLayout && count > nextInitial) {
           return Math.min(count, images.length);
         }
@@ -228,10 +241,9 @@ export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProp
 
   if (!images.length) return null;
 
-  const visibleImages =
-    layout === "multi" ? images : images.slice(0, visibleCount);
-  const showLoadMore = layout !== "multi" && visibleCount < images.length;
-  const batchSize = layout === "multi" ? 0 : GALLERY_BATCH[layout];
+  const visibleImages = images.slice(0, visibleCount);
+  const showLoadMore = visibleCount < images.length;
+  const batchSize = galleryBatchSize(layout, images.length);
   const remainingCount = images.length - visibleCount;
 
   return (
@@ -252,7 +264,7 @@ export function FieldMasonryGallery({ section, images }: FieldMasonryGalleryProp
         </div>
 
         {showLoadMore ? (
-          <div className="mt-8 flex justify-center min-[768px]:hidden">
+          <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() =>
