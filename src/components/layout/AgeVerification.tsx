@@ -95,7 +95,7 @@ export function AgeVerification({ enabled = true }: AgeVerificationProps) {
 
         <button
           type="submit"
-          className="w-full border border-red bg-red py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:py-4"
+          className="w-full !rounded-none border border-red bg-red py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-dark sm:py-4"
         >
           Enter site
         </button>
