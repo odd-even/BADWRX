@@ -28,10 +28,10 @@ type DateParts = {
   year: number | "";
 };
 
-const triggerClassName = `${formInputClassName} !rounded-none mt-0 flex w-full items-center justify-between gap-2 text-left`;
+const triggerClassName = `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 text-left`;
 
 const cellClassName =
-  "bg-black-light px-0.5 py-2 text-center text-xs text-white transition hover:bg-red/10 hover:text-red sm:px-1 sm:text-sm";
+  "!rounded-none bg-black-light px-0.5 py-2 text-center text-xs text-white transition hover:bg-red/10 hover:text-red sm:px-1 sm:text-sm";
 
 const cellSelectedClassName = "bg-red/10 text-white ring-1 ring-inset ring-red";
 
@@ -153,7 +153,7 @@ export function BirthDatePicker({
   }
 
   const triggerClasses = compact
-    ? `${formInputClassName} !rounded-none mt-0 flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left`
+    ? `${formInputClassName} mt-0 flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left`
     : triggerClassName;
   const monthLabel = parts.month ? MONTH_LABELS[parts.month - 1] : "Month";
   const dayLabel = parts.day ? String(parts.day) : "Day";
